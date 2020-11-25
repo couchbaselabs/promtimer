@@ -314,10 +314,7 @@ def start_grafana():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--action', dest='action', choices=['start', 'grafana'], required=True)
     parser.add_argument('--prometheus', dest='prom_bin')
-    parser.add_argument('--app', dest='app', default='')
-    parser.add_argument('--hostname', dest='hostname', default='')
     args = parser.parse_args()
 
     cbcollects = get_cbcollect_dirs()
