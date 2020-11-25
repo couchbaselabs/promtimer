@@ -79,8 +79,9 @@ Start Promtimer:
 promtimer.py
 ```
 
-Open the Grafana UI (`localhost:3000`) in your browser and you can begin 
-exploring the available dashboards.
+The Grafana dashboards page should open for you automatically. 
+If not, navigate to (`localhost:3000/dashboards`) in your browser and  
+begin exploring the available dashboards.
 
 ## Clean Up
 

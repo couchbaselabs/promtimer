@@ -25,6 +25,7 @@ import time
 import json
 import datetime
 import re
+import webbrowser
 
 ROOT_DIR = path.dirname(__file__)
 PROMETHEUS_BIN = 'prometheus'
@@ -327,6 +328,16 @@ def start_grafana():
     print('starting grafana server')
     return start_process(args, log_path, GRAFANA_DIR)
 
+def open_browser():
+    url = 'http://localhost:3000/dashboards'
+    try:
+        # For some reason this sometimes throws an OSError with no
+        # apparent side-effects. Probably related to forking processes
+        webbrowser.open_new(url)
+    except OSError:
+        print("Hit `OSError` opening web browser")
+        pass
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--prometheus', dest='prom_bin')
@@ -343,8 +354,9 @@ def main():
     processes = start_prometheuses(cbcollects)
     processes.append(start_grafana())
 
+    time.sleep(0.1)
+    open_browser()
     poll_processes(processes)
-    os.system('open localhost:3000')
 
 if __name__ == '__main__':
     main()

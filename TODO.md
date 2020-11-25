@@ -17,7 +17,6 @@
 #### Add support for Grafana UI ports other than 3000
 #### Add support for Grafana homepath argument
 #### Guess where Grafana is
-#### Auto open browser to localhost:3000 after start
 
 ## Prometheus Integration
 
