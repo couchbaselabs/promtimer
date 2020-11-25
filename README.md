@@ -91,3 +91,7 @@ directory:
 ```
 rm -rf .grafana
 ```
+
+## Want to Help?
+
+Awesome! See the [list of todos](TODO.md).
