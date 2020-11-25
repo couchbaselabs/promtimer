@@ -321,10 +321,10 @@ def prepare_grafana(cbcollect_dirs, times):
     make_dashboards_yaml()
     make_dashboards(data_sources, times)
 
-def start_grafana():
+def start_grafana(grafana_home_path):
     log_path = path.join(GRAFANA_DIR, 'grafana.log')
     args = [GRAFANA_BIN,
-            '--homepath', '/usr/local/Cellar/grafana/7.1.5/share/grafana/',
+            '--homepath', grafana_home_path,
             '--config','custom.ini']
     print('starting grafana server')
     return start_process(args, log_path, GRAFANA_DIR)
@@ -343,7 +343,12 @@ def main():
     logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
                         level=logging.DEBUG)
     parser = argparse.ArgumentParser()
-    parser.add_argument('--prometheus', dest='prom_bin')
+    parser.add_argument('--prometheus', dest='prom_bin',
+                        help='path to prometheus binary if it\'s not'
+                             'available on the path')
+    parser.add_argument('--grafana-home', dest='grafana_home_path',
+                        required=True,
+                        help='Grafana "homepath"')
     args = parser.parse_args()
 
     cbcollects = get_cbcollect_dirs()
@@ -355,9 +360,8 @@ def main():
         PROMETHEUS_BIN = args.prom_bin
 
     processes = start_prometheuses(cbcollects)
-    processes.append(start_grafana())
+    processes.append(start_grafana(args.grafana_home_path))
 
-    time.sleep(0.1)
     open_browser()
     poll_processes(processes)
 

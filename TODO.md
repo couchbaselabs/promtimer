@@ -15,8 +15,7 @@
 ## Grafana Integration
 
 #### Add support for Grafana UI ports other than 3000
-#### Add support for Grafana homepath argument
-#### Guess where Grafana is
+#### Guess where Grafana is when homepath not provided
 
 ## Prometheus Integration
 

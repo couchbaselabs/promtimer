@@ -76,7 +76,7 @@ ls cbcollect*.zip | xargs -n 1 unzip
 Start Promtimer:
 
 ```
-promtimer.py
+promtimer.py --grafana-home <path-to-grafana-shared-config-home>
 ```
 
 The Grafana dashboards page should open for you automatically. If not, navigate
