@@ -1,0 +1,14 @@
+apiVersion: 1
+
+providers:
+- name: dashboards
+  type: file
+  # <int> essentially disable updates (every 100 hours)
+  updateIntervalSeconds: 360000
+  # <bool> disable dashboard deletion
+  disableDeletion: true
+  # <bool> allow updating provisioned dashboards from the UI
+  allowUiUpdates: true
+  options:
+    path: {absolute-path-to-cwd}/.grafana/provisioning/dashboards
+    foldersFromFilesStructure: true

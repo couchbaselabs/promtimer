@@ -1,0 +1,63 @@
+{
+  "title": "System Overview",
+  "_base": "dashboard",
+  "_panels": [
+    {
+      "title": "sys_cpu_utilization_rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sys_cpu_utilization_rate",
+          "_base": "target-per-data-source"
+        }
+      ]
+    },
+    {
+      "title": "sys_mem_limit and used",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sys_mem_limit",
+          "_base": "target-per-data-source"
+        },
+        {
+          "expr": "sys_mem_limit - ignoring(name) sys_mem_free",
+          "_base": "target-per-data-source"
+        }
+      ]
+    },
+    {
+      "title": "sys_mem_free",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sys_mem_free",
+          "legendFormat": "{data-source-name} sys_mem_free",
+          "_base": "target-per-data-source"
+        }
+      ]
+    },
+    {
+      "title": "sum(kv_mem_used_bytes)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_mem_used_bytes)",
+          "legendFormat": "{data-source-name} sum(kv_mem_used_bytes)",
+          "_base": "target-per-data-source"
+        }
+      ]
+    },
+    {
+      "_base": "panel-per-data-source",
+      "_targets": [
+        {
+          "expr": "sum(irate(kv_ops[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(kv_ops[1m]))",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
+

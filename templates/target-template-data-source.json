@@ -1,0 +1,7 @@
+{
+  "datasource": "$cbcollect",
+  "expr": "{expr}",
+  "interval": "",
+  "legendFormat": "{data-source-name} {expr}",
+  "refId": "A"
+}

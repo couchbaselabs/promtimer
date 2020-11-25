@@ -1,0 +1,86 @@
+{
+  "title": "Node Overview",
+  "_base": "dashboard-template-data-source",
+  "_dashboardTemplate": {
+    "type": "data-source-name",
+    "variable": "node "
+  },
+  "_panels": [
+    {
+      "title": "sys_cpu_utilization_rate",
+      "_base": "panel-template-data-source",
+      "_targets": [
+        {
+          "expr": "sys_cpu_utilization_rate",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sysproc_cpu_utilization",
+      "_base": "panel-template-data-source",
+      "_targets": [
+        {
+          "expr": "sysproc_cpu_utilization",
+          "legendFormat": "{{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sysproc_mem_resident",
+      "_base": "panel-template-data-source",
+      "_targets": [
+        {
+          "expr": "sysproc_mem_resident",
+          "legendFormat": "{{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "kv_curr_items",
+      "_base": "panel-template-data-source",
+      "_targets": [
+        {
+          "expr": "kv_curr_items",
+          "legendFormat": "kv_curr_items {{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sum(irate(kv_ops[1m]))",
+      "_base": "panel-template-data-source",
+      "_targets": [
+        {
+          "expr": "sum(irate(kv_ops[1m]))",
+          "legendFormat": "sum(irate(kv_ops[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sum by (bucket) (irate(kv_ops[1m]))",
+      "_base": "panel-template-data-source",
+      "_targets": [
+        {
+          "expr": "sum by (bucket) (irate(kv_ops[1m]))",
+          "legendFormat": "{{bucket}}:{{op}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sys_rest_requests",
+      "_base": "panel-template-data-source",
+      "_targets": [
+        {
+          "expr": "sys_rest_requests",
+          "legendFormat": "sys_rest_requests",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
