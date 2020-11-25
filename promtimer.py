@@ -26,6 +26,7 @@ import json
 import datetime
 import re
 import webbrowser
+import logging
 
 ROOT_DIR = path.dirname(__file__)
 PROMETHEUS_BIN = 'prometheus'
@@ -181,7 +182,7 @@ def make_targets(target_metas, template_params):
         target = json.loads(target_template)
         merge_meta_into_template(target, target_meta)
         target_template = json.dumps(target)
-        print('target template:', target_template)
+        logging.debug('target template:{}'.format(target_template))
         for param_meta in template_params:
             param_type = param_meta['type']
             param_values = param_meta['values']
@@ -191,7 +192,7 @@ def make_targets(target_metas, template_params):
                     expr = target_meta['expr']
                     replacements = {param_type: param_value,
                                         'legend': param_value + ' ' + expr}
-                    print('replacements', replacements)
+                    logging.debug('replacements:{}'.format(replacements))
                     target_string = replace(target_template, replacements)
                     target = json.loads(target_string)
                     result.append(target)
@@ -214,7 +215,7 @@ def make_panels(panel_metas, template_params):
                 for param_value in param_values:
                     replacements = {param_type: param_value,
                                     'panel-title': param_value}
-                    print('replacements', replacements)
+                    logging.debug('replacements:{}'.format(replacements))
                     panel_string = replace(panel_template, replacements)
                     panel = json.loads(panel_string)
                     targets = make_targets(panel_meta['_targets'],
@@ -267,7 +268,7 @@ def make_dashboards(data_sources, times):
         dashboard_template = meta.get('_dashboardTemplate')
         template_params = [{'type': 'data-source-name',
                             'values': data_sources}]
-        print('dashboard template', dashboard_template)
+        logging.debug('dashboard template:{}'.format(dashboard_template))
         if dashboard_template:
             variable = dashboard_template['variable']
             for template_param in template_params:
@@ -339,6 +340,8 @@ def open_browser():
         pass
 
 def main():
+    logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
+                        level=logging.DEBUG)
     parser = argparse.ArgumentParser()
     parser.add_argument('--prometheus', dest='prom_bin')
     args = parser.parse_args()
