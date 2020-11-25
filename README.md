@@ -1,6 +1,6 @@
 # Promtimer
 
-[Mortimer](https://github.com/couchbaselabs/mortimer) is a convenient python 
+[Mortimer](https://github.com/couchbaselabs/mortimer) is a convenient 
 tool that can be used to display statistics grabbed from Couchbase collected 
 log bundles (cbcollects). With the move to use Prometheus for stats
 storage and management, Mortimer will no longer work. It would be possible
@@ -30,7 +30,7 @@ You will need:
 
 If you happen to be building Couchbase Server 7.0 or later, you will already 
 have a Prometheus binary: it's in the `install/bin` directory of one of your 
-local builds. If you don't, the [Getting Started)[https://prometheus.io/docs/introduction/first_steps/] 
+local builds. If you don't, the [Getting Started](https://prometheus.io/docs/introduction/first_steps/) 
 instructions on the Prometheus website are comprehensive. If you're on Mac,
 `brew` works great:
 
@@ -49,7 +49,7 @@ make prometheus
 
 You'll need a full Grafana install. The `grafana-server` binary alone isn't 
 sufficient as Grafana ships with many configuration files. 
-(Installation instructions)[https://grafana.com/docs/grafana/latest/installation/] 
+[Installation instructions](https://grafana.com/docs/grafana/latest/installation/) 
 on the Grafana website look comprehensive. On Mac, it's easy:
 
 ```
