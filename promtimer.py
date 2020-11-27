@@ -116,6 +116,12 @@ def get_provisioning_dir():
 def get_dashboards_dir():
     return path.join(get_provisioning_dir(), 'dashboards')
 
+def get_plugins_dir():
+    return path.join(get_provisioning_dir(), 'plugins')
+
+def get_notifiers_dir():
+    return path.join(get_provisioning_dir(), 'notifiers')
+
 def get_custom_ini_template():
     with open(path.join(ROOT_DIR, 'custom.ini'), 'r') as file:
         return file.read()
@@ -282,7 +288,6 @@ def make_dashboards(data_sources, times):
 def make_data_sources(cbcollects):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
     os.makedirs(datasources_dir, exist_ok=True)
-    os.makedirs(GRAFANA_DIR, exist_ok=True)
     template = get_data_source_template()
     for i in range(len(cbcollects)):
         cbcollect = cbcollects[i]
@@ -314,6 +319,10 @@ def get_data_source_names(cbcollect_dirs):
     return cbcollect_dirs
 
 def prepare_grafana(cbcollect_dirs, times):
+    os.makedirs(GRAFANA_DIR, exist_ok=True)
+    os.makedirs(get_dashboards_dir(), exist_ok=True)
+    os.makedirs(get_plugins_dir(), exist_ok=True)
+    os.makedirs(get_notifiers_dir(), exist_ok=True)
     data_sources = get_data_source_names(cbcollect_dirs)
     make_custom_ini()
     make_home_dashboard()
