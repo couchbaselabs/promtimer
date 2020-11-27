@@ -369,6 +369,10 @@ def main():
                         default=13000)
     args = parser.parse_args()
 
+    os.makedirs(GRAFANA_DIR, exist_ok=True)
+    logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
+                        level=logging.DEBUG)
+
     cbcollects = get_cbcollect_dirs()
     times = get_prometheus_min_and_max_times(cbcollects)
 
@@ -379,9 +383,6 @@ def main():
     if args.prom_bin:
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
-
-    logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
-                        level=logging.DEBUG)
 
     processes = start_prometheuses(cbcollects, prometheus_base_port)
     processes.append(start_grafana(args.grafana_home_path))
