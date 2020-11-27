@@ -351,8 +351,6 @@ def open_browser(grafana_http_port):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--prometheus', dest='prom_bin',
-                        help='path to prometheus binary if it\'s not available on $PATH')
     parser.add_argument('--grafana-home', dest='grafana_home_path', required=True,
                         help='''
                         Grafana configuration "homepath"; should be set to the
@@ -362,12 +360,17 @@ def main():
                         On linux systems the homepath should usually be:
                             /usr/share/grafana
                         ''')
+    parser.add_argument('--prometheus', dest='prom_bin',
+                        help='path to prometheus binary if it\'s not available on $PATH')
+    parser.add_argument('--grafana-port', dest='grafana_port', type=int,
+                        help='http port on which Grafana should listen (default: 13000)',
+                        default=13000)
     args = parser.parse_args()
 
     cbcollects = get_cbcollect_dirs()
     times = get_prometheus_min_and_max_times(cbcollects)
 
-    grafana_port = 13000
+    grafana_port = args.grafana_port
     prometheus_base_port = grafana_port + 1
     prepare_grafana(grafana_port, prometheus_base_port, cbcollects, times)
 
