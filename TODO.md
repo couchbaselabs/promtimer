@@ -14,13 +14,11 @@
 
 ## Grafana Integration
 
-#### Add support for Grafana UI ports other than 3000
 #### Guess where Grafana is when homepath not provided
 
 ## Prometheus Integration
 
 #### Support accessing Prometheus instances other than from cbcollects
-#### Support base Prometheus ports other than 9090
 
 ## Code
 
