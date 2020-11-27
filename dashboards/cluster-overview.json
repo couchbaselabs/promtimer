@@ -7,8 +7,10 @@
       "_base": "panel",
       "_targets": [
         {
+          "datasource": "{data-source-name}",
           "expr": "sys_cpu_utilization_rate",
-          "_base": "target-per-data-source"
+          "legendFormat": "{data-source-name} sys_cpu_utilization_rate",
+          "_base": "target"
         }
       ]
     },
@@ -17,12 +19,16 @@
       "_base": "panel",
       "_targets": [
         {
+          "datasource": "{data-source-name}",
           "expr": "sys_mem_limit",
-          "_base": "target-per-data-source"
+          "legendFormat": "{data-source-name} sys_mem_limit",
+          "_base": "target"
         },
         {
-          "expr": "sys_mem_limit - ignoring(name) sys_mem_free",
-          "_base": "target-per-data-source"
+          "datasource": "{data-source-name}",
+          "expr": "sys_mem_limit - ignoring(name)sys_mem_free",
+          "legendFormat": "{data-source-name} sys_mem_limit - ignoring(name)sys_mem_free",
+          "_base": "target"
         }
       ]
     },
@@ -31,9 +37,10 @@
       "_base": "panel",
       "_targets": [
         {
+          "datasource": "{data-source-name}",
           "expr": "sys_mem_free",
           "legendFormat": "{data-source-name} sys_mem_free",
-          "_base": "target-per-data-source"
+          "_base": "target"
         }
       ]
     },
@@ -42,9 +49,10 @@
       "_base": "panel",
       "_targets": [
         {
+          "datasource": "{data-source-name}",
           "expr": "sum(kv_mem_used_bytes)",
           "legendFormat": "{data-source-name} sum(kv_mem_used_bytes)",
-          "_base": "target-per-data-source"
+          "_base": "target"
         }
       ]
     },
