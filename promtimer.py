@@ -27,6 +27,7 @@ import datetime
 import re
 import webbrowser
 import logging
+import copy
 
 ROOT_DIR = path.dirname(__file__)
 PROMETHEUS_BIN = 'prometheus'
@@ -199,16 +200,13 @@ def make_target(target_meta, template_params):
         if target_template.find('{' + param_type + '}') >= 0:
             for i in range(len(param_values)):
                 param_value = param_values[i]
-                expr = target_meta['expr']
-                replacements = {param_type: param_value,
-                                'legend': param_value + ' ' + expr}
+                replacements = {param_type: param_value}
                 logging.debug('replacements:{}'.format(replacements))
                 target_string = replace(target_template, replacements)
                 target = json.loads(target_string)
                 result.append(target)
         else:
-            replacements = {'legend': ''}
-            target_string = replace(target_template, replacements)
+            target_string = replace(target_template, {})
             target = json.loads(target_string)
             result.append(target)
     return result
@@ -258,13 +256,29 @@ def make_panels(panel_metas, template_params):
         result += make_panel(panel_meta, template_params)
     return result
 
+def maybe_substitute_templating_variables(dashboard, template_params):
+    template_params = copy.deepcopy(template_params)
+    dashboard_template = dashboard.get('templating')
+    if dashboard_template:
+        templating_list = dashboard_template.get('list')
+        for templating in templating_list:
+            variable = templating['name']
+            for template_param in template_params:
+                if template_param['type'] == 'data-source-name' and \
+                    templating['type'] == 'datasource':
+                    template_param['values'] = ['$' + variable]
+    return template_params
+
 def make_dashboard(dashboard_meta, template_params, min_time, max_time):
     replacements = {'dashboard-from-time': min_time.isoformat(),
                     'dashboard-to-time': max_time.isoformat(),
                     'dashboard-title': dashboard_meta['title']}
-    base_dashboard = dashboard_meta['_base']
-    dashboard_string = replace(get_template(base_dashboard), replacements)
+    template_string = get_template(dashboard_meta['_base'])
+    template_string = metaify_template_string(template_string, dashboard_meta)
+    dashboard_string = replace(template_string, replacements)
     dashboard = json.loads(dashboard_string)
+    template_params = maybe_substitute_templating_variables(dashboard, template_params)
+    logging.debug('make_dashboard: template_params {}'.format(template_params))
     panel_id = 0
     panels = make_panels(dashboard_meta['_panels'], template_params)
     for i in range(len(panels)):
@@ -283,21 +297,14 @@ def make_dashboards(data_sources, times):
     min_time = datetime.datetime.fromtimestamp(times[0] / 1000.0)
     max_time = datetime.datetime.fromtimestamp(times[1] / 1000.0)
     dashboard_meta_strings = get_dashboard_metas()
+    template_params = [{'type': 'data-source-name',
+                        'values': data_sources}]
     for meta_string in dashboard_meta_strings:
         meta = json.loads(meta_string)
-        dashboard_template = meta.get('_dashboardTemplate')
-        template_params = [{'type': 'data-source-name',
-                            'values': data_sources}]
-        logging.debug('dashboard template:{}'.format(dashboard_template))
-        if dashboard_template:
-            variable = dashboard_template['variable']
-            for template_param in template_params:
-                if dashboard_template['type'] == template_param['type']:
-                    template_param['values'] = ['$' + variable]
         dashboard = make_dashboard(meta, template_params, min_time, max_time)
         file_name = meta['title'].replace(' ', '-').lower() + '.json'
         with open(path.join(get_dashboards_dir(), file_name), 'w') as file:
-            file.write(json.dumps(dashboard))
+            file.write(json.dumps(dashboard, indent=2))
 
 def make_data_sources(data_sources_names, base_port):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
