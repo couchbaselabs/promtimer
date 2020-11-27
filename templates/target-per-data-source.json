@@ -1,7 +1,0 @@
-{
-  "datasource": "{data-source-name}",
-  "expr": "{expr}",
-  "interval": "",
-  "legendFormat": "{data-source-name} {expr}",
-  "refId": "A"
-}
