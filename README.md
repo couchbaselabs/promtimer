@@ -23,20 +23,21 @@ Promtimer:
 
 You will need:
 
-* A Prometheus binary
-* Grafana
+* A Prometheus binary (version 2.20 or later)
+* Grafana (version 7.6 or later)
 * Promtimer
 * Some cbcollects
 
 If you happen to be building Couchbase Server 7.0 or later, you will already 
 have a Prometheus binary: it's in the `install/bin` directory of one of your 
 local builds. If you don't, the [Getting Started](https://prometheus.io/docs/introduction/first_steps/) 
-instructions on the Prometheus website are comprehensive. If you're on Mac,
-`brew` works great:
+instructions on the Prometheus website are comprehensive. You don't actually
+need to install Prometheus, you just need the binary. [Downloading](https://prometheus.io/download/)
+and unzipping the pre-compiled binaries for your platform is sufficient.
 
-```
-brew install prometheus
-```
+If you're on Mac,`brew` is convenient:
+
+    brew install prometheus
 
 It's also possible to build Prometheus from source yourself. This is 
 straightforward:
@@ -50,17 +51,14 @@ make prometheus
 You'll need a full Grafana install. The `grafana-server` binary alone isn't 
 sufficient as Grafana ships with many configuration files. 
 [Installation instructions](https://grafana.com/docs/grafana/latest/installation/) 
-on the Grafana website look comprehensive. On Mac, it's easy:
+on the Grafana website look comprehensive. Follow the instructions for your
+platform to get a recent version of Grafana. On Mac, it's easy:
 
-```
-brew install grafana
-```
+    brew install grafana
 
 To get Promtimer, clone this repo locally:
 
-```
-git clone git@github.com:couchbaselabs/promtimer.git
-```
+    git clone https://github.com/couchbaselabs/promtimer.git
 
 As to cbcollects, you probably wouldn't be reading this if you didn't already
 have them. 
