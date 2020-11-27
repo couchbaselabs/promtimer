@@ -340,15 +340,19 @@ def open_browser():
         pass
 
 def main():
-    logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
-                        level=logging.DEBUG)
     parser = argparse.ArgumentParser()
     parser.add_argument('--prometheus', dest='prom_bin',
-                        help='path to prometheus binary if it\'s not'
-                             'available on the path')
-    parser.add_argument('--grafana-home', dest='grafana_home_path',
-                        required=True,
-                        help='Grafana "homepath"')
+                        help='path to prometheus binary if it\'s not available on $PATH')
+    parser.add_argument('--grafana-home', dest='grafana_home_path', required=True,
+                        help='''
+                        Grafana configuration "homepath"; should be set to the
+                        out-of-the-box Grafana config path. On brew-installed Grafana on
+                        Macs this is something like:
+                            /usr/local/Cellar/grafana/x.y.z/share/grafana
+                        On linux systems the homepath should usually be:
+                            /usr/share/grafana
+                        '''
+                        )
     args = parser.parse_args()
 
     cbcollects = get_cbcollect_dirs()
@@ -358,6 +362,9 @@ def main():
     if args.prom_bin:
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
+
+    logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
+                        level=logging.DEBUG)
 
     processes = start_prometheuses(cbcollects)
     processes.append(start_grafana(args.grafana_home_path))

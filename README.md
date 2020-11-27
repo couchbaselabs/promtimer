@@ -79,8 +79,18 @@ Start Promtimer:
 promtimer.py --grafana-home <path-to-grafana-shared-config-home>
 ```
 
+The `path-to-grafana-shared-config-home` is what is known in Grafana terminology as the
+"homepath". This is the out-of-the-box Grafana shared config path. On brew-installed
+Grafana on Macs this is something like:
+
+    /usr/local/Cellar/grafana/x.y.z/share/grafana
+
+On linux systems the homepath should usually be:
+
+    /usr/share/grafana
+
 The Grafana dashboards page should open for you automatically. If not, navigate
-to (`localhost:3000/dashboards`) in your browser and begin exploring the 
+to (`localhost:3000/dashboards`) in your browser and begin exploring the
 available dashboards.
 
 ## Clean Up
