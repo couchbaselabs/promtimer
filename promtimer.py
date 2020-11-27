@@ -93,13 +93,15 @@ def start_prometheuses(cbcollects, base_port):
 
     return nodes
 
-def poll_processes(processes):
-    while True:
+def poll_processes(processes, count=-1):
+    check = 0
+    while count < 0 or check < count:
         for p in processes:
-            if p.poll() is not None:
-                return
-
+            result = p.poll()
+            if result is not None:
+                return result
         time.sleep(0.1)
+        check += 1
 
 def get_data_source_template():
     with open(path.join(ROOT_DIR, 'data-source.yaml'), 'r') as file:
@@ -198,7 +200,7 @@ def make_targets(target_metas, template_params):
                     param_value = param_values[i]
                     expr = target_meta['expr']
                     replacements = {param_type: param_value,
-                                        'legend': param_value + ' ' + expr}
+                                    'legend': param_value + ' ' + expr}
                     logging.debug('replacements:{}'.format(replacements))
                     target_string = replace(target_template, replacements)
                     target = json.loads(target_string)
@@ -384,8 +386,11 @@ def main():
     processes = start_prometheuses(cbcollects, prometheus_base_port)
     processes.append(start_grafana(args.grafana_home_path))
 
-    open_browser(grafana_port)
-    poll_processes(processes)
+    time.sleep(0.1)
+    result = poll_processes(processes, 1)
+    if result is None:
+        open_browser(grafana_port)
+        poll_processes(processes)
 
 if __name__ == '__main__':
     main()
