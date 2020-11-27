@@ -77,7 +77,7 @@ def get_prometheus_min_and_max_times(cbcollects):
     times = [get_prometheus_times(c) for c in cbcollects]
     return min([t[0] for t in times]), max([t[1] for t in times])
 
-def start_prometheuses(cbcollects):
+def start_prometheuses(cbcollects, base_port):
     nodes = []
     for i in range(len(cbcollects)):
         cbcollect= cbcollects[i]
@@ -86,7 +86,7 @@ def start_prometheuses(cbcollects):
                 '--config.file', path.join(ROOT_DIR, 'noscrape.yml'),
                 '--storage.tsdb.path', path.join(cbcollect, 'stats_snapshot'),
                 '--storage.tsdb.retention.time', '10y',
-                '--web.listen-address', '0.0.0.0:{}'.format(9090 + i)]
+                '--web.listen-address', '0.0.0.0:{}'.format(base_port + i)]
         print('starting node', i)
         node = start_process(args, log_path)
         nodes.append(node)
@@ -130,9 +130,10 @@ def get_home_dashboard():
     with open(path.join(ROOT_DIR, 'home.json'), 'r') as file:
         return file.read()
 
-def make_custom_ini():
+def make_custom_ini(grafana_http_port):
     os.makedirs(GRAFANA_DIR, exist_ok=True)
-    replacements = {'absolute-path-to-cwd': os.path.abspath('.')}
+    replacements = {'absolute-path-to-cwd': os.path.abspath('.'),
+                    'grafana-http-port': str(grafana_http_port)}
     template = get_custom_ini_template()
     contents = replace(template, replacements)
     with open(path.join(GRAFANA_DIR, 'custom.ini'), 'w') as file:
@@ -285,15 +286,15 @@ def make_dashboards(data_sources, times):
         with open(path.join(get_dashboards_dir(), file_name), 'w') as file:
             file.write(json.dumps(dashboard))
 
-def make_data_sources(cbcollects):
+def make_data_sources(data_sources_names, base_port):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
     os.makedirs(datasources_dir, exist_ok=True)
     template = get_data_source_template()
-    for i in range(len(cbcollects)):
-        cbcollect = cbcollects[i]
-        replacement_map = {'data-source-name': cbcollect,
-                           'data-source-port' : str(9090 +i)}
-        filename = path.join(datasources_dir, 'ds-{}.yaml'.format(cbcollect))
+    for i in range(len(data_sources_names)):
+        data_source_name = data_sources_names[i]
+        replacement_map = {'data-source-name': data_source_name,
+                           'data-source-port' : str(base_port + i)}
+        filename = path.join(datasources_dir, 'ds-{}.yaml'.format(data_source_name))
         with open(filename, 'w') as file:
             file.write(replace(template, replacement_map))
 
@@ -318,15 +319,15 @@ def get_data_source_names(cbcollect_dirs):
             return result
     return cbcollect_dirs
 
-def prepare_grafana(cbcollect_dirs, times):
+def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, times):
     os.makedirs(GRAFANA_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     os.makedirs(get_plugins_dir(), exist_ok=True)
     os.makedirs(get_notifiers_dir(), exist_ok=True)
     data_sources = get_data_source_names(cbcollect_dirs)
-    make_custom_ini()
+    make_custom_ini(grafana_port)
     make_home_dashboard()
-    make_data_sources(data_sources)
+    make_data_sources(data_sources, prometheus_base_port)
     make_dashboards_yaml()
     make_dashboards(data_sources, times)
 
@@ -338,8 +339,8 @@ def start_grafana(grafana_home_path):
     print('starting grafana server')
     return start_process(args, log_path, GRAFANA_DIR)
 
-def open_browser():
-    url = 'http://localhost:3000/dashboards'
+def open_browser(grafana_http_port):
+    url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
     try:
         # For some reason this sometimes throws an OSError with no
         # apparent side-effects. Probably related to forking processes
@@ -360,13 +361,15 @@ def main():
                             /usr/local/Cellar/grafana/x.y.z/share/grafana
                         On linux systems the homepath should usually be:
                             /usr/share/grafana
-                        '''
-                        )
+                        ''')
     args = parser.parse_args()
 
     cbcollects = get_cbcollect_dirs()
     times = get_prometheus_min_and_max_times(cbcollects)
-    prepare_grafana(cbcollects, times)
+
+    grafana_port = 13000
+    prometheus_base_port = grafana_port + 1
+    prepare_grafana(grafana_port, prometheus_base_port, cbcollects, times)
 
     if args.prom_bin:
         global PROMETHEUS_BIN
@@ -375,10 +378,10 @@ def main():
     logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
                         level=logging.DEBUG)
 
-    processes = start_prometheuses(cbcollects)
+    processes = start_prometheuses(cbcollects, prometheus_base_port)
     processes.append(start_grafana(args.grafana_home_path))
 
-    open_browser()
+    open_browser(grafana_port)
     poll_processes(processes)
 
 if __name__ == '__main__':

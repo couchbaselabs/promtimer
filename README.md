@@ -24,7 +24,7 @@ Promtimer:
 You will need:
 
 * A Prometheus binary (version 2.20 or later)
-* Grafana (version 7.6 or later)
+* Grafana (version 7.1 or later)
 * Promtimer
 * Some cbcollects
 
@@ -88,7 +88,7 @@ On linux systems the homepath should usually be:
     /usr/share/grafana
 
 The Grafana dashboards page should open for you automatically. If not, navigate
-to (`localhost:3000/dashboards`) in your browser and begin exploring the
+to `localhost:13000/dashboards` in your browser and begin exploring the
 available dashboards.
 
 ## Clean Up
