@@ -183,68 +183,79 @@ def merge_meta_into_template(template, meta):
             else:
                 template[k] = val
 
-def make_targets(target_metas, template_params):
+def metaify_template_string(template_string, meta):
+    template = json.loads(template_string)
+    merge_meta_into_template(template, meta)
+    return json.dumps(template)
+
+def make_target(target_meta, template_params):
+    target_template = get_template(target_meta['_base'])
+    target_template = metaify_template_string(target_template, target_meta)
+    logging.debug('target template:{}'.format(target_template))
     result = []
-    for target_meta in target_metas:
-        base_target = target_meta['_base']
-        target_template = get_template(base_target)
-        target = json.loads(target_template)
-        merge_meta_into_template(target, target_meta)
-        target_template = json.dumps(target)
-        logging.debug('target template:{}'.format(target_template))
-        for param_meta in template_params:
-            param_type = param_meta['type']
-            param_values = param_meta['values']
-            if target_template.find('{' + param_type + '}') >= 0:
-                for i in range(len(param_values)):
-                    param_value = param_values[i]
-                    expr = target_meta['expr']
-                    replacements = {param_type: param_value,
-                                    'legend': param_value + ' ' + expr}
-                    logging.debug('replacements:{}'.format(replacements))
-                    target_string = replace(target_template, replacements)
-                    target = json.loads(target_string)
-                    result.append(target)
-            else:
-                replacements = {'legend': ''}
+    for param_meta in template_params:
+        param_type = param_meta['type']
+        param_values = param_meta['values']
+        if target_template.find('{' + param_type + '}') >= 0:
+            for i in range(len(param_values)):
+                param_value = param_values[i]
+                expr = target_meta['expr']
+                replacements = {param_type: param_value,
+                                'legend': param_value + ' ' + expr}
+                logging.debug('replacements:{}'.format(replacements))
                 target_string = replace(target_template, replacements)
                 target = json.loads(target_string)
                 result.append(target)
+        else:
+            replacements = {'legend': ''}
+            target_string = replace(target_template, replacements)
+            target = json.loads(target_string)
+            result.append(target)
+    return result
+
+def make_targets(target_metas, template_params):
+    result = []
+    for target_meta in target_metas:
+        result += make_target(target_meta, template_params)
+    return result
+
+def add_targets_to_panel(panel, targets):
+    for i in range(len(targets)):
+        target = targets[i]
+        target['refId'] = chr(65 + i)
+        panel['targets'].append(target)
+
+def make_panel(panel_meta, template_params):
+    base_panel = panel_meta['_base']
+    panel_template = get_template(base_panel)
+    panel_template = metaify_template_string(panel_template, panel_meta)
+    result = []
+    for param_meta in template_params:
+        param_type = param_meta['type']
+        if panel_template.find('{' + param_type + '}') >= 0:
+            param_values = param_meta['values']
+            for param_value in param_values:
+                replacements = {param_type: param_value}
+                logging.debug('replacements:{}'.format(replacements))
+                panel_string = replace(panel_template, replacements)
+                panel = json.loads(panel_string)
+                targets = make_targets(panel_meta['_targets'],
+                                       [{'type': 'data-source-name',
+                                         'values': [param_value]}])
+                add_targets_to_panel(panel, targets)
+                result.append(panel)
+        else:
+            panel_string = replace(panel_template, {})
+            panel = json.loads(panel_string)
+            targets = make_targets(panel_meta['_targets'], template_params)
+            add_targets_to_panel(panel, targets)
+            result.append(panel)
     return result
 
 def make_panels(panel_metas, template_params):
     result = []
     for panel_meta in panel_metas:
-        base_panel = panel_meta['_base']
-        panel_template = get_template(base_panel)
-        for param_meta in template_params:
-            param_type = param_meta['type']
-            if panel_template.find('{' + param_type + '}') >= 0:
-                param_values = param_meta['values']
-                for param_value in param_values:
-                    replacements = {param_type: param_value,
-                                    'panel-title': param_value}
-                    logging.debug('replacements:{}'.format(replacements))
-                    panel_string = replace(panel_template, replacements)
-                    panel = json.loads(panel_string)
-                    targets = make_targets(panel_meta['_targets'],
-                                           [{'type': 'data-source-name',
-                                             'values': [param_value]}])
-                    for i in range(len(targets)):
-                        target = targets[i]
-                        target['refId'] = chr(65 + i)
-                        panel['targets'].append(target)
-                    result.append(panel)
-            else:
-                panel_string = replace(panel_template, {})
-                panel = json.loads(panel_string)
-                panel['title'] = panel_meta['title']
-                targets = make_targets(panel_meta['_targets'], template_params)
-                for i in range(len(targets)):
-                    target = targets[i]
-                    target['refId'] = chr(65 + i)
-                    panel['targets'].append(target)
-                result.append(panel)
+        result += make_panel(panel_meta, template_params)
     return result
 
 def make_dashboard(dashboard_meta, template_params, min_time, max_time):

@@ -57,7 +57,9 @@
       ]
     },
     {
-      "_base": "panel-per-data-source",
+      "title": "{data-source-name} sum(irate(kv_ops[1m]))",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
       "_targets": [
         {
           "expr": "sum(irate(kv_ops[1m]))",
