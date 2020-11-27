@@ -26,6 +26,7 @@
       "_targets": [
         {
           "expr": "sys_cpu_utilization_rate",
+          "legendFormat": "",
           "_base": "target"
         }
       ]
