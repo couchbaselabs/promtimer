@@ -336,8 +336,7 @@ def maybe_expand_templating(dashboard, template_params):
 
 def make_dashboard(dashboard_meta, template_params, min_time, max_time):
     replacements = {'dashboard-from-time': min_time.isoformat(),
-                    'dashboard-to-time': max_time.isoformat(),
-                    'dashboard-title': dashboard_meta['title']}
+                    'dashboard-to-time': max_time.isoformat()}
     template_string = get_template(dashboard_meta['_base'])
     template_string = metaify_template_string(template_string, dashboard_meta)
     dashboard_string = replace(template_string, replacements)
