@@ -55,6 +55,9 @@ def make_dashboard_part(part_meta, template_params, sub_part_function=None):
 
     combinations = get_all_param_value_combinations(template_params_to_expand)
     result = []
+    logging.debug('part_template:{}'.format(part_template))
+    logging.debug('template_params:{}'.format(template_params))
+    logging.debug('combinations:{}'.format(combinations))
     if combinations:
         for combination in combinations:
             replacements = {}
@@ -64,13 +67,13 @@ def make_dashboard_part(part_meta, template_params, sub_part_function=None):
                 param_value = param['value']
                 replacements[param_type] = param_value
                 idx = util.index(sub_template_params, lambda x: x['type'] == param_type)
-                sub_template_params[idx] = {'type': param_type, 'values': param_value}
+                sub_template_params[idx] = {'type': param_type, 'values': [param_value]}
             logging.debug('replacements:{}'.format(replacements))
             logging.debug('sub_template_params:{}'.format(sub_template_params))
             part_string = util.replace(part_template, replacements)
             part = json.loads(part_string)
             if sub_part_function:
-                sub_part_function(part, part_meta, template_params)
+                sub_part_function(part, part_meta, sub_template_params)
             if part not in result:
                 result.append(part)
     else:
@@ -138,7 +141,7 @@ def maybe_substitute_templating_variables(dashboard, template_params):
 
 def maybe_expand_templating(dashboard, template_params):
     dashboard_template = dashboard.get('templating')
-    logging.debug('dashboard_tempate:{}'.format(dashboard_template))
+    logging.debug('dashboard_template:{}'.format(dashboard_template))
     if dashboard_template:
         templating_list = dashboard_template.get('list')
         logging.debug('templating_list:{}'.format(templating_list))
@@ -149,7 +152,6 @@ def maybe_expand_templating(dashboard, template_params):
                     options = templating['options']
                     option_template = options.pop()
                     option_string = json.dumps(option_template)
-
                     logging.debug('options:{}'.format(options))
                     logging.debug('option_template:{}'.format(option_template))
                     logging.debug('option_string:{}'.format(option_string))
@@ -168,7 +170,7 @@ def make_dashboard(dashboard_meta, template_params, min_time, max_time):
     template_string = get_template(dashboard_meta['_base'])
     template_string = metaify_template_string(template_string, dashboard_meta)
     dashboard_string = util.replace(template_string, replacements)
-    logging.debug('dashboard_string:{}'.format(dashboard_string))
+    logging.debug('make_dashboard: dashboard_string:{}'.format(dashboard_string))
     dashboard = json.loads(dashboard_string)
     maybe_expand_templating(dashboard, template_params)
     template_params = maybe_substitute_templating_variables(dashboard, template_params)
