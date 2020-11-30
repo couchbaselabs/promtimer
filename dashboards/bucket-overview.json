@@ -74,13 +74,13 @@
       ]
     },
     {
-      "title": "{data-source-name} sum(irate(kv_ops[1m]))",
+      "title": "{data-source-name} irate(kv_ops[1m])",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
           "expr": "irate(kv_ops{bucket=\"$bucket\"}[1m])",
-          "legendFormat": "irate(kv_ops[1m]) {{op}} {{result}}",
+          "legendFormat": "irate(kv_ops[1m]) {{op}}-{{result}}",
           "_base": "target"
         }
       ]
