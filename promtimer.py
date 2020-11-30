@@ -78,10 +78,10 @@ def get_prometheus_min_and_max_times(cbcollects):
     times = [get_prometheus_times(c) for c in cbcollects]
     return min([t[0] for t in times]), max([t[1] for t in times])
 
-def start_prometheuses(cbcollects, base_port):
+def start_prometheuses(cbcollects, base_port, log_dir):
     nodes = []
     for i, cbcollect in enumerate(cbcollects):
-        log_path = path.join(cbcollect, 'prom.log')
+        log_path = path.join(log_dir, 'prom-{}.log'.format(i))
         args = [PROMETHEUS_BIN,
                 '--config.file', path.join(ROOT_DIR, 'noscrape.yml'),
                 '--storage.tsdb.path', path.join(cbcollect, 'stats_snapshot'),
@@ -505,7 +505,7 @@ def main():
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
 
-    processes = start_prometheuses(cbcollects, prometheus_base_port)
+    processes = start_prometheuses(cbcollects, prometheus_base_port, GRAFANA_DIR)
     processes.append(start_grafana(args.grafana_home_path))
 
     time.sleep(0.1)
