@@ -2,7 +2,6 @@
 
 ## Dashboards
 
-#### Add bucket-related dashboard(s)
 #### Add ns_server related dashboard(s)
 #### Add query related dashboard(s)
 #### Add indexing related dashboard(s)
@@ -23,7 +22,6 @@
 ## Code
 
 #### Better comments in the code
-#### Consider splitting into multiple python modules
 
 
 
