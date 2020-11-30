@@ -1,0 +1,89 @@
+{
+  "_base": "dashboard",
+  "title": "Bucket Overview",
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "bucket",
+        "options": [
+          {
+            "selected": false,
+            "text": "{bucket}",
+            "value": "{bucket}"
+          }
+        ],
+        "query": "",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "_panels": [
+    {
+      "title": "sum(irate(kv_ops[1m]))",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ops{bucket=\"$bucket\"}[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(kv_ops[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "irate(kv_ep_bg_fetched[1m]))",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(kv_ep_bg_fetched{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "{data-source-name} irate(kv_ep_bg_fetched[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "kv_ep_diskqueue_items",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_ep_diskqueue_items{bucket=\"$bucket\"}",
+          "legendFormat": "{data-source-name} kv_ep_diskqueue_items)",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "kv_ep_diskqueue_items",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(kv_vb_active_ops_create{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "{data-source-name} irate(kv_vb_active_ops_create[1m])",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "{data-source-name} sum(irate(kv_ops[1m]))",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "irate(kv_ops{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "irate(kv_ops[1m]) {{op}} {{result}}",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}

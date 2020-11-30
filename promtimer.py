@@ -80,8 +80,7 @@ def get_prometheus_min_and_max_times(cbcollects):
 
 def start_prometheuses(cbcollects, base_port):
     nodes = []
-    for i in range(len(cbcollects)):
-        cbcollect= cbcollects[i]
+    for i, cbcollect in enumerate(cbcollects):
         log_path = path.join(cbcollect, 'prom.log')
         args = [PROMETHEUS_BIN,
                 '--config.file', path.join(ROOT_DIR, 'noscrape.yml'),
@@ -108,9 +107,33 @@ def get_data_source_template():
     with open(path.join(ROOT_DIR, 'data-source.yaml'), 'r') as file:
         return file.read()
 
+def find_template_parameter(string, parameter, start_idx=0):
+    to_find = '{' + parameter + '}'
+    idx = string.find(to_find, start_idx)
+    if idx <= 0:
+        return idx
+    if string[idx - 1] == '{' and string[idx + len(to_find)] == '}':
+        return -1
+    return idx
+
+def replace_template_parameter(string, to_find, to_replace):
+    idx = find_template_parameter(string, to_find)
+    if idx < 0:
+        return string
+    find_len = len(to_find)
+    result = []
+    prev_idx = 0
+    while idx >= 0:
+        result.append(string[prev_idx:idx])
+        result.append(to_replace)
+        prev_idx = idx + find_len + 2
+        idx = find_template_parameter(string, to_find, prev_idx)
+    result.append(string[prev_idx:])
+    return ''.join(result)
+
 def replace(string, replacement_map):
     for k, v in replacement_map.items():
-        string = string.replace('{' + k + '}', v)
+        string = replace_template_parameter(string, k, v)
     return string
 
 def get_provisioning_dir():
@@ -152,8 +175,8 @@ def make_dashboards_yaml():
     with open(path.join(ROOT_DIR, 'dashboards.yaml'), 'r') as file:
         replacements = {'absolute-path-to-cwd': os.path.abspath('.')}
         contents = replace(file.read(), replacements)
-        with open(path.join(get_dashboards_dir(), 'dashboards.yaml'), 'w') as file:
-            file.write(contents)
+        with open(path.join(get_dashboards_dir(), 'dashboards.yaml'), 'w') as file_to_write:
+            file_to_write.write(contents)
 
 def get_template(name):
     with open(path.join(ROOT_DIR, 'templates', name + '.json'), 'r') as file:
@@ -166,10 +189,6 @@ def get_dashboard_metas():
         with open(f, 'r') as file:
             result.append(file.read())
     return result
-
-def find_template_parameters(template_string):
-    candidates = ['{data-source-name}']
-    return [c for c in candidates    if template_string.find(c) >= 0]
 
 def merge_meta_into_template(template, meta):
     for k in meta:
@@ -189,71 +208,87 @@ def metaify_template_string(template_string, meta):
     merge_meta_into_template(template, meta)
     return json.dumps(template)
 
-def make_target(target_meta, template_params):
-    target_template = get_template(target_meta['_base'])
-    target_template = metaify_template_string(target_template, target_meta)
-    logging.debug('target template:{}'.format(target_template))
-    result = []
-    for param_meta in template_params:
-        param_type = param_meta['type']
-        param_values = param_meta['values']
-        if target_template.find('{' + param_type + '}') >= 0:
-            for i in range(len(param_values)):
-                param_value = param_values[i]
-                replacements = {param_type: param_value}
-                logging.debug('replacements:{}'.format(replacements))
-                target_string = replace(target_template, replacements)
-                target = json.loads(target_string)
-                result.append(target)
-        else:
-            target_string = replace(target_template, {})
-            target = json.loads(target_string)
-            result.append(target)
-    return result
-
 def make_targets(target_metas, template_params):
     result = []
     for target_meta in target_metas:
-        result += make_target(target_meta, template_params)
+        result += make_dashboard_part(target_meta, template_params)
     return result
 
 def add_targets_to_panel(panel, targets):
-    for i in range(len(targets)):
-        target = targets[i]
+    for i, target in enumerate(targets):
         target['refId'] = chr(65 + i)
         panel['targets'].append(target)
 
-def make_panel(panel_meta, template_params):
-    base_panel = panel_meta['_base']
-    panel_template = get_template(base_panel)
-    panel_template = metaify_template_string(panel_template, panel_meta)
+
+def get_all_param_value_combinations(template_params):
+    if not template_params:
+        return []
+    head = template_params[0]
+    rest = template_params[1:]
+    rest_permutations = get_all_param_value_combinations(rest)
     result = []
-    for param_meta in template_params:
-        param_type = param_meta['type']
-        if panel_template.find('{' + param_type + '}') >= 0:
-            param_values = param_meta['values']
-            for param_value in param_values:
-                replacements = {param_type: param_value}
-                logging.debug('replacements:{}'.format(replacements))
-                panel_string = replace(panel_template, replacements)
-                panel = json.loads(panel_string)
-                targets = make_targets(panel_meta['_targets'],
-                                       [{'type': 'data-source-name',
-                                         'values': [param_value]}])
-                add_targets_to_panel(panel, targets)
-                result.append(panel)
+    for value in head['values']:
+        head_value = ({'type': head['type'], 'value': value},)
+        if not rest_permutations:
+            result.append(head_value)
         else:
-            panel_string = replace(panel_template, {})
-            panel = json.loads(panel_string)
-            targets = make_targets(panel_meta['_targets'], template_params)
-            add_targets_to_panel(panel, targets)
-            result.append(panel)
+            for rest_permutation in rest_permutations:
+                result.append(head_value + rest_permutation)
+    return result
+
+def index(alist, predicate):
+    for i, element in enumerate(alist):
+        if predicate(element):
+            return i
+    return -1
+
+def make_and_add_targets(panel, panel_meta, template_params):
+    targets = make_targets(panel_meta['_targets'], template_params)
+    add_targets_to_panel(panel, targets)
+
+def make_dashboard_part(part_meta, template_params, sub_part_function=None):
+    base_part = part_meta['_base']
+    part_template = get_template(base_part)
+    part_template = metaify_template_string(part_template, part_meta)
+
+    template_params_to_expand = [
+        p for p in template_params if
+        find_template_parameter(part_template, p['type']) >= 0]
+
+    combinations = get_all_param_value_combinations(template_params_to_expand)
+    result = []
+    if combinations:
+        for combination in combinations:
+            replacements = {}
+            sub_template_params = template_params[:]
+            for param in combination:
+                param_type = param['type']
+                param_value = param['value']
+                replacements[param_type] = param_value
+                idx = index(sub_template_params, lambda x: x['type'] == param_type)
+                sub_template_params[idx] = {'type': param_type, 'values': param_value}
+            logging.debug('replacements:{}'.format(replacements))
+            logging.debug('sub_template_params:{}'.format(sub_template_params))
+            part_string = replace(part_template, replacements)
+            part = json.loads(part_string)
+            if sub_part_function:
+                sub_part_function(part, part_meta, template_params)
+            if part not in result:
+                result.append(part)
+    else:
+        part_string = replace(part_template, {})
+        part = json.loads(part_string)
+        if sub_part_function:
+            sub_part_function(part, part_meta, template_params)
+        if part not in result:
+            result.append(part)
     return result
 
 def make_panels(panel_metas, template_params):
     result = []
     for panel_meta in panel_metas:
-        result += make_panel(panel_meta, template_params)
+        result += make_dashboard_part(panel_meta, template_params,
+                                      make_and_add_targets)
     return result
 
 def maybe_substitute_templating_variables(dashboard, template_params):
@@ -267,7 +302,37 @@ def maybe_substitute_templating_variables(dashboard, template_params):
                 if template_param['type'] == 'data-source-name' and \
                     templating['type'] == 'datasource':
                     template_param['values'] = ['$' + variable]
+                if template_param['type'] == 'bucket' and \
+                    templating['type'] == 'custom':
+                    template_param['values'] = ['$' + variable]
     return template_params
+
+def maybe_expand_templating(dashboard, template_params):
+    dashboard_template = dashboard.get('templating')
+    logging.debug('dashboard_tempate:{}'.format(dashboard_template))
+    if dashboard_template:
+        templating_list = dashboard_template.get('list')
+        logging.debug('templating_list:{}'.format(templating_list))
+        for templating in templating_list:
+            for template_param in template_params:
+                if template_param['type'] == 'bucket' and \
+                                templating['type'] == 'custom':
+                    options = templating['options']
+                    option_template = options.pop()
+                    option_string = json.dumps(option_template)
+
+                    logging.debug('options:{}'.format(options))
+                    logging.debug('option_template:{}'.format(option_template))
+                    logging.debug('option_string:{}'.format(option_string))
+                    logging.debug('template_params:{}'.format(template_params))
+                    for idx, value in enumerate(template_param['values']):
+                        option = replace(option_string, {'bucket': value})
+                        option_json = json.loads(option)
+                        if idx == 0:
+                            option_json['selected'] = True
+                            templating['current'] = option_json
+                        options.append(option_json)
+
 
 def make_dashboard(dashboard_meta, template_params, min_time, max_time):
     replacements = {'dashboard-from-time': min_time.isoformat(),
@@ -276,12 +341,15 @@ def make_dashboard(dashboard_meta, template_params, min_time, max_time):
     template_string = get_template(dashboard_meta['_base'])
     template_string = metaify_template_string(template_string, dashboard_meta)
     dashboard_string = replace(template_string, replacements)
+    logging.debug('dashboard_string:{}'.format(dashboard_string))
     dashboard = json.loads(dashboard_string)
+    maybe_expand_templating(dashboard, template_params)
     template_params = maybe_substitute_templating_variables(dashboard, template_params)
-    logging.debug('make_dashboard: template_params {}'.format(template_params))
+    logging.debug('make_dashboard: title:{}, template_params {}'.format(
+        dashboard_meta['title'], template_params))
     panel_id = 0
     panels = make_panels(dashboard_meta['_panels'], template_params)
-    for i in range(len(panels)):
+    for i, panel in enumerate(panels):
         panel = panels[i]
         panel['gridPos']['w'] = 12
         panel['gridPos']['h'] = 12
@@ -292,13 +360,14 @@ def make_dashboard(dashboard_meta, template_params, min_time, max_time):
         dashboard['panels'].append(panel)
     return dashboard
 
-def make_dashboards(data_sources, times):
+def make_dashboards(data_sources, buckets, times):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     min_time = datetime.datetime.fromtimestamp(times[0] / 1000.0)
     max_time = datetime.datetime.fromtimestamp(times[1] / 1000.0)
     dashboard_meta_strings = get_dashboard_metas()
-    template_params = [{'type': 'data-source-name',
-                        'values': data_sources}]
+    template_params = \
+        [{'type': 'data-source-name', 'values': data_sources},
+         {'type': 'bucket', 'values': buckets}]
     for meta_string in dashboard_meta_strings:
         meta = json.loads(meta_string)
         dashboard = make_dashboard(meta, template_params, min_time, max_time)
@@ -310,7 +379,7 @@ def make_data_sources(data_sources_names, base_port):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
     os.makedirs(datasources_dir, exist_ok=True)
     template = get_data_source_template()
-    for i in range(len(data_sources_names)):
+    for i, data_source_name in enumerate(data_sources_names):
         data_source_name = data_sources_names[i]
         replacement_map = {'data-source-name': data_source_name,
                            'data-source-port' : str(base_port + i)}
@@ -333,13 +402,13 @@ def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
 def get_data_source_names(cbcollect_dirs):
     regex = re.compile('cbcollect_info_ns_(\d+)\@(.*)_(\d+)-(\d+)')
     formats = ['{1}', 'ns_{0}@{1}', '{1}-{2}-{3}', 'ns_{0}-{1}-{2}-{3}']
-    for format in formats:
-        result = try_get_data_source_names(cbcollect_dirs, regex, format)
+    for fmt in formats:
+        result = try_get_data_source_names(cbcollect_dirs, regex, fmt)
         if result:
             return result
     return cbcollect_dirs
 
-def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, times):
+def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets, times):
     os.makedirs(GRAFANA_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     os.makedirs(get_plugins_dir(), exist_ok=True)
@@ -349,7 +418,7 @@ def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, times):
     make_home_dashboard()
     make_data_sources(data_sources, prometheus_base_port)
     make_dashboards_yaml()
-    make_dashboards(data_sources, times)
+    make_dashboards(data_sources, buckets, times)
 
 def start_grafana(grafana_home_path):
     log_path = path.join(GRAFANA_DIR, 'grafana.log')
@@ -368,6 +437,36 @@ def open_browser(grafana_http_port):
     except OSError:
         print("Hit `OSError` opening web browser")
         pass
+
+def parse_couchbase_log(cbcollect_dir):
+    logging.debug('parsing couchbase.log')
+    in_config = False
+    in_buckets = False
+    buckets = []
+    section_divider_count = 0
+    with open(path.join(cbcollect_dir, 'couchbase.log'), "r") as file:
+        for full_line in file:
+            line = full_line.rstrip()
+            config_line = 'Couchbase config'
+            if not in_config and line.rstrip() == config_line:
+                in_config = True
+            elif in_config:
+                if line.strip().startswith('=================='):
+                    section_divider_count += 1
+                    if section_divider_count == 2:
+                        break
+                if not in_buckets and line == ' {buckets,':
+                    in_buckets = True
+                elif in_buckets:
+                    if re.match('^ \{.*,$', line):
+                        break
+                    else:
+                        m = re.match('^     \{\"(.*)\",$', line)
+                        if m:
+                            bucket = m.groups()[0]
+                            logging.debug('found bucket:{}'.format(bucket))
+                            buckets.append(bucket)
+    return {'buckets': sorted(buckets)}
 
 def main():
     parser = argparse.ArgumentParser()
@@ -392,11 +491,16 @@ def main():
                         level=logging.DEBUG)
 
     cbcollects = get_cbcollect_dirs()
+    config = parse_couchbase_log(cbcollects[0])
     times = get_prometheus_min_and_max_times(cbcollects)
 
     grafana_port = args.grafana_port
     prometheus_base_port = grafana_port + 1
-    prepare_grafana(grafana_port, prometheus_base_port, cbcollects, times)
+    prepare_grafana(grafana_port,
+                    prometheus_base_port,
+                    cbcollects,
+                    config['buckets'],
+                    times)
 
     if args.prom_bin:
         global PROMETHEUS_BIN
