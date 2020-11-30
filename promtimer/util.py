@@ -31,35 +31,6 @@ def index(alist, predicate):
             return i
     return -1
 
-def find_template_parameter(string, parameter, start_idx=0):
-    to_find = '{' + parameter + '}'
-    idx = string.find(to_find, start_idx)
-    if idx <= 0:
-        return idx
-    if string[idx - 1] == '{' and string[idx + len(to_find)] == '}':
-        return -1
-    return idx
-
-def replace_template_parameter(string, to_find, to_replace):
-    idx = find_template_parameter(string, to_find)
-    if idx < 0:
-        return string
-    find_len = len(to_find)
-    result = []
-    prev_idx = 0
-    while idx >= 0:
-        result.append(string[prev_idx:idx])
-        result.append(to_replace)
-        prev_idx = idx + find_len + 2
-        idx = find_template_parameter(string, to_find, prev_idx)
-    result.append(string[prev_idx:])
-    return ''.join(result)
-
-def replace(string, replacement_map):
-    for k, v in replacement_map.items():
-        string = replace_template_parameter(string, k, v)
-    return string
-
 def kill_node(process):
     try:
         process.kill()

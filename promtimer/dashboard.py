@@ -21,6 +21,7 @@ import logging
 
 # local imports
 import util
+import templating
 
 def get_template(name):
     with open(path.join(util.get_root_dir(), 'templates', name + '.json'), 'r') as file:
@@ -51,7 +52,7 @@ def make_dashboard_part(part_meta, template_params, sub_part_function=None):
 
     template_params_to_expand = [
         p for p in template_params if
-        util.find_template_parameter(part_template, p['type']) >= 0]
+        templating.find_parameter(part_template, p['type']) >= 0]
 
     combinations = get_all_param_value_combinations(template_params_to_expand)
     result = []
@@ -70,14 +71,14 @@ def make_dashboard_part(part_meta, template_params, sub_part_function=None):
                 sub_template_params[idx] = {'type': param_type, 'values': [param_value]}
             logging.debug('replacements:{}'.format(replacements))
             logging.debug('sub_template_params:{}'.format(sub_template_params))
-            part_string = util.replace(part_template, replacements)
+            part_string = templating.replace(part_template, replacements)
             part = json.loads(part_string)
             if sub_part_function:
                 sub_part_function(part, part_meta, sub_template_params)
             if part not in result:
                 result.append(part)
     else:
-        part_string = util.replace(part_template, {})
+        part_string = templating.replace(part_template, {})
         part = json.loads(part_string)
         if sub_part_function:
             sub_part_function(part, part_meta, template_params)
@@ -145,11 +146,11 @@ def maybe_expand_templating(dashboard, template_params):
     if dashboard_template:
         templating_list = dashboard_template.get('list')
         logging.debug('templating_list:{}'.format(templating_list))
-        for templating in templating_list:
+        for element in templating_list:
             for template_param in template_params:
                 if template_param['type'] == 'bucket' and \
-                                templating['type'] == 'custom':
-                    options = templating['options']
+                                element['type'] == 'custom':
+                    options = element['options']
                     option_template = options.pop()
                     option_string = json.dumps(option_template)
                     logging.debug('options:{}'.format(options))
@@ -157,11 +158,11 @@ def maybe_expand_templating(dashboard, template_params):
                     logging.debug('option_string:{}'.format(option_string))
                     logging.debug('template_params:{}'.format(template_params))
                     for idx, value in enumerate(template_param['values']):
-                        option = util.replace(option_string, {'bucket': value})
+                        option = templating.replace(option_string, {'bucket': value})
                         option_json = json.loads(option)
                         if idx == 0:
                             option_json['selected'] = True
-                            templating['current'] = option_json
+                            element['current'] = option_json
                         options.append(option_json)
 
 def make_dashboard(dashboard_meta, template_params, min_time, max_time):
@@ -169,7 +170,7 @@ def make_dashboard(dashboard_meta, template_params, min_time, max_time):
                     'dashboard-to-time': max_time.isoformat()}
     template_string = get_template(dashboard_meta['_base'])
     template_string = metaify_template_string(template_string, dashboard_meta)
-    dashboard_string = util.replace(template_string, replacements)
+    dashboard_string = templating.replace(template_string, replacements)
     logging.debug('make_dashboard: dashboard_string:{}'.format(dashboard_string))
     dashboard = json.loads(dashboard_string)
     maybe_expand_templating(dashboard, template_params)

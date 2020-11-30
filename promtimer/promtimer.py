@@ -28,6 +28,7 @@ import logging
 
 # local imports
 import util
+import templating
 import dashboard
 
 PROMETHEUS_BIN = 'prometheus'
@@ -101,7 +102,7 @@ def make_custom_ini(grafana_http_port):
     replacements = {'absolute-path-to-cwd': os.path.abspath('.'),
                     'grafana-http-port': str(grafana_http_port)}
     template = get_custom_ini_template()
-    contents = util.replace(template, replacements)
+    contents = templating.replace(template, replacements)
     with open(path.join(GRAFANA_DIR, 'custom.ini'), 'w') as file:
         file.write(contents)
 
@@ -114,7 +115,7 @@ def make_dashboards_yaml():
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     with open(path.join(util.get_root_dir(), 'dashboards.yaml'), 'r') as file:
         replacements = {'absolute-path-to-cwd': os.path.abspath('.')}
-        contents = util.replace(file.read(), replacements)
+        contents = templating.replace(file.read(), replacements)
         with open(path.join(get_dashboards_dir(), 'dashboards.yaml'), 'w') as file_to_write:
             file_to_write.write(contents)
 
@@ -151,7 +152,7 @@ def make_data_sources(data_sources_names, base_port):
                            'data-source-port' : str(base_port + i)}
         filename = path.join(datasources_dir, 'ds-{}.yaml'.format(data_source_name))
         with open(filename, 'w') as file:
-            file.write(util.replace(template, replacement_map))
+            file.write(templating.replace(template, replacement_map))
 
 def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
     data_sources = []
