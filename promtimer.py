@@ -460,7 +460,7 @@ def parse_couchbase_log(cbcollect_dir):
                     if re.match('^ \{.*,$', line):
                         break
                     else:
-                        m = re.match('^     \{\"(.*)\",$', line)
+                        m = re.match('^    [ \[]\{\"(.*)\",$', line)
                         if m:
                             bucket = m.groups()[0]
                             logging.debug('found bucket:{}'.format(bucket))
