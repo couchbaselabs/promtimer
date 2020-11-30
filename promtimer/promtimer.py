@@ -27,7 +27,6 @@ import datetime
 import re
 import webbrowser
 import logging
-import copy
 
 ROOT_DIR = path.join(path.dirname(__file__), '..')
 PROMETHEUS_BIN = 'prometheus'
@@ -292,7 +291,7 @@ def make_panels(panel_metas, template_params):
     return result
 
 def maybe_substitute_templating_variables(dashboard, template_params):
-    template_params = copy.deepcopy(template_params)
+    template_params = [p.copy() for p in template_params]
     dashboard_template = dashboard.get('templating')
     if dashboard_template:
         templating_list = dashboard_template.get('list')
