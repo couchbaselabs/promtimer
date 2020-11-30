@@ -56,13 +56,13 @@
         {
           "datasource": "{data-source-name}",
           "expr": "kv_ep_diskqueue_items{bucket=\"$bucket\"}",
-          "legendFormat": "{data-source-name} kv_ep_diskqueue_items)",
+          "legendFormat": "{data-source-name} kv_ep_diskqueue_items",
           "_base": "target"
         }
       ]
     },
     {
-      "title": "kv_ep_diskqueue_items",
+      "title": "kv_vb_active_ops_create",
       "_base": "panel",
       "_targets": [
         {
