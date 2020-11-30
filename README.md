@@ -74,7 +74,7 @@ ls cbcollect*.zip | xargs -n 1 unzip
 Start Promtimer:
 
 ```
-promtimer.py --grafana-home <path-to-grafana-shared-config-home>
+bin/promtimer --grafana-home <path-to-grafana-shared-config-home>
 ```
 
 The `path-to-grafana-shared-config-home` is what is known in Grafana terminology as the

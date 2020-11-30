@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export PROMTIMER_DIR="$(dirname "$0")/.."
+exec $PROMTIMER_DIR/promtimer/promtimer.py $@

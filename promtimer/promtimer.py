@@ -29,7 +29,7 @@ import webbrowser
 import logging
 import copy
 
-ROOT_DIR = path.dirname(__file__)
+ROOT_DIR = path.join(path.dirname(__file__), '..')
 PROMETHEUS_BIN = 'prometheus'
 GRAFANA_DIR = '.grafana'
 GRAFANA_BIN = 'grafana-server'
