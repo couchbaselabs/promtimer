@@ -68,13 +68,14 @@ have them.
 Assemble the cbcollects in a directory and unzip them. 
 
 ```
-ls cbcollect*.zip | xargs -n 1 unzip
+ls collectinfo*.zip | xargs -n 1 unzip
 ```
 
 Start Promtimer:
 
 ```
 bin/promtimer --grafana-home <path-to-grafana-shared-config-home>
+     [--prometheus <path-to-prometheus-binary>]
 ```
 
 The `path-to-grafana-shared-config-home` is what is known in Grafana terminology as the
@@ -86,6 +87,9 @@ Grafana on Macs this is something like:
 On linux systems the homepath should usually be:
 
     /usr/share/grafana
+
+The `path-to-prometheus-binary` specifies the path to the prometheus binary
+and is needed if the binary isn't locatable via your default search path.
 
 The Grafana dashboards page should open for you automatically. If not, navigate
 to `localhost:13000/dashboards` in your browser and begin exploring the
