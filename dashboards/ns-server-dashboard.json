@@ -1,0 +1,205 @@
+{
+  "title": "NS Server Dashboard",
+  "_base": "dashboard",
+  "_panels": [
+    {
+      "title": "sys_cpu_utilization_rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_utilization_rate",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_user_rate",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_sys_rate",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "total cpu & ns-server cpu utilization",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_utilization_rate * ignoring(name)sys_cpu_cores_available",
+          "legendFormat": "{data-source-name} sys_cpu_utilization_rate (in cores)",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sysproc_cpu_utilization{proc=\"ns_server\"}",
+          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "ns-server rest requests",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_rest_requests",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "ns-server hibernated requests",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_hibernated_requests",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_hibernated_waked",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "cpu stolen rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_stolen_rate",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "cpu irq rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_irq_rate",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sys_mem_limit and used",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_mem_limit",
+          "legendFormat": "{data-source-name} sys_mem_limit",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_mem_actual_used",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "ns-server mem size and resident",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sysproc_mem_size{proc=\"ns_server\"}",
+          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sysproc_mem_resident{proc=\"ns_server\"}",
+          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sys_cpu_cores_available",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_cores_available",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "rate ns-server major faults",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(sysproc_major_faults_raw{proc=\"ns_server\"}[1m])",
+          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "rate ns-server minor faults",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(sysproc_minor_faults_raw{proc=\"ns_server\"}[1m])",
+          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "rate of system allocstalls",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(sys_allocstall[1m])",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "system swap total and used",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_swap_total",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_swap_used",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
+
