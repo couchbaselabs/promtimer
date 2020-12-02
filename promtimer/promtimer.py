@@ -25,6 +25,7 @@ import datetime
 import re
 import webbrowser
 import logging
+import sys
 
 # local imports
 import util
@@ -62,12 +63,15 @@ def start_prometheuses(cbcollects, base_port, log_dir):
     nodes = []
     for i, cbcollect in enumerate(cbcollects):
         log_path = path.join(log_dir, 'prom-{}.log'.format(i))
+        listen_addr = '0.0.0.0:{}'.format(base_port + i)
         args = [PROMETHEUS_BIN,
                 '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
                 '--storage.tsdb.path', path.join(cbcollect, 'stats_snapshot'),
                 '--storage.tsdb.retention.time', '10y',
-                '--web.listen-address', '0.0.0.0:{}'.format(base_port + i)]
-        print('starting node', i)
+                '--web.listen-address', listen_addr]
+        logging.info('starting node {}'.format(i))
+        logging.debug('listening on {} logging to {}'.format(
+            listen_addr, log_path))
         node = util.start_process(args, log_path)
         nodes.append(node)
 
@@ -192,17 +196,19 @@ def start_grafana(grafana_home_path):
     args = [GRAFANA_BIN,
             '--homepath', grafana_home_path,
             '--config','custom.ini']
-    print('starting grafana server')
+    logging.info('starting grafana server')
     return util.start_process(args, log_path, GRAFANA_DIR)
 
 def open_browser(grafana_http_port):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
+    # Helpful for those who accidently close the browser
+    logging.info('starting browser using {}'.format(url))
     try:
         # For some reason this sometimes throws an OSError with no
         # apparent side-effects. Probably related to forking processes
         webbrowser.open_new(url)
     except OSError:
-        print("Hit `OSError` opening web browser")
+        logging.error("Hit `OSError` opening web browser")
         pass
 
 def parse_couchbase_log(cbcollect_dir):
@@ -251,11 +257,23 @@ def main():
     parser.add_argument('--grafana-port', dest='grafana_port', type=int,
                         help='http port on which Grafana should listen (default: 13000)',
                         default=13000)
+    parser.add_argument("--verbose", dest='verbose', action='store_true',
+                        default=False, help="verbose output")
     args = parser.parse_args()
 
     os.makedirs(GRAFANA_DIR, exist_ok=True)
-    logging.basicConfig(filename=path.join('.grafana','promtimer.log'),
-                        level=logging.DEBUG)
+
+    stream_handler = logging.StreamHandler(sys.stdout)
+    level = logging.DEBUG if args.verbose else logging.INFO
+    stream_handler.setLevel(level)
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(message)s',
+                        handlers=[
+                            logging.FileHandler(path.join('.grafana',
+                                'promtimer.log')),
+                            stream_handler
+                            ]
+                        )
 
     cbcollects = get_cbcollect_dirs()
     config = parse_couchbase_log(cbcollects[0])
