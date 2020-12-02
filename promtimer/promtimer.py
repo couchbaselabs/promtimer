@@ -70,9 +70,8 @@ def start_prometheuses(cbcollects, base_port, log_dir):
                 '--storage.tsdb.path', path.join(cbcollect, 'stats_snapshot'),
                 '--storage.tsdb.retention.time', '10y',
                 '--web.listen-address', listen_addr]
-        logging.info('starting node {}'.format(i))
-        logging.debug('listening on {} logging to {}'.format(
-            listen_addr, log_path))
+        logging.info('starting prometheus server {} (on {}; logging to {})'
+                     .format(i, listen_addr, log_path))
         node = util.start_process(args, log_path)
         nodes.append(node)
 
@@ -193,12 +192,13 @@ def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets,
     make_dashboards_yaml()
     make_dashboards(data_sources, buckets, times)
 
-def start_grafana(grafana_home_path):
+def start_grafana(grafana_home_path, grafana_port):
     log_path = path.join(GRAFANA_LOGS_DIR, 'grafana.log')
     args = [GRAFANA_BIN,
             '--homepath', grafana_home_path,
             '--config','custom.ini']
-    logging.info('starting grafana server')
+    logging.info('starting grafana server (on localhost:{}; logging to {})'
+                 .format(grafana_port, log_path))
     return util.start_process(args, log_path, GRAFANA_DIR)
 
 def open_browser(grafana_http_port):
@@ -295,7 +295,7 @@ def main():
 
     processes = start_prometheuses(cbcollects, prometheus_base_port,
             GRAFANA_LOGS_DIR)
-    processes.append(start_grafana(args.grafana_home_path))
+    processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     time.sleep(0.1)
     result = util.poll_processes(processes, 1)
