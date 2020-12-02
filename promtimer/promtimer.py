@@ -34,6 +34,7 @@ import dashboard
 
 PROMETHEUS_BIN = 'prometheus'
 GRAFANA_DIR = '.grafana'
+GRAFANA_LOGS_DIR = path.join(GRAFANA_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
 
 def get_cbcollect_dirs():
@@ -181,6 +182,7 @@ def get_data_source_names(cbcollect_dirs):
 
 def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets, times):
     os.makedirs(GRAFANA_DIR, exist_ok=True)
+    os.makedirs(GRAFANA_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     os.makedirs(get_plugins_dir(), exist_ok=True)
     os.makedirs(get_notifiers_dir(), exist_ok=True)
@@ -192,7 +194,7 @@ def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets,
     make_dashboards(data_sources, buckets, times)
 
 def start_grafana(grafana_home_path):
-    log_path = path.join(GRAFANA_DIR, 'grafana.log')
+    log_path = path.join(GRAFANA_LOGS_DIR, 'grafana.log')
     args = [GRAFANA_BIN,
             '--homepath', grafana_home_path,
             '--config','custom.ini']
@@ -261,7 +263,7 @@ def main():
                         default=False, help="verbose output")
     args = parser.parse_args()
 
-    os.makedirs(GRAFANA_DIR, exist_ok=True)
+    os.makedirs(GRAFANA_LOGS_DIR, exist_ok=True)
 
     stream_handler = logging.StreamHandler(sys.stdout)
     level = logging.DEBUG if args.verbose else logging.INFO
@@ -269,7 +271,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(message)s',
                         handlers=[
-                            logging.FileHandler(path.join('.grafana',
+                            logging.FileHandler(path.join(GRAFANA_LOGS_DIR,
                                 'promtimer.log')),
                             stream_handler
                             ]
@@ -291,7 +293,8 @@ def main():
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
 
-    processes = start_prometheuses(cbcollects, prometheus_base_port, GRAFANA_DIR)
+    processes = start_prometheuses(cbcollects, prometheus_base_port,
+            GRAFANA_LOGS_DIR)
     processes.append(start_grafana(args.grafana_home_path))
 
     time.sleep(0.1)
