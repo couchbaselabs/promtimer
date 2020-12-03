@@ -34,6 +34,7 @@ import dashboard
 
 PROMETHEUS_BIN = 'prometheus'
 GRAFANA_DIR = '.grafana'
+GRAFANA_LOGS_DIR = path.join(GRAFANA_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
 
 def get_cbcollect_dirs():
@@ -180,6 +181,7 @@ def get_data_source_names(cbcollect_dirs):
 
 def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets, times):
     os.makedirs(GRAFANA_DIR, exist_ok=True)
+    os.makedirs(GRAFANA_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     os.makedirs(get_plugins_dir(), exist_ok=True)
     os.makedirs(get_notifiers_dir(), exist_ok=True)
@@ -197,7 +199,9 @@ def start_grafana(grafana_home_path, grafana_port):
             '--config','custom.ini']
     logging.info('starting grafana server (on localhost:{}; logging to {})'
                  .format(grafana_port, log_path))
-    return util.start_process(args, log_path, GRAFANA_DIR)
+    # Don't specify a log file as it is done within the custom.ini file
+    # otherwise the output is duplicated.
+    return util.start_process(args, None, GRAFANA_DIR)
 
 def open_browser(grafana_http_port):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
@@ -261,7 +265,7 @@ def main():
                         default=False, help="verbose output")
     args = parser.parse_args()
 
-    os.makedirs(GRAFANA_DIR, exist_ok=True)
+    os.makedirs(GRAFANA_LOGS_DIR, exist_ok=True)
 
     stream_handler = logging.StreamHandler(sys.stdout)
     level = logging.DEBUG if args.verbose else logging.INFO
@@ -269,7 +273,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(message)s',
                         handlers=[
-                            logging.FileHandler(path.join('.grafana',
+                            logging.FileHandler(path.join(GRAFANA_LOGS_DIR,
                                 'promtimer.log')),
                             stream_handler
                             ]
@@ -291,7 +295,8 @@ def main():
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
 
-    processes = start_prometheuses(cbcollects, prometheus_base_port, GRAFANA_DIR)
+    processes = start_prometheuses(cbcollects, prometheus_base_port,
+                                   GRAFANA_LOGS_DIR)
     processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     time.sleep(0.1)
