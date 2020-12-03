@@ -38,7 +38,10 @@ def kill_node(process):
         pass
 
 def start_process(args, log_filename, cwd=None):
-    log_file = open(log_filename, 'a')
+    if log_filename is not None:
+        log_file = open(log_filename, 'a')
+    else:
+        log_file = subprocess.DEVNULL
     process = subprocess.Popen(args,
                                stdin=None,
                                cwd=cwd,
