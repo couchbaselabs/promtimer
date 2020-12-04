@@ -26,6 +26,8 @@ import re
 import webbrowser
 import logging
 import sys
+import zipfile
+import pathlib
 
 # local imports
 import util
@@ -36,14 +38,43 @@ PROMETHEUS_BIN = 'prometheus'
 GRAFANA_DIR = '.grafana'
 GRAFANA_LOGS_DIR = path.join(GRAFANA_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
+STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
+COUCHBASE_LOG = 'couchbase.log'
+
+def make_snapshot_dir_path(candidate_cbcollect_dir):
+    return candidate_cbcollect_dir / '{}'.format(STATS_SNAPSHOT_DIR_NAME)
+
+def is_cbcollect_dir(candidate_path):
+    return candidate_path.is_dir() and make_snapshot_dir_path(candidate_path).exists()
+
+def find_cbcollect_dirs():
+    cbcollects = sorted(glob.glob('cbcollect_info*'))
+    return [f for f in cbcollects if is_cbcollect_dir(pathlib.Path(f))]
+
+def should_extract_from_zip(filename):
+    return filename.find('/{}/'.format(STATS_SNAPSHOT_DIR_NAME)) >= 0 or \
+                filename.endswith(COUCHBASE_LOG)
+
+def maybe_extract_from_zipfile(zip_file):
+    root = zipfile.Path(zip_file)
+    for p in root.iterdir():
+        if is_cbcollect_dir(p):
+            extracting = False
+            for item in zip_file.infolist():
+                if should_extract_from_zip(item.filename):
+                    if not path.exists(path.join(*item.filename.split('/'))):
+                        if not extracting:
+                            extracting = True
+                            logging.info('extracting stats, couchbase.log from cbcollect'
+                                         ' zip:{}'.format(zip_file.filename))
+                        zip_file.extract(item)
 
 def get_cbcollect_dirs():
-    cbcollect_files = sorted(glob.glob('cbcollect_info*'))
-    result = []
-    for file in cbcollect_files:
-        if path.isdir(file) and path.isdir(path.join(file, 'stats_snapshot')):
-            result.append(file)
-    return result
+    zips = sorted(glob.glob('*.zip'))
+    for z in zips:
+        with zipfile.ZipFile(z) as zip_file:
+            maybe_extract_from_zipfile(zip_file)
+    return find_cbcollect_dirs()
 
 def get_prometheus_times(cbcollect_dir):
     min_times = []
