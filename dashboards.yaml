@@ -10,5 +10,5 @@ providers:
   # <bool> allow updating provisioned dashboards from the UI
   allowUiUpdates: true
   options:
-    path: {absolute-path-to-cwd}/.grafana/provisioning/dashboards
+    path: {absolute-path-to-cwd}/.promtimer/provisioning/dashboards
     foldersFromFilesStructure: true

@@ -97,12 +97,12 @@ available dashboards.
 
 ## Clean Up
 
-Promtimer creates a `.grafana` sub-directory in the directory where it's 
+Promtimer creates a `.promtimer` sub-directory in the directory where it's
 started and places the Grafana configuration. To clean up, remove this
 directory:
 
 ```
-rm -rf .grafana
+rm -rf .promtimer
 ```
 
 ## Want to Help?

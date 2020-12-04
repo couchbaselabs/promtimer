@@ -33,8 +33,8 @@ import templating
 import dashboard
 
 PROMETHEUS_BIN = 'prometheus'
-GRAFANA_DIR = '.grafana'
-GRAFANA_LOGS_DIR = path.join(GRAFANA_DIR, 'logs')
+PROMTIMER_DIR = '.promtimer'
+PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
 
 def get_cbcollect_dirs():
@@ -82,7 +82,7 @@ def get_data_source_template():
         return file.read()
 
 def get_provisioning_dir():
-    return path.join(GRAFANA_DIR, 'provisioning')
+    return path.join(PROMTIMER_DIR, 'provisioning')
 
 def get_dashboards_dir():
     return path.join(get_provisioning_dir(), 'dashboards')
@@ -102,17 +102,17 @@ def get_home_dashboard():
         return file.read()
 
 def make_custom_ini(grafana_http_port):
-    os.makedirs(GRAFANA_DIR, exist_ok=True)
+    os.makedirs(PROMTIMER_DIR, exist_ok=True)
     replacements = {'absolute-path-to-cwd': os.path.abspath('.'),
                     'grafana-http-port': str(grafana_http_port)}
     template = get_custom_ini_template()
     contents = templating.replace(template, replacements)
-    with open(path.join(GRAFANA_DIR, 'custom.ini'), 'w') as file:
+    with open(path.join(PROMTIMER_DIR, 'custom.ini'), 'w') as file:
         file.write(contents)
 
 def make_home_dashboard():
     dash = get_home_dashboard()
-    with open(path.join(GRAFANA_DIR, 'home.json'), 'w') as file:
+    with open(path.join(PROMTIMER_DIR, 'home.json'), 'w') as file:
         file.write(dash)
 
 def make_dashboards_yaml():
@@ -180,8 +180,8 @@ def get_data_source_names(cbcollect_dirs):
     return cbcollect_dirs
 
 def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets, times):
-    os.makedirs(GRAFANA_DIR, exist_ok=True)
-    os.makedirs(GRAFANA_LOGS_DIR, exist_ok=True)
+    os.makedirs(PROMTIMER_DIR, exist_ok=True)
+    os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     os.makedirs(get_plugins_dir(), exist_ok=True)
     os.makedirs(get_notifiers_dir(), exist_ok=True)
@@ -193,7 +193,7 @@ def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets,
     make_dashboards(data_sources, buckets, times)
 
 def start_grafana(grafana_home_path, grafana_port):
-    log_path = path.join(GRAFANA_DIR, 'grafana.log')
+    log_path = path.join(PROMTIMER_DIR, 'grafana.log')
     args = [GRAFANA_BIN,
             '--homepath', grafana_home_path,
             '--config','custom.ini']
@@ -201,7 +201,7 @@ def start_grafana(grafana_home_path, grafana_port):
                  .format(grafana_port, log_path))
     # Don't specify a log file as it is done within the custom.ini file
     # otherwise the output is duplicated.
-    return util.start_process(args, None, GRAFANA_DIR)
+    return util.start_process(args, None, PROMTIMER_DIR)
 
 def open_browser(grafana_http_port):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
@@ -265,7 +265,7 @@ def main():
                         default=False, help="verbose output")
     args = parser.parse_args()
 
-    os.makedirs(GRAFANA_LOGS_DIR, exist_ok=True)
+    os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
 
     stream_handler = logging.StreamHandler(sys.stdout)
     level = logging.DEBUG if args.verbose else logging.INFO
@@ -273,7 +273,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(message)s',
                         handlers=[
-                            logging.FileHandler(path.join(GRAFANA_LOGS_DIR,
+                            logging.FileHandler(path.join(PROMTIMER_LOGS_DIR,
                                 'promtimer.log')),
                             stream_handler
                             ]
@@ -296,7 +296,7 @@ def main():
         PROMETHEUS_BIN = args.prom_bin
 
     processes = start_prometheuses(cbcollects, prometheus_base_port,
-                                   GRAFANA_LOGS_DIR)
+                                   PROMTIMER_LOGS_DIR)
     processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     time.sleep(0.1)
