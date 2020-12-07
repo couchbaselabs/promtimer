@@ -154,28 +154,22 @@ def make_dashboards_yaml():
         with open(path.join(get_dashboards_dir(), 'dashboards.yaml'), 'w') as file_to_write:
             file_to_write.write(contents)
 
-def get_dashboard_metas():
-    files = glob.glob(path.join(util.get_root_dir(), 'dashboards', '*.json'))
-    result = []
-    for f in files:
-        with open(f, 'r') as file:
-            result.append(file.read())
-    return result
-
 def make_dashboards(data_sources, buckets, times):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     min_time = datetime.datetime.fromtimestamp(times[0] / 1000.0)
     max_time = datetime.datetime.fromtimestamp(times[1] / 1000.0)
-    dashboard_meta_strings = get_dashboard_metas()
     template_params = \
         [{'type': 'data-source-name', 'values': data_sources},
          {'type': 'bucket', 'values': buckets}]
-    for meta_string in dashboard_meta_strings:
-        meta = json.loads(meta_string)
-        dash = dashboard.make_dashboard(meta, template_params, min_time, max_time)
-        file_name = meta['title'].replace(' ', '-').lower() + '.json'
-        with open(path.join(get_dashboards_dir(), file_name), 'w') as file:
-            file.write(json.dumps(dash, indent=2))
+    meta_file_names = glob.glob(path.join(util.get_root_dir(), 'dashboards', '*.json'))
+    for meta_file_name in meta_file_names:
+        with open(meta_file_name, 'r') as meta_file:
+            meta = json.loads(meta_file.read())
+            base_file_name = path.basename(meta_file_name)
+            dash = dashboard.make_dashboard(meta, template_params, min_time, max_time)
+            dash['uid'] = base_file_name[:-len('.json')]
+            with open(path.join(get_dashboards_dir(), base_file_name), 'w') as file:
+                file.write(json.dumps(dash, indent=2))
 
 def make_data_sources(data_sources_names, base_port):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
