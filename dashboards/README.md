@@ -5,7 +5,6 @@ graphs. The dashboard "meta model" is Promtimer's attempt to do this. To explain
 dashboarding works it's necessary to understand a little about how Grafana dashboarding works.
 
 [Grafana Background](GrafanaBackground.md)
-[Dashboard Meta Model](DashboardMetaModel.md)
 
 However, if you're already comfortable with that, or you just want to proceed to creating your
 first Promtimer dashboard by example, feel free to keep reading.
