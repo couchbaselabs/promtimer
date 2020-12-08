@@ -21,13 +21,13 @@
         {
           "datasource": "{data-source-name}",
           "expr": "sys_mem_limit",
-          "legendFormat": "{data-source-name} sys_mem_limit",
+          "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_mem_limit - ignoring(name)sys_mem_free",
-          "legendFormat": "{data-source-name} sys_mem_limit - ignoring(name)sys_mem_free",
+          "expr": "sys_mem_actual_used",
+          "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
       ]
@@ -45,6 +45,30 @@
       ]
     },
     {
+      "title": "kv_ops",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ops[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(kv_ops[1m]))",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ops{op=\"get\"}[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(kv_ops{op=get}[1m]))",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ops{op=\"set\"}[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(kv_ops{op=set}[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "sum(kv_mem_used_bytes)",
       "_base": "panel",
       "_targets": [
@@ -57,13 +81,73 @@
       ]
     },
     {
-      "title": "{data-source-name} sum(irate(kv_ops[1m]))",
-      "datasource": "{data-source-name}",
+      "title": "irate(n1ql_requests[1m])",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "sum(irate(kv_ops[1m]))",
-          "legendFormat": "{data-source-name} sum(irate(kv_ops[1m]))",
+          "datasource": "{data-source-name}",
+          "expr": "irate(n1ql_requests[1m])",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "n1ql selects, updates & inserts",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(n1ql_selects[1m])",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(n1ql_updates[1m])",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(n1ql_inserts[1m])",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "index items",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(index_items_count)",
+          "legendFormat": "{data-source-name} sum(index_items_count)",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "index scans / second",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(index_num_rows_scanned[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(index_num_rows_scanned[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sum(index_memory_used)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(index_memory_used)",
+          "legendFormat": "{data-source-name} sum(index_memory_used)",
           "_base": "target"
         }
       ]
