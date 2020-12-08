@@ -7,7 +7,12 @@ storage and management, Mortimer will no longer work. It would be possible
 to extract stats from cbcollects and adapt them to work with Mortimer, but
 this project attempts somthing different: use Prometheus itself and Grafana
 to allow easy, powerful browsing of Prometheus metrics (stats) available in 
-cbcollects. 
+cbcollects.
+
+If you've already installed, here are a some quick links you might be
+interested in:
+* [Dashboards README](dashboards/README.md)
+* [Todos](TODO.md)
 
 ## Idea
 Promtimer:
