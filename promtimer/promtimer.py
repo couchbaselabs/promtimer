@@ -272,7 +272,7 @@ def parse_couchbase_log(cbcollect_dir):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--grafana-home', dest='grafana_home_path', required=True,
+    parser.add_argument('-g', '--grafana-home', dest='grafana_home_path', required=True,
                         help='''
                         Grafana configuration "homepath"; should be set to the
                         out-of-the-box Grafana config path. On brew-installed Grafana on
@@ -281,7 +281,7 @@ def main():
                         On linux systems the homepath should usually be:
                             /usr/share/grafana
                         ''')
-    parser.add_argument('--prometheus', dest='prom_bin',
+    parser.add_argument('-p', '--prometheus', dest='prom_bin',
                         help='path to prometheus binary if it\'s not available on $PATH')
     parser.add_argument('--grafana-port', dest='grafana_port', type=int,
                         help='http port on which Grafana should listen (default: 13000)',
