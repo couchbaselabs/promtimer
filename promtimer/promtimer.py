@@ -303,6 +303,9 @@ def main():
                             stream_handler
                             ]
                         )
+    if not os.path.isdir(args.grafana_home_path):
+        logging.error('Invalid grafana path: {}'.format(args.grafana_home_path))
+        sys.exit(1)
 
     cbcollects = get_cbcollect_dirs()
     config = parse_couchbase_log(cbcollects[0])
