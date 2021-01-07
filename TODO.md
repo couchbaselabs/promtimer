@@ -15,12 +15,10 @@
 ## Grafana Integration
 
 #### Guess where Grafana is when homepath not provided
-#### Provide friendly error message if Grafana can't be found
 
 ## Prometheus Integration
 
 #### Support accessing Prometheus instances other than from cbcollects
-#### Provide friendly error message if Prometheus can't be found
 
 ## Code
 
