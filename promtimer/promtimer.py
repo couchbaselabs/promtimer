@@ -47,6 +47,9 @@ def make_snapshot_dir_path(candidate_cbcollect_dir):
 def is_cbcollect_dir(candidate_path):
     return candidate_path.is_dir() and make_snapshot_dir_path(candidate_path).exists()
 
+def is_executable_file(candidate_file):
+    return os.path.isfile(candidate_file) and os.access(candidate_file, os.X_OK)
+
 def find_cbcollect_dirs():
     cbcollects = sorted(glob.glob('cbcollect_info*'))
     return [f for f in cbcollects if is_cbcollect_dir(pathlib.Path(f))]
@@ -308,6 +311,11 @@ def main():
         sys.exit(1)
 
     cbcollects = get_cbcollect_dirs()
+    if len(cbcollects) == 0:
+        logging.error('No "collectinfo*.zip" files or "cbcollect_info*" '
+                      'directories found')
+        sys.exit(1)
+
     config = parse_couchbase_log(cbcollects[0])
     times = get_prometheus_min_and_max_times(cbcollects)
 
@@ -322,6 +330,11 @@ def main():
     if args.prom_bin:
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
+
+    if not is_executable_file(PROMETHEUS_BIN):
+        logging.error('Invalid prometheus executable path: {}'.format(
+            PROMETHEUS_BIN))
+        sys.exit(1)
 
     processes = start_prometheuses(cbcollects, prometheus_base_port,
                                    PROMTIMER_LOGS_DIR)
