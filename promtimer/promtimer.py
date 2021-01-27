@@ -312,9 +312,15 @@ def main():
 
     cbcollects = get_cbcollect_dirs()
     if len(cbcollects) == 0:
-        logging.error('No "collectinfo*.zip" files or "cbcollect_info*" '
-                      'directories found')
-        sys.exit(1)
+        if os.path.isdir(STATS_SNAPSHOT_DIR_NAME):
+            # Found stats directory, assume we're inside an unzip'd cbcollect
+            # directory
+            cbcollects.append(".")
+        else:
+            logging.error('No "collectinfo*.zip" files or "cbcollect_info*" '
+                          'directories or "{}" directory found'.format(
+                              STATS_SNAPSHOT_DIR_NAME))
+            sys.exit(1)
 
     config = parse_couchbase_log(cbcollects[0])
     times = get_prometheus_min_and_max_times(cbcollects)
