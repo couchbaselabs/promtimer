@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2020 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-2021 Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -243,8 +243,8 @@ def open_browser(grafana_http_port):
         logging.error("Hit `OSError` opening web browser")
         pass
 
-def parse_couchbase_log(cbcollect_dir):
-    logging.debug('parsing couchbase.log')
+def parse_couchbase_ns_config(cbcollect_dir):
+    logging.debug('parsing couchbase.log (Couchbase config)')
     in_config = False
     in_buckets = False
     buckets = []
@@ -272,6 +272,50 @@ def parse_couchbase_log(cbcollect_dir):
                             logging.debug('found bucket:{}'.format(bucket))
                             buckets.append(bucket)
     return {'buckets': sorted(buckets)}
+
+def parse_couchbase_chronicle(cbcollect_dir):
+    logging.debug('parsing couchbase.log (Chronicle config)')
+    in_config = False
+    in_buckets = False
+    bucket_list = ''
+    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r') as file:
+        for full_line in file:
+            line = full_line.rstrip()
+            if not in_config and line == 'Chronicle config':
+                in_config = True
+            elif in_config:
+                # Names of bucket can be on a single or multiple lines
+                end_of_list = False
+                possible_buckets = ''
+                if not in_buckets:
+                    if line.startswith(' {bucket_names,'):
+                        in_buckets = True
+                        possible_buckets = line.replace(' {bucket_names,[', '')
+                elif in_buckets:
+                    possible_buckets = line
+
+                if possible_buckets != '':
+                    if possible_buckets.endswith(']},'):
+                        possible_buckets = possible_buckets[:-3]
+                        end_of_list = True
+
+                    bucket_list += possible_buckets
+
+                    if end_of_list:
+                        break
+
+    buckets = []
+    if bucket_list != '':
+        for b in bucket_list.replace(' ','').replace('"','').split(','):
+            buckets.append(b)
+
+    return {'buckets': sorted(buckets)}
+
+def parse_couchbase_log(cbcollect_dir):
+    config = parse_couchbase_ns_config(cbcollect_dir)
+    if config['buckets'] == []:
+        config = parse_couchbase_chronicle(cbcollect_dir)
+    return config
 
 def main():
     parser = argparse.ArgumentParser()
