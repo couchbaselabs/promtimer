@@ -45,13 +45,13 @@
       ]
     },
     {
-      "title": "ns-server rest requests",
+      "title": "ns-server rest request rate",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_rest_requests",
-          "legendFormat": "{data-source-name} {{name}}",
+          "expr": "irate(sys_rest_requests[1m])",
+          "legendFormat": "{data-source-name} irate(sys_rest_requests[1m])",
           "_base": "target"
         }
       ]

@@ -92,13 +92,13 @@
       ]
     },
     {
-      "title": "sys_rest_requests",
+      "title": "sys_rest_requests rate",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "sys_rest_requests",
-          "legendFormat": "sys_rest_requests",
+          "expr": "irate(sys_rest_requests[1m])",
+          "legendFormat": "irate(sys_rest_requests[1m])",
           "_base": "target"
         }
       ]
