@@ -289,6 +289,10 @@ def main():
     parser.add_argument('--grafana-port', dest='grafana_port', type=int,
                         help='http port on which Grafana should listen (default: 13000)',
                         default=13000)
+    parser.add_argument('--buckets', dest='buckets',
+                        help='comma-separated list of buckets to build bucket dashboards '
+                             'for; if this option is provided, auto-detection of the '
+                             'buckets by parsing couchbase.log will be skipped')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
     args = parser.parse_args()
@@ -322,7 +326,11 @@ def main():
                               STATS_SNAPSHOT_DIR_NAME))
             sys.exit(1)
 
-    config = parse_couchbase_log(cbcollects[0])
+    if not args.buckets:
+        config = parse_couchbase_log(cbcollects[0])
+    else:
+        config = {'buckets': sorted(args.buckets.split(','))}
+
     times = get_prometheus_min_and_max_times(cbcollects)
 
     grafana_port = args.grafana_port
