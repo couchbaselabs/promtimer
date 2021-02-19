@@ -62,14 +62,14 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_hibernated_requests",
-          "legendFormat": "{data-source-name} {{name}}",
+          "expr": "irate(sys_hibernated_requests[1m])",
+          "legendFormat": "{data-source-name} irate(sys_hibernated_requests[1m])",
           "_base": "target"
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_hibernated_waked",
-          "legendFormat": "{data-source-name} {{name}}",
+          "expr": "irate(sys_hibernated_waked[1m])",
+          "legendFormat": "{data-source-name} irate(sys_hibernated_waked[1m])",
           "_base": "target"
         }
       ]
