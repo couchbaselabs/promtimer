@@ -25,9 +25,9 @@ Create an empty dashboard by adding a new meta file `new-dashboard.json` in the
       ]
     }
 
-If you run `promtimer` against some cbcollect_info and browse to http://localhost:13000/dashboards,
+If you run `promtimer` against some cbcollect_info and browse to http://localhost:13300/dashboards,
 you'll now find a new dashboard titled "New Dashboard". You can visit this dashboard directly by
-navigating to: http://localhost:13000/d/new-dashboard/new-dashboard.
+navigating to: http://localhost:13300/d/new-dashboard/new-dashboard.
 
 The `_base` attribute specifies the name of the dashboard template that this dashboard is based on.
 In this case the base dashboard is the file of the name `dashboard` in the `templates` directory

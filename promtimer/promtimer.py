@@ -331,8 +331,8 @@ def main():
     parser.add_argument('-p', '--prometheus', dest='prom_bin',
                         help='path to prometheus binary if it\'s not available on $PATH')
     parser.add_argument('--grafana-port', dest='grafana_port', type=int,
-                        help='http port on which Grafana should listen (default: 13000)',
-                        default=13000)
+                        help='http port on which Grafana should listen (default: 13300)',
+                        default=13300)
     parser.add_argument('--buckets', dest='buckets',
                         help='comma-separated list of buckets to build bucket dashboards '
                              'for; if this option is provided, auto-detection of the '
