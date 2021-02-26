@@ -84,6 +84,75 @@
           "_base": "target"
         }
       ]
+    },
+    {
+      "title": "{data-source-name} kv_memory",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "mem_used {{bucket}}",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "high watermark {{bucket}}",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "low watermark {{bucket}}",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"memcached\"}",
+          "interval": "",
+          "legendFormat": "memcached RSS",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "{data-source-name} kv_disk",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_diskqueue_items{bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "Disk Queue {{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "{data-source-name} kv resident items",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_curr_items_tot{bucket=\"$bucket\"} - on() kv_ep_num_non_resident{bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "Items Resident (a+r) {{bucket}}",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_vb_curr_items{state=\"replica\"} - on() kv_vb_num_non_resident{state=\"replica\"}",
+          "interval": "",
+          "legendFormat": "Replica Items Resident {{bucket}}",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_vb_curr_items{state=\"active\"} - on() kv_vb_num_non_resident{state=\"active\"}",
+          "interval": "",
+          "legendFormat": "Active Items Resident {{bucket}}",
+          "_base": "target"
+        }
+      ]
     }
   ]
 }
