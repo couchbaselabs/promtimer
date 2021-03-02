@@ -75,8 +75,8 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "kv_ep_diskqueue_items{bucket=\"$bucket\"}",
-          "legendFormat": "{data-source-name} kv_ep_diskqueue_items",
+          "expr": "kv_ep_diskqueue_memory_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "{data-source-name} kv_ep_diskqueue_memory_bytes",
           "_base": "target"
         }
       ]
