@@ -1,6 +1,6 @@
 {
   "_base": "dashboard",
-  "title": "2. Data Service Dashboard",
+  "title": "Data Service Dashboard",
   "templating": {
     "list": [
       {
