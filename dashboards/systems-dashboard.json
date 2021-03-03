@@ -1,0 +1,145 @@
+{
+  "_base": "dashboard",
+  "title": "Systems Dashboard",
+  "_panels": [
+    {
+      "title": "CPU Utilization",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_utilization_rate",
+          "legendFormat": "CPU Utilization",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Memory Limit and Used Memory",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_mem_limit",
+          "legendFormat": "Memory Limit",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_mem_actual_used",
+          "legendFormat": "Memory Used",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "CPU Utilization Per Service",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "stack": true,
+      "_targets": [
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"memcached\"}",
+          "legendFormat": "Data",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"cbq-engine\"}",
+          "legendFormat": "Query",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"fts\"}",
+          "legendFormat": "FTS",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"indexer\"}",
+          "legendFormat": "Indexing",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"java\"}",
+          "legendFormat": "Analytics",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"eventing-produc\"}",
+          "legendFormat": "Eventing",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"cbbs\"}",
+          "legendFormat": "Backup",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"goxdcr\"}",
+          "legendFormat": "XDCR",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Memory Usage Per Service",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "stack": true,
+      "_targets": [
+        {
+          "expr": "sysproc_mem_resident{proc=\"memcached\"}",
+          "legendFormat": "Data",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"cbq-engine\"}",
+          "legendFormat": "Query",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"fts\"}",
+          "legendFormat": "fts",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"indexer\"}",
+          "legendFormat": "Indexing",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"java\"}",
+          "legendFormat": "Analytics",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"eventing-produc\"}",
+          "legendFormat": "Eventing",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"cbbs\"}",
+          "legendFormat": "Backup",
+          "_base": "target"
+        },
+        {
+          "expr": "sysproc_mem_resident{proc=\"goxdcr\"}",
+          "legendFormat": "XDCR",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Free Memory",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_mem_free",
+          "legendFormat": "Free Memory",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
+

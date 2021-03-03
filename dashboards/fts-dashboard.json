@@ -1,0 +1,106 @@
+{
+  "_base": "dashboard",
+  "title": "FTS Service Dashboard",
+  "_panels": [
+    {
+      "title": "CPU Utilization",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "stack": true,
+      "_targets": [
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"fts\"}",
+          "legendFormat": "CPU Utilization",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Memory Usage",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_num_bytes_used_ram",
+          "legendFormat": "Bytes Used",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Disk Usage",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_num_bytes_used_disk",
+          "legendFormat": "Bytes Used",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Total Queries",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_total_queries",
+          "legendFormat": "Queries",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Query Latency",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_avg_queries_latency",
+          "legendFormat": "Query Latency",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Total Doc Count",
+      "type": "stat",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_doc_count",
+          "legendFormat": "Docs",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Query Failures",
+      "type": "stat",
+      "_base": "panel",
+      "stack": true,
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_total_queries_error",
+          "legendFormat": "Errors",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_total_queries_timeout",
+          "legendFormat": "Timeouts",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "fts_total_queries_slow",
+          "legendFormat": "Slow Queries",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "_base": "dashboard",
+  "title": "Indexing Service Dashboard",
+  "_panels": [
+    {
+      "title": "CPU Utilization",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "stack": true,
+      "_targets": [
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"indexer\"}",
+          "legendFormat": "CPU Utilization",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Memory Usage",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "index_memory_quota",
+          "legendFormat": "Memory Quota",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "index_memory_used_total",
+          "legendFormat": "Used Memory",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Total Items",
+      "_base": "panel",
+      "stack": true,
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "index_items_count",
+          "legendFormat": "Total Items",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of Requests",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "index_num_requests",
+          "legendFormat": "Requests",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
