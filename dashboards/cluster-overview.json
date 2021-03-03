@@ -151,6 +151,18 @@
           "_base": "target"
         }
       ]
+    },
+    {
+      "title": "Disk usage summed over buckets",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(couch_docs_actual_disk_size)",
+          "legendFormat": "{data-source-name} sum(couch_docs_actual_disk_size)",
+          "_base": "target"
+        }
+      ]
     }
   ]
 }

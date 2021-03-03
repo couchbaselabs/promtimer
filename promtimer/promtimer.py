@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2020 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-2021 Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -243,8 +243,8 @@ def open_browser(grafana_http_port):
         logging.error("Hit `OSError` opening web browser")
         pass
 
-def parse_couchbase_log(cbcollect_dir):
-    logging.debug('parsing couchbase.log')
+def parse_couchbase_ns_config(cbcollect_dir):
+    logging.debug('parsing couchbase.log (Couchbase config)')
     in_config = False
     in_buckets = False
     buckets = []
@@ -273,6 +273,50 @@ def parse_couchbase_log(cbcollect_dir):
                             buckets.append(bucket)
     return {'buckets': sorted(buckets)}
 
+def parse_couchbase_chronicle(cbcollect_dir):
+    logging.debug('parsing couchbase.log (Chronicle config)')
+    in_config = False
+    in_buckets = False
+    bucket_list = ''
+    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r') as file:
+        for full_line in file:
+            line = full_line.rstrip()
+            if not in_config and line == 'Chronicle config':
+                in_config = True
+            elif in_config:
+                # Names of bucket can be on a single or multiple lines
+                end_of_list = False
+                possible_buckets = ''
+                if not in_buckets:
+                    if line.startswith(' {bucket_names,'):
+                        in_buckets = True
+                        possible_buckets = line.replace(' {bucket_names,[', '')
+                elif in_buckets:
+                    possible_buckets = line
+
+                if possible_buckets != '':
+                    if possible_buckets.endswith(']},'):
+                        possible_buckets = possible_buckets[:-3]
+                        end_of_list = True
+
+                    bucket_list += possible_buckets
+
+                    if end_of_list:
+                        break
+
+    buckets = []
+    if bucket_list != '':
+        for b in bucket_list.replace(' ','').replace('"','').split(','):
+            buckets.append(b)
+
+    return {'buckets': sorted(buckets)}
+
+def parse_couchbase_log(cbcollect_dir):
+    config = parse_couchbase_ns_config(cbcollect_dir)
+    if config['buckets'] == []:
+        config = parse_couchbase_chronicle(cbcollect_dir)
+    return config
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-g', '--grafana-home', dest='grafana_home_path', required=True,
@@ -287,8 +331,12 @@ def main():
     parser.add_argument('-p', '--prometheus', dest='prom_bin',
                         help='path to prometheus binary if it\'s not available on $PATH')
     parser.add_argument('--grafana-port', dest='grafana_port', type=int,
-                        help='http port on which Grafana should listen (default: 13000)',
-                        default=13000)
+                        help='http port on which Grafana should listen (default: 13300)',
+                        default=13300)
+    parser.add_argument('--buckets', dest='buckets',
+                        help='comma-separated list of buckets to build bucket dashboards '
+                             'for; if this option is provided, auto-detection of the '
+                             'buckets by parsing couchbase.log will be skipped')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
     args = parser.parse_args()
@@ -322,7 +370,11 @@ def main():
                               STATS_SNAPSHOT_DIR_NAME))
             sys.exit(1)
 
-    config = parse_couchbase_log(cbcollects[0])
+    if not args.buckets:
+        config = parse_couchbase_log(cbcollects[0])
+    else:
+        config = {'buckets': sorted(args.buckets.split(','))}
+
     times = get_prometheus_min_and_max_times(cbcollects)
 
     grafana_port = args.grafana_port

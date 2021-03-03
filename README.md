@@ -97,7 +97,7 @@ The `path-to-prometheus-binary` specifies the path to the prometheus binary
 and is needed if the binary isn't locatable via your default search path.
 
 The Grafana dashboards page should open for you automatically. If not, navigate
-to `localhost:13000/dashboards` in your browser and begin exploring the
+to `localhost:13300/dashboards` in your browser and begin exploring the
 available dashboards.
 
 ## Clean Up
