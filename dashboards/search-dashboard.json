@@ -1,0 +1,114 @@
+{
+    "title": "Search Dashboard",
+    "_base": "dashboard",
+    "_panels": [
+        {
+            "title": "fts_num_bytes_used_ram",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_bytes_used_ram",
+                "legendFormat": "{data-source-name} fts_num_bytes_used_ram",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_curr_batches_blocked_by_herder",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_curr_batches_blocked_by_herder",
+                "legendFormat": "{data-source-name} fts_curr_batches_blocked_by_herder",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_tot_queryreject_on_memquota",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_tot_queryreject_on_memquota",
+                "legendFormat": "{data-source-name} fts_tot_queryreject_on_memquota",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_tot_grpc_queryreject_on_memquota",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_tot_grpc_queryreject_on_memquota",
+                "legendFormat": "{data-source-name} fts_tot_grpc_queryreject_on_memquota",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_queries_rejected_by_herder",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_queries_rejected_by_herder",
+                "legendFormat": "{data-source-name} fts_total_queries_rejected_by_herder",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_batch_bytes_added",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_batch_bytes_added",
+                "legendFormat": "{data-source-name} fts_batch_bytes_added",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_batch_bytes_removed",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_batch_bytes_removed",
+                "legendFormat": "{data-source-name} fts_batch_bytes_removed",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_pct_cpu_gc",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_pct_cpu_gc",
+                "legendFormat": "{data-source-name} fts_pct_cpu_gc",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_gc",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_gc",
+                "legendFormat": "{data-source-name} fts_total_gc",
+                "_base": "target"
+              }
+            ]
+          }
+    ]
+  }
