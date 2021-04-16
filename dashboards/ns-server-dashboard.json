@@ -45,13 +45,13 @@
       ]
     },
     {
-      "title": "ns-server rest request rate",
+      "title": "ns-server http request rate",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(sys_rest_requests[1m])",
-          "legendFormat": "{data-source-name} irate(sys_rest_requests[1m])",
+          "expr": "sum(irate(cm_http_requests_total[5m]))",
+          "legendFormat": "{data-source-name} sum(irate(cm_http_requests_total[5m]))",
           "_base": "target"
         }
       ]
@@ -62,14 +62,14 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(sys_hibernated_requests[1m])",
-          "legendFormat": "{data-source-name} irate(sys_hibernated_requests[1m])",
+          "expr": "irate(cm_request_hibernates_total[5m])",
+          "legendFormat": "{data-source-name} irate(cm_request_hibernates_total[5m])",
           "_base": "target"
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(sys_hibernated_waked[1m])",
-          "legendFormat": "{data-source-name} irate(sys_hibernated_waked[1m])",
+          "expr": "irate(cm_request_unhibernates_total[5m])",
+          "legendFormat": "{data-source-name} irate(cm_request_unhibernates_total[5m])",
           "_base": "target"
         }
       ]
