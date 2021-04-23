@@ -105,8 +105,9 @@ def start_prometheuses(cbcollects, base_port, log_dir):
                 '--storage.tsdb.no-lockfile',
                 '--storage.tsdb.retention.time', '10y',
                 '--web.listen-address', listen_addr]
-        logging.info('starting prometheus server {} (on {}; logging to {})'
-                     .format(i, listen_addr, log_path))
+        logging.info('starting prometheus server {} (on {} against {}; logging to {})'
+                     .format(i, listen_addr, path.join(cbcollect, 'stats_snapshot'),
+                             log_path))
         node = util.start_process(args, log_path)
         nodes.append(node)
 
