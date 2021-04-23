@@ -102,6 +102,7 @@ def start_prometheuses(cbcollects, base_port, log_dir):
         args = [PROMETHEUS_BIN,
                 '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
                 '--storage.tsdb.path', path.join(cbcollect, 'stats_snapshot'),
+                '--storage.tsdb.no-lockfile',
                 '--storage.tsdb.retention.time', '10y',
                 '--web.listen-address', listen_addr]
         logging.info('starting prometheus server {} (on {}; logging to {})'
