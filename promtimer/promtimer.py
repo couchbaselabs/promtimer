@@ -222,10 +222,10 @@ def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets,
     make_dashboards(data_sources, buckets, times)
 
 def start_grafana(grafana_home_path, grafana_port):
-    log_path = path.join(PROMTIMER_DIR, 'grafana.log')
     args = [GRAFANA_BIN,
             '--homepath', grafana_home_path,
             '--config','custom.ini']
+    log_path = path.join(PROMTIMER_DIR, 'logs/grafana.log')
     logging.info('starting grafana server (on localhost:{}; logging to {})'
                  .format(grafana_port, log_path))
     # Don't specify a log file as it is done within the custom.ini file
