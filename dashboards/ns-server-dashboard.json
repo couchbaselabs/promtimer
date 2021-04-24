@@ -11,18 +11,6 @@
           "expr": "sys_cpu_utilization_rate",
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
-        },
-        {
-          "datasource": "{data-source-name}",
-          "expr": "sys_cpu_user_rate",
-          "legendFormat": "{data-source-name} {{name}}",
-          "_base": "target"
-        },
-        {
-          "datasource": "{data-source-name}",
-          "expr": "sys_cpu_sys_rate",
-          "legendFormat": "{data-source-name} {{name}}",
-          "_base": "target"
         }
       ]
     },
@@ -40,6 +28,30 @@
           "datasource": "{data-source-name}",
           "expr": "sysproc_cpu_utilization{proc=\"ns_server\"}",
           "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "rate ns-server rest requests served",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(cm_rest_request_leaves_total[1m])",
+          "legendFormat": "{data-source-name} sum(cm_rest_request_leaves_total[1m])",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "ns-server rest request enters minus leaves",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
+          "legendFormat": "{data-source-name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
           "_base": "target"
         }
       ]
@@ -147,6 +159,18 @@
       ]
     },
     {
+      "title": "ns-server major faults",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sysproc_major_faults_raw{proc=\"ns_server\"}",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "rate ns-server major faults",
       "_base": "panel",
       "_targets": [
@@ -166,6 +190,18 @@
           "datasource": "{data-source-name}",
           "expr": "irate(sysproc_minor_faults_raw{proc=\"ns_server\"}[1m])",
           "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "system allocstalls",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_allocstall",
+          "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
       ]
