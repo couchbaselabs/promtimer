@@ -145,7 +145,7 @@
       ]
     },
     {
-      "title": "90th percentile outgoing request latencies",
+      "title": "90th percentile ns-server outgoing request latencies",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
