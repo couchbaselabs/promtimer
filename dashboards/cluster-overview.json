@@ -45,7 +45,7 @@
       ]
     },
     {
-      "title": "kv_ops",
+      "title": "total kv_ops",
       "_base": "panel",
       "_targets": [
         {
@@ -53,7 +53,13 @@
           "expr": "sum(irate(kv_ops[1m]))",
           "legendFormat": "{data-source-name} sum(irate(kv_ops[1m]))",
           "_base": "target"
-        },
+        }
+      ]
+    },
+    {
+      "title": "kv gets and mutations",
+      "_base": "panel",
+      "_targets": [
         {
           "datasource": "{data-source-name}",
           "expr": "sum(irate(kv_ops{op=\"get\"}[1m]))",
@@ -62,8 +68,8 @@
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "sum(irate(kv_ops{op=\"set\"}[1m]))",
-          "legendFormat": "{data-source-name} sum(irate(kv_ops{op=set}[1m]))",
+          "expr": "sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(kv_ops{op=~set|set_meta|cas|delete|...}[1m]))",
           "_base": "target"
         }
       ]
