@@ -38,6 +38,18 @@
       ]
     },
     {
+      "title": "90th percentile GET latency",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.90, irate(kv_cmd_duration_seconds_bucket{opcode=\"GET\",bucket=\"$bucket\"}[5m]))",
+          "legendFormat": "{{bucket}} GET latency",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "irate(kv_ep_bg_fetched[1m]))",
       "_base": "panel",
       "_targets": [
@@ -62,13 +74,13 @@
       ]
     },
     {
-      "title": "kv_vb_active_ops_create",
+      "title": "kv_vb_ops_create",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(kv_vb_active_ops_create{bucket=\"$bucket\"}[1m])",
-          "legendFormat": "{data-source-name} irate(kv_vb_active_ops_create[1m])",
+          "expr": "irate(kv_vb_ops_create{bucket=\"$bucket\",state=\"active\"}[1m])",
+          "legendFormat": "{data-source-name} irate(kv_vb_ops_create{state=active}[1m])",
           "_base": "target"
         }
       ]
