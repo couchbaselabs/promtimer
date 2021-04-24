@@ -135,19 +135,19 @@
       "_base": "panel",
       "_targets": [
         {
-          "expr": "kv_curr_items_tot{bucket=\"$bucket\"} - on() kv_ep_num_non_resident{bucket=\"$bucket\"}",
+          "expr": "kv_curr_items_tot{bucket=\"$bucket\"} - ignoring(name) kv_ep_num_non_resident{bucket=\"$bucket\"}",
           "interval": "",
           "legendFormat": "Items Resident (a+r) {{bucket}}",
           "_base": "target"
         },
         {
-          "expr": "kv_vb_curr_items{state=\"replica\"} - on() kv_vb_num_non_resident{state=\"replica\"}",
+          "expr": "kv_vb_curr_items{state=\"replica\",bucket=\"$bucket\"} - ignoring(name) kv_vb_num_non_resident{state=\"replica\",bucket=\"$bucket\"}",
           "interval": "",
           "legendFormat": "Replica Items Resident {{bucket}}",
           "_base": "target"
         },
         {
-          "expr": "kv_vb_curr_items{state=\"active\"} - on() kv_vb_num_non_resident{state=\"active\"}",
+          "expr": "kv_vb_curr_items{state=\"active\",bucket=\"$bucket\"} - ignoring(name) kv_vb_num_non_resident{state=\"active\",bucket=\"$bucket\"}",
           "interval": "",
           "legendFormat": "Active Items Resident {{bucket}}",
           "_base": "target"
