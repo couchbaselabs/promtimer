@@ -42,10 +42,30 @@ STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
 COUCHBASE_LOG = 'couchbase.log'
 
 def make_snapshot_dir_path(candidate_cbcollect_dir):
+    """
+    Returns a path representing the 'stats_snapshot' directory in
+    candidate_cbcollect_dir.
+    :type candidate_cbcollect_dir: pathlib.Path
+    :rtype: pathlib.Path
+    """
     return candidate_cbcollect_dir / '{}'.format(STATS_SNAPSHOT_DIR_NAME)
 
+def snapshot_dir_exists(candidate_cbcollect_dir):
+    """
+    Returns whether or not the 'stats_snapshot' directory inside
+    candidate_cbcollect_dir exists.
+    :type candidate_cbcollect_dir: ,lib.Path
+    """
+    return make_snapshot_dir_path(candidate_cbcollect_dir).exists()
+
 def is_cbcollect_dir(candidate_path):
-    return candidate_path.is_dir() and make_snapshot_dir_path(candidate_path).exists()
+    """
+    Returns a guess as to whether candidate_path represents a
+    cbcollect directory by checking whether the 'stats_snapshot' directory exists
+    inside it.
+    :type candidate_path: pathlib.Path
+    """
+    return candidate_path.is_dir() and snapshot_dir_exists(candidate_path)
 
 def is_executable_file(candidate_file):
     return os.path.isfile(candidate_file) and os.access(candidate_file, os.X_OK)
@@ -54,23 +74,42 @@ def find_cbcollect_dirs():
     cbcollects = sorted(glob.glob('cbcollect_info*'))
     return [f for f in cbcollects if is_cbcollect_dir(pathlib.Path(f))]
 
-def should_extract_from_zip(filename):
-    return filename.find('/{}/'.format(STATS_SNAPSHOT_DIR_NAME)) >= 0 or \
-                filename.endswith(COUCHBASE_LOG)
+def is_stats_snapshot_file(filename):
+    """
+    Returns whether filename contains 'stats_snapshot' (and thus is a file we
+    probably want to extract from a cbcollect zip).
+    :type filename: string
+    :rtype: bool
+    """
+    return filename.find('/{}/'.format(STATS_SNAPSHOT_DIR_NAME)) >= 0
 
 def maybe_extract_from_zipfile(zip_file):
+    """
+    Extract files needed for Promtimer to run if necessary. Files needed by Promtimer are:
+    * everything under the stats_snapshot directory; nothing is extracted if the
+      stats_snapshot directory is already present
+    * couchbase.log: extracted if not present
+    """
     root = zipfile.Path(zip_file)
     for p in root.iterdir():
         if is_cbcollect_dir(p):
+            stats_snapshot_exists = snapshot_dir_exists(pathlib.Path(p.name))
+            logging.debug("{}/stats_snapshot exists: {}".format(p.name, stats_snapshot_exists))
             extracting = False
             for item in zip_file.infolist():
-                if should_extract_from_zip(item.filename):
-                    if not path.exists(path.join(*item.filename.split('/'))):
-                        if not extracting:
-                            extracting = True
-                            logging.info('extracting stats, couchbase.log from cbcollect'
-                                         ' zip:{}'.format(zip_file.filename))
-                        zip_file.extract(item)
+                item_path = path.join(*item.filename.split('/'))
+                should_extract = False
+                if is_stats_snapshot_file(item.filename):
+                    should_extract = not stats_snapshot_exists
+                elif item.filename.endswith(COUCHBASE_LOG):
+                    should_extract = not path.exists(item_path)
+                if should_extract:
+                    logging.debug("zipfile item:{}, exists:{}".format(item_path, path.exists(item_path)))
+                    if not extracting:
+                        extracting = True
+                        logging.info('extracting stats, couchbase.log from cbcollect zip:{}'
+                                     .format(zip_file.filename))
+                    zip_file.extract(item)
 
 def get_cbcollect_dirs():
     zips = sorted(glob.glob('*.zip'))
