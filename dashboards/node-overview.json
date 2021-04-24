@@ -80,7 +80,24 @@
       ]
     },
     {
-      "title": "sum by (bucket) (irate(kv_ops[1m]))",
+      "title": "kv gets and mutations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(irate(kv_ops{op=\"get\"}[1m]))",
+          "legendFormat": "sum(irate(kv_ops{op=get}[1m]))",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))",
+          "legendFormat": "sum(irate(kv_ops{op=~set|set_meta|cas|delete|...}[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "total ops by bucket",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
@@ -92,13 +109,49 @@
       ]
     },
     {
-      "title": "sys_rest_requests rate",
+      "title": "90th percentile GET latency",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "irate(sys_rest_requests[1m])",
-          "legendFormat": "irate(sys_rest_requests[1m])",
+          "expr": "histogram_quantile(0.90, irate(kv_cmd_duration_seconds_bucket{opcode=\"GET\"}[5m]))",
+          "legendFormat": "{{bucket}}-latency",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "rate ns-server rest requests served",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(cm_rest_request_leaves_total[1m])",
+          "legendFormat": "{data-source-name} sum(cm_rest_request_leaves_total[1m])",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "ns-server rest request enters minus leaves",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
+          "legendFormat": "{data-source-name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "90th percentile outgoing request latencies",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "histogram_quantile(0.9, irate(cm_outgoing_http_requests_seconds_bucket[5m]))",
+          "legendFormat": "{{type}}",
           "_base": "target"
         }
       ]
