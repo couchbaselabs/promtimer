@@ -235,6 +235,18 @@
           "_base": "target"
         }
       ]
+    },
+    {
+      "title": "config merger max queue_len over 1m",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "cm_ns_config_merger_queue_len_1m_max",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
     }
   ]
 }
