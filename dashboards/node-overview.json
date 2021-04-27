@@ -133,7 +133,7 @@
       ]
     },
     {
-      "title": "ns-server rest request enters minus leaves",
+      "title": "ns-server streaming requests currently being served",
       "_base": "panel",
       "_targets": [
         {
