@@ -247,6 +247,18 @@
           "_base": "target"
         }
       ]
+    },
+    {
+      "title": "check_time message delay",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.999, irate(cm_timer_lag_seconds_bucket[5m]))",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ]
     }
   ]
 }
