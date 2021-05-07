@@ -178,13 +178,23 @@ def make_dashboard(dashboard_meta, template_params, min_time, max_time):
     logging.debug('make_dashboard: title:{}, template_params {}'.format(
         dashboard_meta['title'], template_params))
     panel_id = 0
+    current_y = 0
+    panel_row_width = 0
+    panel_row_height = 0
     panels = make_panels(dashboard_meta['_panels'], template_params)
     for i, panel in enumerate(panels):
         panel = panels[i]
-        panel['gridPos']['w'] = 12
-        panel['gridPos']['h'] = 12
-        panel['gridPos']['x'] = (i % 2) * 12
-        panel['gridPos']['y'] = int(i / 2) * 12
+        if panel['gridPos']['w'] > (24 - panel_row_width):
+            # If the next panel won't fit, move it to the next row of panels
+            current_y = current_y + panel_row_height
+            panel_row_height = 0
+            panel_row_width = 0
+        if panel['gridPos']['h'] > panel_row_height:
+            # If the current panel is the tallest, update row height
+            panel_row_height = panel['gridPos']['h']
+        panel['gridPos']['x'] = panel_row_width
+        panel['gridPos']['y'] = current_y
+        panel_row_width += panel['gridPos']['w']
         panel['id'] = panel_id
         panel_id += 1
         dashboard['panels'].append(panel)
