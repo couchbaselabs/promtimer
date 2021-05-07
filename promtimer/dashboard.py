@@ -114,8 +114,9 @@ def get_all_param_value_combinations(template_params):
     return result
 
 def make_and_add_targets(panel, panel_meta, template_params):
-    targets = make_targets(panel_meta['_targets'], template_params)
-    add_targets_to_panel(panel, targets)
+    if '_targets' in panel_meta:
+        targets = make_targets(panel_meta['_targets'], template_params)
+        add_targets_to_panel(panel, targets)
 
 def make_panels(panel_metas, template_params):
     result = []
