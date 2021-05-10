@@ -14,9 +14,7 @@
   "fillGradient": 0,
   "gridPos": {
     "h": 12,
-    "w": 12,
-    "x": 0,
-    "y": 0
+    "w": 12
   },
   "hiddenSeries": false,
   "id": null,
