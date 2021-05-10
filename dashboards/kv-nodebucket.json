@@ -1,0 +1,768 @@
+{
+  "_base": "dashboard",
+  "title": "KV View - Node & Bucket",
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "bucket",
+        "options": [
+          {
+            "selected": false,
+            "text": "{bucket}",
+            "value": "{bucket}"
+          }
+        ],
+        "query": "",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "_panels": [
+    {
+      "title": "Collections",
+      "_base": "row"
+    },
+    {
+      "title": "Memory Used by Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_collection_mem_used_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory used per collection in bytes",
+      "stack": true
+    },
+    {
+      "title": "Operations Run on Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_collection_ops{bucket=\"$bucket\"}",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Operations run on a particular collection",
+      "stack": true
+    },
+    {
+      "title": "Connections",
+      "_base": "row"
+    },
+    {
+      "title": "Connections Ever Opened",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_total_connections",
+          "legendFormat": "Connections",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Current Connections",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_curr_connections",
+          "legendFormat": "Current",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_daemon_connections",
+          "legendFormat": "Daemon",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_system_connections",
+          "legendFormat": "System",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "Number of Auth Errors",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_auth_errors{bucket=\"$bucket\"}",
+          "legendFormat": "Errors",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of auth errors"
+    },
+    {
+      "title": "DCP",
+      "_base": "row"
+    },
+    {
+      "title": "Backoff Events",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_backoff{bucket=\"$bucket\"}",
+          "legendFormat": "Events",
+          "_base": "target"
+        }
+      ],
+      "description": "Total number of backoff events"
+    },
+    {
+      "title": "Idle Timeout",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_dcp_idle_timeout{bucket=\"$bucket\"}",
+          "legendFormat": "Seconds",
+          "_base": "target"
+        }
+      ],
+      "description": "DCP idle timeout value"
+    },
+    {
+      "title": "Producer Count",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_producer_count{bucket=\"$bucket\"}",
+          "legendFormat": "Producers",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of DCP Producers"
+    },
+    {
+      "title": "Remaining Items",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_items_remaining{bucket=\"$bucket\"}",
+          "legendFormat": "Items",
+          "_base": "target"
+        }
+      ],
+      "description": "Total items remaining to be sent"
+    },
+    {
+      "title": "Sent Items",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_dcp_items_sent{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Items",
+          "_base": "target"
+        }
+      ],
+      "description": "Total items sent"
+    },
+    {
+      "title": "Total Connections",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_connection_count{bucket=\"$bucket\"}",
+          "legendFormat": "Connections",
+          "_base": "target"
+        }
+      ],
+      "description": "Connection count"
+    },
+    {
+      "title": "Total Data Size",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_total_data_size_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Total Bytes",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_dcp_total_uncompressed_data_size_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Uncompressed Bytes",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Data",
+      "_base": "row"
+    },
+    {
+      "title": "Data Operation Failures",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_data_read_failed{bucket=\"$bucket\"}",
+          "legendFormat": "Reads",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_data_write_failed{bucket=\"$bucket\"}",
+          "legendFormat": "Writes",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Doc Size",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "couch_docs_actual_disk_size",
+          "legendFormat": "Disk Size",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of Docs",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_curr_items_tot{bucket=\"$bucket\"}",
+          "legendFormat": "Total Items",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_curr_items{bucket=\"$bucket\"}",
+          "legendFormat": "Items",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Percentage Memory Resident",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_vb_perc_mem_resident_ratio{state=\"active\", bucket=\"$bucket\"}",
+          "legendFormat": "Active",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_vb_perc_mem_resident_ratio{state=\"replica\", bucket=\"$bucket\"}",
+          "legendFormat": "Replica",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_vb_perc_mem_resident_ratio{state=\"pending\", bucket=\"$bucket\"}",
+          "legendFormat": "Pending",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "Rate of Deletes",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_ep_total_del_items{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Items",
+          "_base": "target"
+        }
+      ],
+      "description": "The number of deleted documents, converted into tombstones, every minute"
+    },
+    {
+      "title": "Rate of Doc Expirations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_vb_expired{state=\"active\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Active",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_expired{state=\"pending\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Pending",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_expired{state=\"replica\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Replica",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Rollback Item Count",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_rollback_item_count{bucket=\"$bucket\"}",
+          "legendFormat": "Item",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of items rolled back?"
+    },
+    {
+      "title": "Size of Key",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_bfilter_key_count{bucket=\"$bucket\"}",
+          "legendFormat": "Keys",
+          "_base": "target"
+        }
+      ],
+      "description": "Minimum key count that bloom filter will accomodate"
+    },
+    {
+      "title": "Disk",
+      "_base": "row"
+    },
+    {
+      "title": "Data Size",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "couch_docs_actual_disk_size{bucket=\"$bucket\"}",
+          "legendFormat": "Bytes",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Disk Queue Items",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_diskqueue_items{bucket=\"$bucket\"}",
+          "legendFormat": "Items",
+          "_base": "target"
+        }
+      ],
+      "description": "Total number of items in disk queue"
+    },
+    {
+      "title": "Disk Queue Memory Usage",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_diskqueue_memory_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Bytes",
+          "_base": "target"
+        }
+      ],
+      "description": "Total memory used by disk queue, in bytes"
+    },
+    {
+      "title": "Items Persisted",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_total_new_items{bucket=\"$bucket\"}",
+          "legendFormat": "New",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_total_persisted{bucket=\"$bucket\"}",
+          "legendFormat": "Persisted",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Written / Read Bytes",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_read_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Read",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_written_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Written",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "General",
+      "_base": "row"
+    },
+    {
+      "title": "CPU Utilization",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sysproc_cpu_utilization{proc=\"memcached\"}",
+          "legendFormat": "Percentage",
+          "_base": "target"
+        }
+      ],
+      "description": "KV service CPU Utilization of all cores summed up, in percent\n\nsysproc_cpu_utilization{proc=\"memcached\"}"
+    },
+    {
+      "title": "Failed KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ops_failed{bucket=\"$bucket\"}",
+          "legendFormat": "{{op}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of failed KV operations"
+    },
+    {
+      "title": "KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_ops{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "{{op}} ({{result}})",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "KV Uptime",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_uptime_seconds",
+          "legendFormat": "Seconds",
+          "_base": "target"
+        }
+      ],
+      "description": "KV service uptime in seconds"
+    },
+    {
+      "title": "Memory Usage",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sysproc_mem_resident{proc=\"memcached\"}",
+          "legendFormat": "Bytes",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}"
+    },
+    {
+      "title": "Memory",
+      "_base": "row"
+    },
+    {
+      "title": "Checkpoint Memory",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_checkpoint_memory_overhead_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Overhead",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_checkpoint_memory_unreferenced_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Unreferenced",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Checkpoint Memory Size",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_checkpoint_memory_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Bytes",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory of items in all checkpoints, in bytes"
+    },
+    {
+      "title": "Defragmenter Enabled",
+      "type": "bargauge",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_defragmenter_enabled{bucket=\"$bucket\"}",
+          "legendFormat": "Enabled",
+          "_base": "target"
+        }
+      ],
+      "description": "Whether the defragmenter is enabled or not",
+      "fieldConfig": {
+        "defaults": {
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Defragmenter Interval",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_defragmenter_interval{bucket=\"$bucket\"}",
+          "legendFormat": "Seconds",
+          "_base": "target"
+        }
+      ],
+      "description": "How often defragmenter task should run, in seconds"
+    },
+    {
+      "title": "KV Memory Usage",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"}",
+          "legendFormat": "High Watermark",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"}",
+          "legendFormat": "Low Watermark",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Memory Used",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Metadata Overhead",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_vb_meta_data_memory_bytes{state=\"active\", bucket=\"$bucket\"}",
+          "legendFormat": "Active",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_vb_meta_data_memory_bytes{state=\"replica\", bucket=\"$bucket\"}",
+          "legendFormat": "Replica",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_vb_meta_data_memory_bytes{state=\"pending\", bucket=\"$bucket\"}",
+          "legendFormat": "Pending",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "OOM Errors",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_oom_errors{bucket=\"$bucket\"}",
+          "legendFormat": "Total",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_warmup_oom{bucket=\"$bucket\"}",
+          "legendFormat": "Warmup",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "vBuckets",
+      "_base": "row"
+    },
+    {
+      "title": "Total",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_num_vbuckets{bucket=\"$bucket\",state=\"active\"}",
+          "legendFormat": "Active",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_num_vbuckets{bucket=\"$bucket\",state=\"pending\"}",
+          "legendFormat": "Pending",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_num_vbuckets{bucket=\"$bucket\",state=\"replica\"}",
+          "legendFormat": "Stack",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "vBucket Operations (Active)",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_vb_ops_create{state=\"active\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Create",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_delete{state=\"active\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Delete",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_reject{state=\"active\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Reject",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_update{state=\"active\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Update",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_update{state=\"active\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Get",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "vBucket Operations (Replica)",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_vb_ops_create{state=\"replica\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Create",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_delete{state=\"replica\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Delete",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_reject{state=\"replica\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Reject",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_update{state=\"replica\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Update",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_update{state=\"replica\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Get",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "vBucket Operations (Pending)",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_vb_ops_create{state=\"pending\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Create",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_delete{state=\"pending\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Delete",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_reject{state=\"pending\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Reject",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_update{state=\"pending\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Update",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(kv_vb_ops_update{state=\"pending\", bucket=\"$bucket\"}[1m])",
+          "legendFormat": "Get",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    }
+  ]
+}

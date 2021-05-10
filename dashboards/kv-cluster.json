@@ -1,0 +1,125 @@
+{
+  "_base": "dashboard",
+  "title": "KV View - Cluster",
+  "_panels": [
+    {
+      "title": "General",
+      "_base": "row"
+    },
+    {
+      "title": "KV CPU Utilization",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sysproc_cpu_utilization{proc=\"memcached\"}",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "KV service CPU Utilization of all cores summed up, in percent\n\nsysproc_cpu_utilization{proc=\"memcached\"}"
+    },
+    {
+      "title": "KV Uptime",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_uptime_seconds",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "KV service uptime in seconds\n\nkv_uptime_seconds"
+    },
+    {
+      "title": "KV Memory Usage",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sysproc_mem_resident{proc=\"memcached\"}",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}"
+    },
+    {
+      "title": "Connections",
+      "_base": "row"
+    },
+    {
+      "title": "Accumulated Connections",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_total_connections",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of KV service connections accumulated over time\n\nkv_total_connections"
+    },
+    {
+      "title": "Current Connections",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(kv_curr_connections) + sum(kv_daemon_connections) + sum(kv_system_connections)",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of KV service connections currently open\n\nsum(kv_curr_connections) + sum(kv_daemon_connections) + sum(kv_system_connections)"
+    },
+    {
+      "title": "Audit Daemon",
+      "_base": "row"
+    },
+    {
+      "title": "Audit Daemon Enabled",
+      "type": "bargauge",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_audit_enabled",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "Whether the audit daemon is enabled\n\nkv_audit_enabled",
+      "fieldConfig": {
+        "defaults": {
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Dropped Events",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_audit_dropped_events",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_audit_dropped_events"
+    }
+  ]
+}
