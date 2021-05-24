@@ -25,9 +25,7 @@ import datetime
 from dateutil import parser as dateparser
 import re
 import webbrowser
-import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+import urllib.request
 import logging
 import sys
 import zipfile
@@ -304,29 +302,25 @@ def make_data_sources(data_sources_names, base_port):
         with open(filename, 'w') as file:
             file.write(templating.replace(template, replacement_map))
 
-def retry_session(
-    retries=5,
-    backoff_factor=0.3,
-    status_forcelist=(500, 502, 504),
-    session=None,
-):
-    session = session or requests.Session()
-    retry = Retry(
-        total=retries,
-        read=retries,
-        connect=retries,
-        backoff_factor=backoff_factor,
-        status_forcelist=status_forcelist,
-    )
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
-    return session
+def retry_get(url, retries):
+    req = urllib.request.Request(url=url, data=None)
+    success = False
+    get = None
+    while (not success) and (retries > 0):
+        try:
+            get = urllib.request.urlopen(req).read()
+            success = True
+        except:
+            print('Failed to connect to Grafana, retrying...',retries,'retries left')
+            retries -= 1
+            time.sleep(0.5)
+    return get
 
 def create_annotations():
-    try:
-        annotations_json = retry_session().get(ANNOTS_URL).json()
+    annotations_json = retry_get(ANNOTS_URL, 5)
+    if annotations_json is not None:
         print('Successfully connected to Grafana')
+        annotations_json = json.loads(annotations_json)
         if len(annotations_json) > 0:
             print('Found existing annotations, skipping annotation adding')
         else:
@@ -367,10 +361,11 @@ def create_annotations():
                                 tag,
                             ],
                         }
-                    payload = json.dumps(data)
-                    r = requests.post(ANNOTS_URL, headers = ANNOTS_HEADERS, data = payload)
-                    print(r.json(), '-', event_timestamp, '-', data['text'], '-', data['tags'])
-    except:
+                    payload = json.dumps(data).encode('utf-8')
+                    req = urllib.request.Request(url=ANNOTS_URL, data=payload, headers=ANNOTS_HEADERS)
+                    post = urllib.request.urlopen(req).read()
+                    print(json.loads(post), '-', event_timestamp, '-', data['text'], '-', data['tags'])
+    else:
         print('Unable to connect to Grafana, skipping annotation adding')
 
 def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
