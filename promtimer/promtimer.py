@@ -22,8 +22,12 @@ from os import path
 import time
 import json
 import datetime
+from dateutil import parser as dateparser
 import re
 import webbrowser
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 import logging
 import sys
 import zipfile
@@ -40,6 +44,79 @@ PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
 STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
 COUCHBASE_LOG = 'couchbase.log'
+ANNOTS_URL = 'http://localhost:13300/api/annotations'
+ANNOTS_HEADERS = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+}
+ANNOTS_EVENTS_START = {
+    'rebalance_start': 'rebalance',
+}
+ANNOTS_EVENTS_END = {
+    'rebalance_finish': 'rebalance',
+}
+ANNOTS_EVENT_TAGS = {
+    'dataset_created': 'success',
+    'dataset_dropped': 'warning',
+    'analytics_index_created': 'success',
+    'analytics_index_dropped': 'warning',
+
+    'task_finished': 'success',
+    'task_started': 'info',
+    'backup_removed': 'warning',
+    'backup_paused': 'warning',
+    'backup_resumed': 'info',
+    'backup_plan_created': 'success',
+    'backup_plan_deleted': 'warning',
+    'backup_repo_created': 'success',
+    'backup_repo_deleted': 'warning',
+    'backup_repo_imported': 'success',
+    'backup_repo_archived': 'success',
+
+    'rebalance_start': 'info',
+    'rebalance_finish': 'info',
+    'failover_start': 'warning',
+    'failover_end': 'warning',
+    'node_joined': 'success',
+    'node_went_down': 'warning',
+
+    'eventing_function_deployed': 'success',
+    'eventing_function_undeployed': 'warning',
+
+    'fts_index_created': 'success',
+    'fts_index_dropped': 'warning',
+
+    'index_created': 'success',
+    'index_deleted': 'warning',
+    'indexer_active': 'info',
+    'index_built': 'info',
+
+    'bucket_created': 'success',
+    'bucket_deleted': 'warning',
+    'bucket_updated': 'info',
+    'bucket_flushed': 'warning',
+
+    'dropped_ticks': 'info',
+    'data_lost': 'failure',
+    'server_error': 'failure',
+    'sigkill_error': 'failure',
+    'lost_connection_to_server': 'failure',
+
+    'LDAP_settings_modified': 'info',
+    'password_policy_changed': 'info',
+    'group_added': 'success',
+    'group_deleted': 'warning',
+    'user_added': 'success',
+    'user_deleted': 'warning',
+
+    'XDCR_replication_create_started': 'info',
+    'XDCR_replication_remove_started': 'info',
+    'XDCR_replication_create_failed': 'failure',
+    'XDCR_replication_create_successful': 'success',
+    'XDCR_replication_created': 'success',
+    'XDCR_replication_remove_failed': 'failure',
+    'XDCR_replication_remove_successful': 'success',
+}
 
 def make_snapshot_dir_path(candidate_cbcollect_dir):
     """
@@ -226,6 +303,75 @@ def make_data_sources(data_sources_names, base_port):
         filename = path.join(datasources_dir, 'ds-{}.yaml'.format(data_source_name))
         with open(filename, 'w') as file:
             file.write(templating.replace(template, replacement_map))
+
+def retry_session(
+    retries=5,
+    backoff_factor=0.3,
+    status_forcelist=(500, 502, 504),
+    session=None,
+):
+    session = session or requests.Session()
+    retry = Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
+def create_annotations():
+    try:
+        annotations_json = retry_session().get(ANNOTS_URL).json()
+        print('Successfully connected to Grafana')
+        if len(annotations_json) > 0:
+            print('Found existing annotations, skipping annotation adding')
+        else:
+            if not path.isfile('events.log'):
+                print('No events.log, skipping annotation adding')
+            else:
+                print('Adding annotations from events.log')
+                ongoing_events = {}
+                file = open('events.log', 'r')
+                for line in file:
+                    event = json.loads(line)
+                    event_timestamp = event['timestamp']
+                    event_type = event['event_type']
+                    unix_time_ms = int(dateparser.parse(event_timestamp).timestamp()*1000)
+                    try:
+                        tag = ANNOTS_EVENT_TAGS[event_type]
+                    except KeyError:
+                        tag = 'info'
+                    if event_type in ANNOTS_EVENTS_START:
+                        ongoing_events[ANNOTS_EVENTS_START[event_type]] = unix_time_ms
+                        continue
+                    elif event_type in ANNOTS_EVENTS_END and ANNOTS_EVENTS_END[event_type] in ongoing_events:
+                        data = {
+                            'time': ongoing_events[ANNOTS_EVENTS_END[event_type]],
+                            'timeEnd': unix_time_ms,
+                            'text': ANNOTS_EVENTS_END[event_type],
+                            'tags': [
+                                'kv',
+                                tag,
+                            ],
+                        }
+                    else:
+                        data = {
+                            'time': unix_time_ms,
+                            'text': event_type,
+                            'tags': [
+                                'kv',
+                                tag,
+                            ],
+                        }
+                    payload = json.dumps(data)
+                    r = requests.post(ANNOTS_URL, headers = ANNOTS_HEADERS, data = payload)
+                    print(r.json(), '-', event_timestamp, '-', data['text'], '-', data['tags'])
+    except:
+        print('Unable to connect to Grafana, skipping annotation adding')
 
 def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
     data_sources = []
@@ -479,6 +625,7 @@ def main():
     result = util.poll_processes(processes, 1)
     if result is None:
         open_browser(grafana_port)
+        create_annotations()
         util.poll_processes(processes)
 
 if __name__ == '__main__':
