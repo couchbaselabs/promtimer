@@ -28,18 +28,22 @@ ANNOTS_HEADERS = {
 }
 ANNOTS_EVENTS_START = {
     'rebalance_start': 'rebalance',
+    'failover_start': 'failover',
 }
 ANNOTS_EVENTS_END = {
     'rebalance_finish': 'rebalance',
+    'failover_finish': 'failover',
 }
 ANNOTS_EVENT_TAGS = {
-    'dataset_created': 'success',
-    'dataset_dropped': 'warning',
+    # 'dataset_created': 'success',
+    # 'dataset_dropped': 'warning',
+
     'analytics_index_created': 'success',
     'analytics_index_dropped': 'warning',
 
-    'task_finished': 'success',
-    'task_started': 'info',
+    # 'task_finished': 'success',
+    # 'task_started': 'info',
+
     'backup_removed': 'warning',
     'backup_paused': 'warning',
     'backup_resumed': 'info',
@@ -52,39 +56,41 @@ ANNOTS_EVENT_TAGS = {
 
     'rebalance_start': 'info',
     'rebalance_finish': 'info',
+
     'failover_start': 'warning',
     'failover_end': 'warning',
+
     'node_joined': 'success',
     'node_went_down': 'warning',
 
-    'eventing_function_deployed': 'success',
-    'eventing_function_undeployed': 'warning',
+    # 'eventing_function_deployed': 'success',
+    # 'eventing_function_undeployed': 'warning',
 
     'fts_index_created': 'success',
     'fts_index_dropped': 'warning',
 
     'index_created': 'success',
     'index_deleted': 'warning',
-    'indexer_active': 'info',
-    'index_built': 'info',
+    # 'indexer_active': 'info',
+    # 'index_built': 'info',
 
     'bucket_created': 'success',
     'bucket_deleted': 'warning',
     'bucket_updated': 'info',
     'bucket_flushed': 'warning',
 
-    'dropped_ticks': 'info',
+    # 'dropped_ticks': 'info',
     'data_lost': 'failure',
     'server_error': 'failure',
     'sigkill_error': 'failure',
     'lost_connection_to_server': 'failure',
 
-    'LDAP_settings_modified': 'info',
-    'password_policy_changed': 'info',
-    'group_added': 'success',
-    'group_deleted': 'warning',
-    'user_added': 'success',
-    'user_deleted': 'warning',
+    # 'LDAP_settings_modified': 'info',
+    # 'password_policy_changed': 'info',
+    # 'group_added': 'success',
+    # 'group_deleted': 'warning',
+    # 'user_added': 'success',
+    # 'user_deleted': 'warning',
 
     'XDCR_replication_create_started': 'info',
     'XDCR_replication_remove_started': 'info',
@@ -104,7 +110,7 @@ def retry_get(url, retries):
             get = urllib.request.urlopen(req).read()
             success = True
         except:
-            print('Failed to connect to Grafana, retrying...',retries,'retries left')
+            print('Attempting connection to Grafana, retrying...',retries,'retries left')
             retries -= 1
             time.sleep(0.5)
     return get
@@ -130,33 +136,31 @@ def create_annotations():
                     unix_time_ms = int(dateparser.parse(event_timestamp).timestamp()*1000)
                     try:
                         tag = ANNOTS_EVENT_TAGS[event_type]
+                        if event_type in ANNOTS_EVENTS_START:
+                            ongoing_events[ANNOTS_EVENTS_START[event_type]] = unix_time_ms
+                            continue
+                        elif event_type in ANNOTS_EVENTS_END and ANNOTS_EVENTS_END[event_type] in ongoing_events:
+                            data = {
+                                'time': ongoing_events[ANNOTS_EVENTS_END[event_type]],
+                                'timeEnd': unix_time_ms,
+                                'text': ANNOTS_EVENTS_END[event_type],
+                                'tags': [
+                                    tag,
+                                ],
+                            }
+                        else:
+                            data = {
+                                'time': unix_time_ms,
+                                'text': event_type,
+                                'tags': [
+                                    tag,
+                                ],
+                            }
+                        payload = json.dumps(data).encode('utf-8')
+                        req = urllib.request.Request(url=ANNOTS_URL, data=payload, headers=ANNOTS_HEADERS)
+                        post = urllib.request.urlopen(req).read()
+                        print(json.loads(post), '-', event_timestamp, '-', data['text'], '-', data['tags'])
                     except KeyError:
-                        tag = 'info'
-                    if event_type in ANNOTS_EVENTS_START:
-                        ongoing_events[ANNOTS_EVENTS_START[event_type]] = unix_time_ms
-                        continue
-                    elif event_type in ANNOTS_EVENTS_END and ANNOTS_EVENTS_END[event_type] in ongoing_events:
-                        data = {
-                            'time': ongoing_events[ANNOTS_EVENTS_END[event_type]],
-                            'timeEnd': unix_time_ms,
-                            'text': ANNOTS_EVENTS_END[event_type],
-                            'tags': [
-                                'kv',
-                                tag,
-                            ],
-                        }
-                    else:
-                        data = {
-                            'time': unix_time_ms,
-                            'text': event_type,
-                            'tags': [
-                                'kv',
-                                tag,
-                            ],
-                        }
-                    payload = json.dumps(data).encode('utf-8')
-                    req = urllib.request.Request(url=ANNOTS_URL, data=payload, headers=ANNOTS_HEADERS)
-                    post = urllib.request.urlopen(req).read()
-                    print(json.loads(post), '-', event_timestamp, '-', data['text'], '-', data['tags'])
+                        print(event_type, 'event type not accepted, skipping')
     else:
         print('Unable to connect to Grafana, skipping annotation adding')
