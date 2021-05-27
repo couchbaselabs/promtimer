@@ -148,6 +148,7 @@ def create_annotations():
                                     tag,
                                 ],
                             }
+                            ongoing_events.pop(ANNOTS_EVENTS_END[event_type])
                         else:
                             data = {
                                 'time': unix_time_ms,
@@ -162,5 +163,19 @@ def create_annotations():
                         print(json.loads(post), '-', event_timestamp, '-', data['text'], '-', data['tags'])
                     except KeyError:
                         print(event_type, 'event type not accepted, skipping')
+                for event in ongoing_events:
+                    data = {
+                        'time': ongoing_events[event],
+                        'text': event + ' (no end time)',
+                        'tags': [
+                            'failure',
+                            'unfinished',
+                        ]
+                    }
+                    payload = json.dumps(data).encode('utf-8')
+                    req = urllib.request.Request(url=ANNOTS_URL, data=payload, headers=ANNOTS_HEADERS)
+                    post = urllib.request.urlopen(req).read()
+                    print('Could not find ' + event + ' event end time! Adding start time...')
+                    print(json.loads(post), '-', event_timestamp, '-', data['text'], '-', data['tags'])
     else:
         print('Unable to connect to Grafana, skipping annotation adding')
