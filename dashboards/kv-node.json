@@ -24,6 +24,18 @@
       "_base": "row"
     },
     {
+      "title": "Connections Ever Opened",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_total_connections",
+          "legendFormat": "Connections",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "Current Connections",
       "datasource": "{data-source-name}",
       "_base": "panel",
@@ -70,7 +82,7 @@
       "_targets": [
         {
           "expr": "kv_dcp_backoff",
-          "legendFormat": "{{bucket}}",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
           "_base": "target"
         }
       ],
@@ -110,7 +122,7 @@
       "_targets": [
         {
           "expr": "kv_dcp_producer_count",
-          "legendFormat": "{{bucket}}",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
           "_base": "target"
         }
       ],
@@ -123,7 +135,7 @@
       "_targets": [
         {
           "expr": "kv_dcp_items_remaining",
-          "legendFormat": "{{bucket}}",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
           "_base": "target"
         }
       ],
@@ -136,7 +148,7 @@
       "_targets": [
         {
           "expr": "rate(kv_dcp_items_sent[1m])",
-          "legendFormat": "{{bucket}}",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
           "_base": "target"
         }
       ],
@@ -149,7 +161,7 @@
       "_targets": [
         {
           "expr": "kv_dcp_connection_count",
-          "legendFormat": "{{bucket}}",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
           "_base": "target"
         }
       ],
@@ -162,7 +174,7 @@
       "_targets": [
         {
           "expr": "kv_dcp_total_data_size_bytes",
-          "legendFormat": "{{bucket}}",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
           "_base": "target"
         }
       ]
@@ -208,18 +220,6 @@
       ]
     },
     {
-      "title": "Number of Docs",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_curr_items",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
       "title": "Number of Docs (inc. Replicas)",
       "datasource": "{data-source-name}",
       "_base": "panel",
@@ -232,36 +232,12 @@
       ]
     },
     {
-      "title": "Percentage Memory Resident (Active)",
+      "title": "Percentage Memory Resident",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "kv_vb_perc_mem_resident_ratio{state=\"active\"}",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "Percentage Memory Resident (Replica)",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_vb_perc_mem_resident_ratio{state=\"replica\"}",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "Percentage Memory Resident (Pending)",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_vb_perc_mem_resident_ratio{state=\"pending\"}",
+          "expr": "sum(kv_vb_perc_mem_resident_ratio) by (bucket)",
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
@@ -281,36 +257,12 @@
       "description": "The number of deleted documents, converted into tombstones, every minute"
     },
     {
-      "title": "Rate of Doc Expirations (Active)",
+      "title": "Rate of Doc Expirations",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "rate(kv_vb_expired{state=\"active\"}[1m])",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "Rate of Doc Expirations (Replica)",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "rate(kv_vb_expired{state=\"replica\"}[1m])",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "Rate of Doc Expirations (Pending)",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "rate(kv_vb_expired{state=\"pending\"}[1m])",
+          "expr": "sum(rate(kv_vb_expired[1m])) by (bucket)",
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
@@ -386,18 +338,43 @@
       "description": "Total memory used by disk queue, in bytes"
     },
     {
-      "title": "Items Persisted",
+      "title": "New and Persisted Items",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "kv_ep_total_new_items",
-          "legendFormat": "New ({{bucket}})",
+          "expr": "sum(kv_ep_total_new_items) by (bucket) + sum(kv_ep_total_persisted) by (bucket)",
+          "legendFormat": "{{bucket}}",
           "_base": "target"
-        },
+        }
+      ]
+    },
+    {
+      "title": "Written Bytes",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 6
+      },
+      "_base": "panel",
+      "_targets": [
         {
-          "expr": "kv_ep_total_persisted",
-          "legendFormat": "Persisted ({{bucket}})",
+          "expr": "kv_written_bytes",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Read Bytes",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 6
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_read_bytes",
+          "legendFormat": "{{bucket}}",
           "_base": "target"
         }
       ]
@@ -407,7 +384,7 @@
       "_base": "row"
     },
     {
-      "title": "CPU Utilization",
+      "title": "KV CPU Utilization",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
@@ -519,36 +496,12 @@
       }
     },
     {
-      "title": "Metadata Overhead (Active)",
+      "title": "Metadata Overhead",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "kv_vb_meta_data_memory_bytes{state=\"active\"}",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "Metadata Overhead (Replica)",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_vb_meta_data_memory_bytes{state=\"replica\"}",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "Metadata Overhead (Pending)",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_vb_meta_data_memory_bytes{state=\"pending\"}",
+          "expr": "sum(kv_vb_meta_data_memory_bytes) by (bucket)",
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
