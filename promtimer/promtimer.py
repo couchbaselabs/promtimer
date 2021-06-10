@@ -480,7 +480,7 @@ def main():
     result = util.poll_processes(processes, 1)
     if result is None:
         open_browser(grafana_port)
-        annotations.create_annotations()
+        annotations.create_annotations(grafana_port)
         util.poll_processes(processes)
 
 if __name__ == '__main__':

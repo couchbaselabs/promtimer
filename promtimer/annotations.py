@@ -18,31 +18,26 @@
 from os import path
 import time
 import json
+import logging
 from dateutil import parser as dateparser
 import urllib.request
 
-ANNOTS_URL = 'http://localhost:13300/api/annotations'
-ANNOTS_HEADERS = {
+FILENAME = 'events.log'
+HEADERS = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
 }
-ANNOTS_EVENTS_START = {
+EVENTS_START = {
     'rebalance_start': 'rebalance',
     'failover_start': 'failover',
 }
-ANNOTS_EVENTS_END = {
+EVENTS_END = {
     'rebalance_finish': 'rebalance',
     'failover_finish': 'failover',
 }
-ANNOTS_EVENT_TAGS = {
-    # 'dataset_created': 'success',
-    # 'dataset_dropped': 'warning',
-
+EVENT_TAGS = {
     'analytics_index_created': 'success',
     'analytics_index_dropped': 'warning',
-
-    # 'task_finished': 'success',
-    # 'task_started': 'info',
 
     'backup_removed': 'warning',
     'backup_paused': 'warning',
@@ -63,34 +58,21 @@ ANNOTS_EVENT_TAGS = {
     'node_joined': 'success',
     'node_went_down': 'warning',
 
-    # 'eventing_function_deployed': 'success',
-    # 'eventing_function_undeployed': 'warning',
-
     'fts_index_created': 'success',
     'fts_index_dropped': 'warning',
 
     'index_created': 'success',
     'index_deleted': 'warning',
-    # 'indexer_active': 'info',
-    # 'index_built': 'info',
 
     'bucket_created': 'success',
     'bucket_deleted': 'warning',
     'bucket_updated': 'info',
     'bucket_flushed': 'warning',
 
-    # 'dropped_ticks': 'info',
     'data_lost': 'failure',
     'server_error': 'failure',
     'sigkill_error': 'failure',
     'lost_connection_to_server': 'failure',
-
-    # 'LDAP_settings_modified': 'info',
-    # 'password_policy_changed': 'info',
-    # 'group_added': 'success',
-    # 'group_deleted': 'warning',
-    # 'user_added': 'success',
-    # 'user_deleted': 'warning',
 
     'XDCR_replication_create_started': 'info',
     'XDCR_replication_remove_started': 'info',
@@ -110,72 +92,73 @@ def retry_get(url, retries):
             get = urllib.request.urlopen(req).read()
             success = True
         except:
-            print('Attempting connection to Grafana, retrying...',retries,'retries left')
+            logging.debug('Attempting connection to {}, retrying... {} retries left'.format(url, retries))
             retries -= 1
             time.sleep(0.5)
     return get
 
-def create_annotations():
-    annotations_json = retry_get(ANNOTS_URL, 5)
+def create_annotations(grafana_port):
+    url = 'http://localhost:{}/api/annotations'.format(grafana_port)
+    annotations_json = retry_get(url, 5)
     if annotations_json is not None:
-        print('Successfully connected to Grafana')
+        logging.info('Successfully connected to Grafana')
         annotations_json = json.loads(annotations_json)
         if len(annotations_json) > 0:
-            print('Found existing annotations, skipping annotation adding')
+            logging.info('Found existing annotations, skipping annotation adding')
         else:
             if not path.isfile('events.log'):
-                print('No events.log, skipping annotation adding')
+                logging.info('No events.log, skipping annotation adding')
             else:
-                print('Adding annotations from events.log')
+                logging.info('Adding annotations from events.log')
                 ongoing_events = {}
-                file = open('events.log', 'r')
-                for line in file:
-                    event = json.loads(line)
-                    event_timestamp = event['timestamp']
-                    event_type = event['event_type']
-                    unix_time_ms = int(dateparser.parse(event_timestamp).timestamp()*1000)
-                    try:
-                        tag = ANNOTS_EVENT_TAGS[event_type]
-                        if event_type in ANNOTS_EVENTS_START:
-                            ongoing_events[ANNOTS_EVENTS_START[event_type]] = unix_time_ms
-                            continue
-                        elif event_type in ANNOTS_EVENTS_END and ANNOTS_EVENTS_END[event_type] in ongoing_events:
-                            data = {
-                                'time': ongoing_events[ANNOTS_EVENTS_END[event_type]],
-                                'timeEnd': unix_time_ms,
-                                'text': ANNOTS_EVENTS_END[event_type],
-                                'tags': [
-                                    tag,
-                                ],
-                            }
-                            ongoing_events.pop(ANNOTS_EVENTS_END[event_type])
-                        else:
-                            data = {
-                                'time': unix_time_ms,
-                                'text': event_type,
-                                'tags': [
-                                    tag,
-                                ],
-                            }
+                with open(FILENAME, 'r') as file:
+                    for line in file:
+                        event = json.loads(line)
+                        event_timestamp = event['timestamp']
+                        event_type = event['event_type']
+                        unix_time_ms = int(dateparser.parse(event_timestamp).timestamp()*1000)
+                        try:
+                            tag = EVENT_TAGS[event_type]
+                            if event_type in EVENTS_START:
+                                ongoing_events[EVENTS_START[event_type]] = unix_time_ms
+                                continue
+                            elif event_type in EVENTS_END and EVENTS_END[event_type] in ongoing_events:
+                                data = {
+                                    'time': ongoing_events[EVENTS_END[event_type]],
+                                    'timeEnd': unix_time_ms,
+                                    'text': EVENTS_END[event_type],
+                                    'tags': [
+                                        tag,
+                                    ],
+                                }
+                                ongoing_events.pop(EVENTS_END[event_type])
+                            else:
+                                data = {
+                                    'time': unix_time_ms,
+                                    'text': event_type,
+                                    'tags': [
+                                        tag,
+                                    ],
+                                }
+                            payload = json.dumps(data).encode('utf-8')
+                            req = urllib.request.Request(url=url, data=payload, headers=HEADERS)
+                            post = urllib.request.urlopen(req).read()
+                            logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+                        except KeyError:
+                            logging.info('{} event type not accepted, skipping'.format(event_type))
+                    for event in ongoing_events:
+                        data = {
+                            'time': ongoing_events[event],
+                            'text': event + ' (no end time)',
+                            'tags': [
+                                'failure',
+                                'unfinished',
+                            ]
+                        }
                         payload = json.dumps(data).encode('utf-8')
-                        req = urllib.request.Request(url=ANNOTS_URL, data=payload, headers=ANNOTS_HEADERS)
+                        req = urllib.request.Request(url=url, data=payload, headers=HEADERS)
                         post = urllib.request.urlopen(req).read()
-                        print(json.loads(post), '-', event_timestamp, '-', data['text'], '-', data['tags'])
-                    except KeyError:
-                        print(event_type, 'event type not accepted, skipping')
-                for event in ongoing_events:
-                    data = {
-                        'time': ongoing_events[event],
-                        'text': event + ' (no end time)',
-                        'tags': [
-                            'failure',
-                            'unfinished',
-                        ]
-                    }
-                    payload = json.dumps(data).encode('utf-8')
-                    req = urllib.request.Request(url=ANNOTS_URL, data=payload, headers=ANNOTS_HEADERS)
-                    post = urllib.request.urlopen(req).read()
-                    print('Could not find ' + event + ' event end time! Adding start time...')
-                    print(json.loads(post), '-', event_timestamp, '-', data['text'], '-', data['tags'])
+                        logging.error('Could not find {} event end time! Adding start time...'.format(event))
+                        logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
     else:
-        print('Unable to connect to Grafana, skipping annotation adding')
+        logging.error('Unable to connect to Grafana, skipping annotation adding')
