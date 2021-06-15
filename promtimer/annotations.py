@@ -86,68 +86,79 @@ EVENT_TAGS = {
     'XDCR_replication_remove_successful': 'success',
 }
 
-def create_annotations(grafana_port):
-    url = 'http://localhost:{}/api/annotations'.format(grafana_port)
+def check_no_existing_annotations(url):
     annotations_json = util.retry_get_url(url, 5)
     if annotations_json is not None:
         logging.info('Successfully connected to Grafana')
         annotations_json = json.loads(annotations_json)
         if len(annotations_json) > 0:
             logging.info('Found existing annotations, skipping annotation adding')
+            return False
         else:
-            if not path.isfile('events.log'):
-                logging.info('No events.log, skipping annotation adding')
-            else:
-                logging.info('Adding annotations from events.log')
-                ongoing_events = {}
-                with open(FILENAME, 'r') as file:
-                    for line in file:
-                        event = json.loads(line)
-                        event_timestamp = event['timestamp']
-                        event_type = event['event_type']
-                        unix_time_ms = int(dateparser.parse(event_timestamp).timestamp()*1000)
-                        try:
-                            tag = EVENT_TAGS[event_type]
-                            if event_type in EVENTS_START:
-                                ongoing_events[EVENTS_START[event_type]] = unix_time_ms
-                                continue
-                            elif event_type in EVENTS_END and EVENTS_END[event_type] in ongoing_events:
-                                data = {
-                                    'time': ongoing_events[EVENTS_END[event_type]],
-                                    'timeEnd': unix_time_ms,
-                                    'text': EVENTS_END[event_type],
-                                    'tags': [
-                                        tag,
-                                    ],
-                                }
-                                ongoing_events.pop(EVENTS_END[event_type])
-                            else:
-                                data = {
-                                    'time': unix_time_ms,
-                                    'text': event_type,
-                                    'tags': [
-                                        tag,
-                                    ],
-                                }
-                            payload = json.dumps(data).encode('utf-8')
-                            req = urllib.request.Request(url=url, data=payload, headers=HEADERS)
-                            post = urllib.request.urlopen(req).read()
-                            logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
-                        except KeyError:
-                            logging.info('{} event type not accepted, skipping'.format(event_type))
-                    for event in ongoing_events:
-                        data = {
-                            'time': ongoing_events[event],
-                            'text': event + ' (no end time)',
-                            'tags': [
-                                'failure',
-                                'unfinished',
-                            ]
-                        }
-                        payload = json.dumps(data).encode('utf-8')
-                        req = urllib.request.Request(url=url, data=payload, headers=HEADERS)
-                        post = urllib.request.urlopen(req).read()
-                        logging.error('Could not find {} event end time! Adding start time...'.format(event))
-                        logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+            return True
     else:
         logging.error('Unable to connect to Grafana, skipping annotation adding')
+        return False
+
+def post_annotation(url, data):
+    payload = json.dumps(data).encode('utf-8')
+    req = urllib.request.Request(url=url, data=payload, headers=HEADERS)
+    post = urllib.request.urlopen(req).read()
+    return post
+
+def parse_events(url):
+    ongoing_events = {}
+    with open(FILENAME, 'r') as file:
+        for line in file:
+            event = json.loads(line)
+            event_timestamp = event['timestamp']
+            event_type = event['event_type']
+            unix_time_ms = int(dateparser.parse(event_timestamp).timestamp()*1000)
+            try:
+                tag = EVENT_TAGS[event_type]
+                if event_type in EVENTS_START:
+                    ongoing_events[EVENTS_START[event_type]] = unix_time_ms
+                    continue
+                elif event_type in EVENTS_END and EVENTS_END[event_type] in ongoing_events:
+                    data = {
+                        'time': ongoing_events[EVENTS_END[event_type]],
+                        'timeEnd': unix_time_ms,
+                        'text': EVENTS_END[event_type],
+                        'tags': [
+                            tag,
+                        ],
+                    }
+                    ongoing_events.pop(EVENTS_END[event_type])
+                else:
+                    data = {
+                        'time': unix_time_ms,
+                        'text': event_type,
+                        'tags': [
+                            tag,
+                        ],
+                    }
+                post = post_annotation(url, data)
+                logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+            except KeyError:
+                logging.info('{} event type not accepted, skipping'.format(event_type))
+        for event in ongoing_events:
+            data = {
+                'time': ongoing_events[event],
+                'text': event + ' (no end time)',
+                'tags': [
+                    'failure',
+                    'unfinished',
+                ]
+            }
+            post = post_annotation(url, data)
+            logging.error('Could not find {} event end time! Adding start time...'.format(event))
+            logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+
+def create_annotations(grafana_port):
+    url = 'http://localhost:{}/api/annotations'.format(grafana_port)
+    if check_no_existing_annotations(url):
+        if not path.isfile(FILENAME):
+            logging.info('No events.log, skipping annotation adding')
+        else:
+            logging.info('Adding annotations from events.log')
+            parse_events(url)
