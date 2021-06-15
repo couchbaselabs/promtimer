@@ -22,6 +22,9 @@ import logging
 from dateutil import parser as dateparser
 import urllib.request
 
+# local imports
+import util
+
 FILENAME = 'events.log'
 HEADERS = {
     'Accept': 'application/json',
@@ -83,23 +86,9 @@ EVENT_TAGS = {
     'XDCR_replication_remove_successful': 'success',
 }
 
-def retry_get(url, retries):
-    req = urllib.request.Request(url=url, data=None)
-    success = False
-    get = None
-    while (not success) and (retries > 0):
-        try:
-            get = urllib.request.urlopen(req).read()
-            success = True
-        except:
-            logging.debug('Attempting connection to {}, retrying... {} retries left'.format(url, retries))
-            retries -= 1
-            time.sleep(0.5)
-    return get
-
 def create_annotations(grafana_port):
     url = 'http://localhost:{}/api/annotations'.format(grafana_port)
-    annotations_json = retry_get(url, 5)
+    annotations_json = util.retry_get_url(url, 5)
     if annotations_json is not None:
         logging.info('Successfully connected to Grafana')
         annotations_json = json.loads(annotations_json)
