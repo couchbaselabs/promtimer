@@ -138,9 +138,9 @@ def parse_events(url):
                         ],
                     }
                 post = post_annotation(url, data)
-                logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+                logging.debug('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
             except KeyError:
-                logging.info('{} event type not accepted, skipping'.format(event_type))
+                logging.debug('{} event type not accepted, skipping'.format(event_type))
         for event in ongoing_events:
             data = {
                 'time': ongoing_events[event],
@@ -152,7 +152,7 @@ def parse_events(url):
             }
             post = post_annotation(url, data)
             logging.error('Could not find {} event end time! Adding start time...'.format(event))
-            logging.info('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+            logging.error('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
 
 def create_annotations(grafana_port):
     url = 'http://localhost:{}/api/annotations'.format(grafana_port)
@@ -162,3 +162,4 @@ def create_annotations(grafana_port):
         else:
             logging.info('Adding annotations from events.log')
             parse_events(url)
+            logging.info('Annotations added')
