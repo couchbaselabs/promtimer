@@ -33,6 +33,7 @@ import pathlib
 import util
 import templating
 import dashboard
+import annotations
 
 PROMETHEUS_BIN = 'prometheus'
 PROMTIMER_DIR = '.promtimer'
@@ -479,6 +480,7 @@ def main():
     result = util.poll_processes(processes, 1)
     if result is None:
         open_browser(grafana_port)
+        annotations.create_annotations(grafana_port)
         util.poll_processes(processes)
 
 if __name__ == '__main__':

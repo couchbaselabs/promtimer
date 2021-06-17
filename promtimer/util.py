@@ -19,6 +19,8 @@ import subprocess
 import atexit
 import time
 from os import path
+import urllib.request
+import logging
 
 ROOT_DIR = path.join(path.dirname(__file__), '..')
 
@@ -60,6 +62,16 @@ def poll_processes(processes, count=-1):
         time.sleep(0.1)
         check += 1
 
-
-
-
+def retry_get_url(url, retries):
+    req = urllib.request.Request(url=url, data=None)
+    success = False
+    get = None
+    while (not success) and (retries > 0):
+        try:
+            get = urllib.request.urlopen(req).read()
+            success = True
+        except:
+            logging.debug('Attempting connection to {}, retrying... {} retries left'.format(url, retries))
+            retries -= 1
+            time.sleep(0.5)
+    return get

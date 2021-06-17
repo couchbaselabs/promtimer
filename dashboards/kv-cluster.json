@@ -1,6 +1,66 @@
 {
   "_base": "dashboard",
   "title": "KV View - Cluster",
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#F2495C",
+        "limit": 100,
+        "matchAny": true,
+        "name": "Failures",
+        "showIn": 0,
+        "tags": [
+          "failure"
+        ],
+        "type": "tags"
+      },
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#FF9830",
+        "limit": 100,
+        "matchAny": true,
+        "name": "Warnings",
+        "showIn": 0,
+        "tags": [
+          "warning"
+        ],
+        "type": "tags"
+      },
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#73BF69",
+        "limit": 100,
+        "matchAny": true,
+        "name": "Successes",
+        "showIn": 0,
+        "tags": [
+          "success"
+        ],
+        "type": "tags"
+      },
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "rgb(212, 212, 212)",
+        "limit": 100,
+        "matchAny": true,
+        "name": "Info",
+        "showIn": 0,
+        "tags": [
+          "info"
+        ],
+        "type": "tags"
+      }
+    ]
+  },
   "_panels": [
     {
       "title": "General",
