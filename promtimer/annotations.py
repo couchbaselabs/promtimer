@@ -16,7 +16,6 @@
 #
 
 from os import path
-import time
 import json
 import logging
 from dateutil import parser as dateparser
