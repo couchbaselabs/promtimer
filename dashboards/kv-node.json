@@ -80,6 +80,37 @@
   },
   "_panels": [
     {
+      "title": "Collections",
+      "_base": "row"
+    },
+    {
+      "title": "Memory Used by Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_collection_mem_used_bytes) by (collection)",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory used per collection in bytes",
+      "stack": true
+    },
+    {
+      "title": "Operations Run on Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_collection_ops) by (collection)",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Operations run on a particular collection"
+    },
+    {
       "title": "Connections",
       "_base": "row"
     },
@@ -457,6 +488,58 @@
       "description": "KV service CPU Utilization of all cores summed up, in percent\n\nsysproc_cpu_utilization{proc=\"memcached\"}"
     },
     {
+      "title": "Failed KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_ops_failed) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of failed KV operations"
+    },
+    {
+      "title": "KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_ops[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
+      "title": "Failed KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_ops_failed) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of failed KV operations"
+    },
+    {
+      "title": "KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_ops[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "stack": true
+    },
+    {
       "title": "KV Uptime",
       "datasource": "{data-source-name}",
       "_base": "panel",
@@ -470,7 +553,7 @@
       "description": "KV service uptime in seconds"
     },
     {
-      "title": "Memory Usage",
+      "title": "KV Memory Usage",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
@@ -556,6 +639,19 @@
       }
     },
     {
+      "title": "KV Memory Usage",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sysproc_mem_resident{proc=\"memcached\"}",
+          "legendFormat": "Bytes",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}"
+    },
+    {
       "title": "Metadata Overhead",
       "datasource": "{data-source-name}",
       "_base": "panel",
@@ -586,6 +682,128 @@
       "_targets": [
         {
           "expr": "kv_ep_warmup_oom",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "vBuckets",
+      "_base": "row"
+    },
+    {
+      "title": "vBucket Operations (Active)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"active\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "vBucket Operations (Replica)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"replica\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "vBucket Operations (Pending)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"pending\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Total",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_num_vbuckets{state=\"active\"}) by (bucket) + sum(kv_num_vbuckets{state=\"replica\"}) by (bucket) + sum(kv_num_vbuckets{state=\"pending\"}) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "vBuckets",
+      "_base": "row"
+    },
+    {
+      "title": "vBucket Operations (Active)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"active\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "vBucket Operations (Replica)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"replica\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "vBucket Operations (Pending)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"pending\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Total",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_num_vbuckets{state=\"active\"}) by (bucket) + sum(kv_num_vbuckets{state=\"replica\"}) by (bucket) + sum(kv_num_vbuckets{state=\"pending\"}) by (bucket)",
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }

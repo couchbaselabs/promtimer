@@ -127,8 +127,7 @@
           "_base": "target"
         }
       ],
-      "description": "Operations run on a particular collection",
-      "stack": true
+      "description": "Operations run on a particular collection"
     },
     {
       "title": "Connections",
@@ -193,7 +192,7 @@
       "_targets": [
         {
           "expr": "kv_dcp_backoff{bucket=\"$bucket\"}",
-          "legendFormat": "Events",
+          "legendFormat": "{{connection_type}}",
           "_base": "target"
         }
       ],
@@ -403,6 +402,7 @@
     },
     {
       "title": "Size of Key",
+      "type": "stat",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
@@ -634,6 +634,7 @@
     },
     {
       "title": "Defragmenter Interval",
+      "type": "stat",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
@@ -688,8 +689,7 @@
           "legendFormat": "Pending",
           "_base": "target"
         }
-      ],
-      "stack": true
+      ]
     },
     {
       "title": "OOM Errors",
@@ -741,12 +741,11 @@
           "_base": "target"
         },
         {
-          "expr": "rate(kv_vb_ops_update{state=\"active\", bucket=\"$bucket\"}[1m])",
+          "expr": "rate(kv_vb_ops_get{state=\"active\", bucket=\"$bucket\"}[1m])",
           "legendFormat": "Get",
           "_base": "target"
         }
-      ],
-      "stack": true
+      ]
     },
     {
       "title": "vBucket Operations (Replica)",
@@ -777,12 +776,11 @@
           "_base": "target"
         },
         {
-          "expr": "rate(kv_vb_ops_update{state=\"replica\", bucket=\"$bucket\"}[1m])",
+          "expr": "rate(kv_vb_ops_get{state=\"replica\", bucket=\"$bucket\"}[1m])",
           "legendFormat": "Get",
           "_base": "target"
         }
-      ],
-      "stack": true
+      ]
     },
     {
       "title": "vBucket Operations (Pending)",
@@ -813,12 +811,11 @@
           "_base": "target"
         },
         {
-          "expr": "rate(kv_vb_ops_update{state=\"pending\", bucket=\"$bucket\"}[1m])",
+          "expr": "rate(kv_vb_ops_get{state=\"pending\", bucket=\"$bucket\"}[1m])",
           "legendFormat": "Get",
           "_base": "target"
         }
-      ],
-      "stack": true
+      ]
     },
     {
       "title": "Total",
@@ -840,8 +837,7 @@
           "legendFormat": "Stack",
           "_base": "target"
         }
-      ],
-      "stack": true
+      ]
     }
   ]
 }
