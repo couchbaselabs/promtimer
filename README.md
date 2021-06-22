@@ -118,7 +118,7 @@ go build -o ./build ./cmd/cbeventlog
 * Once Event Logger is built, generate the relevant `events.log` file using the following command, pointing to your cbcollect:
 
 ```
-./build/log cbcollect --path "YOUR/PATH/TO/CBCOLLECT.zip" --node-name cbcollect
+./build/cbeventlog cbcollect --path "YOUR/PATH/TO/CBCOLLECT.zip" --node-name cbcollect
 ```
 
 * A file with the cluster's events should now be generated in the repo directory. Place this file in the same directory as the cbcollect you're analyzing and **importantly** make sure it is named **`events.log`** as this is currently the filename that Promtimer looks for in order to generate annotations
