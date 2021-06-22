@@ -89,7 +89,7 @@ The `path-to-grafana-shared-config-home` is what is known in Grafana terminology
 "homepath". This is the out-of-the-box Grafana shared config path. On brew-installed
 Grafana on Macs this is something like:
 
-    /usr/local/Cellar/grafana/x.y.z/share/grafana
+    /usr/local/share/grafana
 
 On linux systems the homepath should usually be:
 
