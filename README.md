@@ -2,17 +2,19 @@
 
 [Mortimer](https://github.com/couchbaselabs/mortimer) is a convenient 
 tool that can be used to display statistics grabbed from Couchbase collected 
-log bundles (cbcollects). With the move to use Prometheus for stats
-storage and management, Mortimer will no longer work. It would be possible
-to extract stats from cbcollects and adapt them to work with Mortimer, but
-this project attempts somthing different: use Prometheus itself and Grafana
-to allow easy, powerful browsing of Prometheus metrics (stats) available in 
-cbcollects.
+log bundles (cbcollects). With the move to Prometheus for stats storage and
+management, Mortimer was temporarily rendered unusable. It has since been
+enabled to access Prometheus stats.
 
-If you've already installed, here are a some quick links you might be
+**Promtimer** provides an alternative to Mortimer, using Prometheus itself and Grafana
+to allow for easy and powerful browsing of Prometheus metrics (stats) available in 
+cbcollects. The preset dashboards also allow for easier discoverability of
+statistics and allow cbcollects to be analyzed without prior knowledge of stat names.
+
+If you've already installed **Promtimer**, here are a some quick links you might be
 interested in:
 * [Dashboards README](dashboards/README.md)
-* [Todos](TODO.md)
+* [List of TODOs](TODO.md)
 
 ## Idea
 Promtimer:
@@ -42,7 +44,7 @@ instructions on the Prometheus website are comprehensive. You don't actually
 need to install Prometheus, you just need the binary. [Downloading](https://prometheus.io/download/)
 and unzipping the pre-compiled binaries for your platform is sufficient.
 
-If you're on Mac,`brew` is convenient:
+If you're on Mac, `brew` is convenient:
 
     brew install prometheus
 
@@ -67,7 +69,7 @@ To get Promtimer, clone this repo locally:
 
     git clone https://github.com/couchbaselabs/promtimer.git
 
-As to cbcollects, you probably wouldn't be reading this if you didn't already
+As for cbcollects, you probably wouldn't be reading this if you didn't already
 have them. 
 
 ## How to Use Promtimer
@@ -136,4 +138,4 @@ rm -rf .promtimer
 
 ## Want to Help?
 
-Awesome! See the [list of todos](TODO.md).
+Awesome! See the [list of TODOs](TODO.md).
