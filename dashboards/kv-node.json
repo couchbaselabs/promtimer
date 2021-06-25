@@ -80,6 +80,37 @@
   },
   "_panels": [
     {
+      "title": "Collections",
+      "_base": "row"
+    },
+    {
+      "title": "Memory Used by Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_collection_mem_used_bytes) by (collection)",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory used per collection in bytes\n\nkv_collection_mem_used_bytes",
+      "stack": true
+    },
+    {
+      "title": "Operations Run on Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_collection_ops) by (collection)",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Operations run on a particular collection\n\nkv_collection_ops"
+    },
+    {
       "title": "Connections",
       "_base": "row"
     },
@@ -93,7 +124,8 @@
           "legendFormat": "Connections",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "Connections that have ever been opened\n\nkv_total_connections"
     },
     {
       "title": "Current Connections",
@@ -116,6 +148,7 @@
           "_base": "target"
         }
       ],
+      "description": "kv_curr_connections, kv_daemon_connections, kv_system_connections",
       "stack": true
     },
     {
@@ -129,7 +162,7 @@
           "_base": "target"
         }
       ],
-      "description": "Number of auth errors"
+      "description": "Number of auth errors\n\nkv_auth_errors"
     },
     {
       "title": "DCP",
@@ -146,7 +179,7 @@
           "_base": "target"
         }
       ],
-      "description": "Total number of backoff events"
+      "description": "Total number of backoff events\n\nkv_dcp_backoff"
     },
     {
       "title": "Idle Timeout",
@@ -160,7 +193,7 @@
           "_base": "target"
         }
       ],
-      "description": "DCP idle timeout value",
+      "description": "DCP idle timeout value\n\nkv_ep_dcp_idle_timeout",
       "fieldConfig": {
         "defaults": {
           "thresholds": {
@@ -186,7 +219,7 @@
           "_base": "target"
         }
       ],
-      "description": "Number of DCP Producers"
+      "description": "Number of DCP Producers\n\nkv_dcp_producer_count"
     },
     {
       "title": "Remaining Items",
@@ -199,7 +232,7 @@
           "_base": "target"
         }
       ],
-      "description": "Total items remaining to be sent"
+      "description": "Total items remaining to be sent\n\nkv_dcp_items_remaining"
     },
     {
       "title": "Sent Items",
@@ -212,7 +245,7 @@
           "_base": "target"
         }
       ],
-      "description": "Total items sent"
+      "description": "Total items sent\n\nkv_dcp_items_sent"
     },
     {
       "title": "Total Connections",
@@ -225,7 +258,7 @@
           "_base": "target"
         }
       ],
-      "description": "Connection count"
+      "description": "Connection count\n\nkv_dcp_connection_count"
     },
     {
       "title": "Total Data Size",
@@ -237,7 +270,8 @@
           "legendFormat": "{{bucket}} ({{connection_type}})",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_dcp_total_data_size_bytes"
     },
     {
       "title": "Data",
@@ -253,7 +287,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_ep_data_read_failed"
     },
     {
       "title": "Data Write Failures",
@@ -265,7 +300,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_ep_data_write_failed"
     },
     {
       "title": "Doc Size",
@@ -277,7 +313,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "couch_docs_actual_disk_size"
     },
     {
       "title": "Number of Docs (inc. Replicas)",
@@ -289,7 +326,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_curr_items_tot"
     },
     {
       "title": "Percentage Memory Resident",
@@ -301,7 +339,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_vb_perc_mem_resident_ratio"
     },
     {
       "title": "Rate of Deletes",
@@ -314,7 +353,7 @@
           "_base": "target"
         }
       ],
-      "description": "The number of deleted documents, converted into tombstones, every minute"
+      "description": "The number of deleted documents, converted into tombstones, every minute\n\nkv_ep_total_del_items"
     },
     {
       "title": "Rate of Doc Expirations",
@@ -326,7 +365,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_vb_expired"
     },
     {
       "title": "Rollback Item Count",
@@ -339,7 +379,7 @@
           "_base": "target"
         }
       ],
-      "description": "Number of items rolled back?"
+      "description": "kv_rollback_item_count"
     },
     {
       "title": "Size of Key",
@@ -353,7 +393,7 @@
           "_base": "target"
         }
       ],
-      "description": "Minimum key count that bloom filter will accomodate"
+      "description": "Minimum key count that bloom filter will accomodate\n\nkv_ep_bfilter_key_count"
     },
     {
       "title": "Disk",
@@ -369,7 +409,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "couch_docs_actual_disk_size"
     },
     {
       "title": "Disk Queue Items",
@@ -382,7 +423,7 @@
           "_base": "target"
         }
       ],
-      "description": "Total number of items in disk queue"
+      "description": "Total number of items in disk queue\n\nkv_ep_diskqueue_items"
     },
     {
       "title": "Disk Queue Memory Usage",
@@ -395,7 +436,7 @@
           "_base": "target"
         }
       ],
-      "description": "Total memory used by disk queue, in bytes"
+      "description": "Total memory used by disk queue, in bytes\n\nkv_ep_diskqueue_memory_bytes"
     },
     {
       "title": "New and Persisted Items",
@@ -407,7 +448,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_ep_total_new_items, kv_ep_total_persisted"
     },
     {
       "title": "Written Bytes",
@@ -422,7 +464,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_written_bytes"
     },
     {
       "title": "Read Bytes",
@@ -437,7 +480,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_read_bytes"
     },
     {
       "title": "General",
@@ -457,6 +501,33 @@
       "description": "KV service CPU Utilization of all cores summed up, in percent\n\nsysproc_cpu_utilization{proc=\"memcached\"}"
     },
     {
+      "title": "Failed KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_ops_failed) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of failed KV operations\n\nkv_ops_failed"
+    },
+    {
+      "title": "KV Operations",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_ops[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_ops",
+      "stack": true
+    },
+    {
       "title": "KV Uptime",
       "datasource": "{data-source-name}",
       "_base": "panel",
@@ -467,10 +538,10 @@
           "_base": "target"
         }
       ],
-      "description": "KV service uptime in seconds"
+      "description": "KV service uptime in seconds\n\nkv_uptime_seconds"
     },
     {
-      "title": "Memory Usage",
+      "title": "KV Memory Usage",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
@@ -497,7 +568,7 @@
           "_base": "target"
         }
       ],
-      "description": "Memory of items in all checkpoints, in bytes"
+      "description": "Memory of items in all checkpoints, in bytes\n\nkv_ep_checkpoint_memory_bytes"
     },
     {
       "title": "Defragmenter Enabled",
@@ -511,7 +582,7 @@
           "_base": "target"
         }
       ],
-      "description": "Whether the defragmenter is enabled or not",
+      "description": "Whether the defragmenter is enabled or not\n\nkv_ep_defragmenter_enabled",
       "fieldConfig": {
         "defaults": {
           "max": 1,
@@ -540,7 +611,7 @@
           "_base": "target"
         }
       ],
-      "description": "How often defragmenter task should run, in seconds",
+      "description": "How often defragmenter task should run, in seconds\n\nkv_ep_defragmenter_interval",
       "fieldConfig": {
         "defaults": {
           "thresholds": {
@@ -556,6 +627,19 @@
       }
     },
     {
+      "title": "KV Memory Usage",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sysproc_mem_resident{proc=\"memcached\"}",
+          "legendFormat": "Bytes",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}"
+    },
+    {
       "title": "Metadata Overhead",
       "datasource": "{data-source-name}",
       "_base": "panel",
@@ -565,7 +649,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_vb_meta_data_memory_bytes"
     },
     {
       "title": "OOM Errors Total",
@@ -577,7 +662,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_ep_oom_errors"
     },
     {
       "title": "OOM Errors at Warmup",
@@ -589,7 +675,73 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
+      ],
+      "description": "kv_ep_warmup_oop"
+    },
+    {
+      "title": "vBuckets",
+      "_base": "row"
+    },
+    {
+      "title": "vBucket Operations (Active)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"active\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_vb_ops_create, kv_vb_ops_delete, kv_vb_ops_reject, kv_vb_ops_update, kv_vb_ops_get"
+    },
+    {
+      "title": "vBucket Operations (Replica)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"replica\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_vb_ops_create, kv_vb_ops_delete, kv_vb_ops_reject, kv_vb_ops_update, kv_vb_ops_get"
+    },
+    {
+      "title": "vBucket Operations (Pending)",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_vb_ops_create{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"pending\"}[1m])) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_vb_ops_create, kv_vb_ops_delete, kv_vb_ops_reject, kv_vb_ops_update, kv_vb_ops_get"
+    },
+    {
+      "title": "Total",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_num_vbuckets{state=\"active\"}) by (bucket) + sum(kv_num_vbuckets{state=\"replica\"}) by (bucket) + sum(kv_num_vbuckets{state=\"pending\"}) by (bucket)",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_num_vbuckets"
     }
   ]
 }

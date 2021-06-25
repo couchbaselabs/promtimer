@@ -133,7 +133,7 @@
           "_base": "target"
         }
       ],
-      "description": "Number of KV service connections currently open\n\nsum(kv_curr_connections) + sum(kv_daemon_connections) + sum(kv_system_connections)"
+      "description": "Number of KV service connections currently open\n\nkv_curr_connections, kv_daemon_connections, kv_system_connections"
     },
     {
       "title": "Audit Daemon",
