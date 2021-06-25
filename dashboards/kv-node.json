@@ -498,33 +498,7 @@
           "_base": "target"
         }
       ],
-      "description": "Number of failed KV operations"
-    },
-    {
-      "title": "KV Operations",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(rate(kv_ops[1m])) by (bucket)",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ],
-      "stack": true
-    },
-    {
-      "title": "Failed KV Operations",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(kv_ops_failed) by (bucket)",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ],
-      "description": "Number of failed KV operations"
+      "description": "Number of failed KV operations\n\nkv_ops_failed"
     },
     {
       "title": "KV Operations",
@@ -685,68 +659,8 @@
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
-      ]
-    },
-    {
-      "title": "vBuckets",
-      "_base": "row"
-    },
-    {
-      "title": "vBucket Operations (Active)",
-      "datasource": "{data-source-name}",
-      "gridPos": {
-        "w": 8
-      },
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(rate(kv_vb_ops_create{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"active\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"active\"}[1m])) by (bucket)",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "vBucket Operations (Replica)",
-      "datasource": "{data-source-name}",
-      "gridPos": {
-        "w": 8
-      },
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(rate(kv_vb_ops_create{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"replica\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"replica\"}[1m])) by (bucket)",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "vBucket Operations (Pending)",
-      "datasource": "{data-source-name}",
-      "gridPos": {
-        "w": 8
-      },
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(rate(kv_vb_ops_create{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_delete{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_reject{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_update{state=\"pending\"}[1m])) by (bucket) + sum(rate(kv_vb_ops_get{state=\"pending\"}[1m])) by (bucket)",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "Total",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(kv_num_vbuckets{state=\"active\"}) by (bucket) + sum(kv_num_vbuckets{state=\"replica\"}) by (bucket) + sum(kv_num_vbuckets{state=\"pending\"}) by (bucket)",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ]
+      ],
+      "description": "kv_ep_warmup_oop"
     },
     {
       "title": "vBuckets",
