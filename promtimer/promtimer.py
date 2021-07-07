@@ -144,6 +144,7 @@ def start_prometheuses(cbcollects, base_port, log_dir):
                 '--storage.tsdb.path', path.join(cbcollect, 'stats_snapshot'),
                 '--storage.tsdb.no-lockfile',
                 '--storage.tsdb.retention.time', '10y',
+                '--query.lookback-delta', '600s',
                 '--web.listen-address', listen_addr]
         logging.info('starting prometheus server {} (on {} against {}; logging to {})'
                      .format(i, listen_addr, path.join(cbcollect, 'stats_snapshot'),
