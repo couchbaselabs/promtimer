@@ -1,13 +1,10 @@
 # Promtimer
 
-[Mortimer](https://github.com/couchbaselabs/mortimer) is a convenient 
-tool that can be used to display statistics grabbed from Couchbase collected 
-log bundles (cbcollects). With the move to use Prometheus for stats
-storage and management, Mortimer will no longer work. It would be possible
-to extract stats from cbcollects and adapt them to work with Mortimer, but
-this project attempts somthing different: use Prometheus itself and Grafana
-to allow easy, powerful browsing of Prometheus metrics (stats) available in 
-cbcollects.
+In 7.0, Couchbase Server has moved to use Prometheus as the storage backend
+for stats and when logs are collected, a Prometheus snapshot is generated
+and included in the zip archive. Promtimer is a tool that uses Prometheus
+itself and Grafana to allow easy, powerful browsing of Prometheus metrics
+(stats) available in cbcollects.
 
 If you've already installed, here are a some quick links you might be
 interested in:
