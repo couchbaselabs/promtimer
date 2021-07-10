@@ -155,6 +155,18 @@
           "_base": "target"
         }
       ]
+    },
+    {
+      "title": "chronicle disk operations taking over 1 second",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "cm_chronicle_disk_latency_seconds_bucket{le=\"+Inf\"} - ignoring(le) cm_chronicle_disk_latency_seconds_bucket{le=\"1.0\"}",
+          "legendFormat": "{{op}}",
+          "_base": "target"
+        }
+      ]
     }
   ]
 }
