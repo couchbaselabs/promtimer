@@ -281,7 +281,7 @@ def open_browser(grafana_http_port):
     try:
         # For some reason this sometimes throws an OSError with no
         # apparent side-effects. Probably related to forking processes
-        webbrowser.open_new(url)
+        webbrowser.open_new_tab(url)
     except OSError:
         logging.error("Hit `OSError` opening web browser")
         pass
