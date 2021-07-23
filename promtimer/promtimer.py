@@ -34,6 +34,7 @@ import util
 import templating
 import dashboard
 import annotations
+import cbstats
 
 PROMETHEUS_BIN = 'prometheus'
 PROMTIMER_DIR = '.promtimer'
@@ -119,41 +120,6 @@ def get_cbcollect_dirs():
             maybe_extract_from_zipfile(zip_file)
     return find_cbcollect_dirs()
 
-def get_prometheus_times(cbcollect_dir):
-    min_times = []
-    max_times = []
-    meta_files = glob.glob(path.join(cbcollect_dir, 'stats_snapshot', '*', 'meta.json'))
-    for meta_file in meta_files:
-        with open(meta_file, 'r') as file:
-            meta = json.loads(file.read())
-            min_times.append(meta['minTime'])
-            max_times.append(meta['maxTime'])
-    return min(min_times), max(max_times)
-
-def get_prometheus_min_and_max_times(cbcollects):
-    times = [get_prometheus_times(c) for c in cbcollects]
-    return min([t[0] for t in times]), max([t[1] for t in times])
-
-def start_prometheuses(cbcollects, base_port, log_dir):
-    nodes = []
-    for i, cbcollect in enumerate(cbcollects):
-        log_path = path.join(log_dir, 'prom-{}.log'.format(i))
-        listen_addr = '0.0.0.0:{}'.format(base_port + i)
-        args = [PROMETHEUS_BIN,
-                '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
-                '--storage.tsdb.path', path.join(cbcollect, 'stats_snapshot'),
-                '--storage.tsdb.no-lockfile',
-                '--storage.tsdb.retention.time', '10y',
-                '--query.lookback-delta', '600s',
-                '--web.listen-address', listen_addr]
-        logging.info('starting prometheus server {} (on {} against {}; logging to {})'
-                     .format(i, listen_addr, path.join(cbcollect, 'stats_snapshot'),
-                             log_path))
-        node = util.start_process(args, log_path)
-        nodes.append(node)
-
-    return nodes
-
 def get_data_source_template():
     with open(path.join(util.get_root_dir(), 'data-source.yaml'), 'r') as file:
         return file.read()
@@ -200,10 +166,11 @@ def make_dashboards_yaml():
         with open(path.join(get_dashboards_dir(), 'dashboards.yaml'), 'w') as file_to_write:
             file_to_write.write(contents)
 
-def make_dashboards(data_sources, buckets, times):
+def make_dashboards(stats_sources, buckets, times):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     min_time = datetime.datetime.fromtimestamp(times[0] / 1000.0)
     max_time = datetime.datetime.fromtimestamp(times[1] / 1000.0)
+    data_sources = [s.short_name() for s in stats_sources]
     template_params = \
         [{'type': 'data-source-name', 'values': data_sources},
          {'type': 'bucket', 'values': buckets}]
@@ -217,14 +184,14 @@ def make_dashboards(data_sources, buckets, times):
             with open(path.join(get_dashboards_dir(), base_file_name), 'w') as file:
                 file.write(json.dumps(dash, indent=2))
 
-def make_data_sources(data_sources_names, base_port):
+def make_data_sources(stats_sources):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
     os.makedirs(datasources_dir, exist_ok=True)
     template = get_data_source_template()
-    for i, data_source_name in enumerate(data_sources_names):
-        data_source_name = data_sources_names[i]
+    for i, stats_source in enumerate(stats_sources):
+        data_source_name = stats_source.short_name()
         replacement_map = {'data-source-name': data_source_name,
-                           'data-source-port' : str(base_port + i)}
+                           'data-source-port' : str(stats_source.port())}
         filename = path.join(datasources_dir, 'ds-{}.yaml'.format(data_source_name))
         with open(filename, 'w') as file:
             file.write(templating.replace(template, replacement_map))
@@ -242,6 +209,17 @@ def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
     return None
 
 def get_data_source_names(cbcollect_dirs):
+    """
+    Returns a list of names of data sources for the given list of cbcollect directories.
+    This function attempts to make short names uniquely identifying each cbcollect
+    directory in the given list. Frequently the node name embedded in the name of
+    the cbcollect directory will be sufficient to uniquely identify the directory,
+    however it may be necessary to use the full name of the directory.
+    :type cbcollect_dirs: list of names of directories, there should be no duplicate
+                          entries
+    :rtype: list of names of data sources; if cbcollect_dirs contains no duplicates the
+            returned list is guaranteed to also contain no duplicates
+    """
     regex = re.compile('cbcollect_info_ns_(\d+)\@(.*)_(\d+)-(\d+)')
     formats = ['{1}', 'ns_{0}@{1}', '{1}-{2}-{3}', 'ns_{0}-{1}-{2}-{3}']
     for fmt in formats:
@@ -250,18 +228,17 @@ def get_data_source_names(cbcollect_dirs):
             return result
     return cbcollect_dirs
 
-def prepare_grafana(grafana_port, prometheus_base_port, cbcollect_dirs, buckets, times):
+def prepare_grafana(grafana_port, stats_sources, buckets, times):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     os.makedirs(get_plugins_dir(), exist_ok=True)
     os.makedirs(get_notifiers_dir(), exist_ok=True)
-    data_sources = get_data_source_names(cbcollect_dirs)
     make_custom_ini(grafana_port)
     make_home_dashboard()
-    make_data_sources(data_sources, prometheus_base_port)
+    make_data_sources(stats_sources)
     make_dashboards_yaml()
-    make_dashboards(data_sources, buckets, times)
+    make_dashboards(stats_sources, buckets, times)
 
 def start_grafana(grafana_home_path, grafana_port):
     args = [GRAFANA_BIN,
@@ -285,116 +262,6 @@ def open_browser(grafana_http_port):
     except OSError:
         logging.error("Hit `OSError` opening web browser")
         pass
-
-def parse_couchbase_ns_config(cbcollect_dir):
-    logging.debug('parsing couchbase.log (Couchbase config)')
-    in_config = False
-    in_buckets = False
-    buckets = []
-    section_divider_count = 0
-    with open(path.join(cbcollect_dir, 'couchbase.log'), "r") as file:
-        for full_line in file:
-            line = full_line.rstrip()
-            config_line = 'Couchbase config'
-            if not in_config and line.rstrip() == config_line:
-                in_config = True
-            elif in_config:
-                if line.strip().startswith('=================='):
-                    section_divider_count += 1
-                    if section_divider_count == 2:
-                        break
-                if not in_buckets and line == ' {buckets,':
-                    in_buckets = True
-                elif in_buckets:
-                    if re.match('^ \{.*,$', line):
-                        break
-                    else:
-                        m = re.match('^    [ \[]\{\"(.*)\",$', line)
-                        if m:
-                            bucket = m.groups()[0]
-                            logging.debug('found bucket:{}'.format(bucket))
-                            buckets.append(bucket)
-    return {'buckets': sorted(buckets)}
-
-def parse_couchbase_chronicle_older_version(cbcollect_dir):
-    logging.debug('parsing couchbase.log (Chronicle config)')
-    in_config = False
-    in_buckets = False
-    bucket_list = ''
-    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r') as file:
-        for full_line in file:
-            line = full_line.rstrip()
-            if not in_config and line == 'Chronicle config':
-                in_config = True
-            elif in_config:
-                # Names of bucket can be on a single or multiple lines
-                end_of_list = False
-                possible_buckets = ''
-                if not in_buckets:
-                    if line.startswith(' {bucket_names,'):
-                        in_buckets = True
-                        possible_buckets = line.replace(' {bucket_names,[', '')
-                elif in_buckets:
-                    possible_buckets = line
-
-                if possible_buckets != '':
-                    if possible_buckets.endswith(']},'):
-                        possible_buckets = possible_buckets[:-3]
-                        end_of_list = True
-
-                    bucket_list += possible_buckets
-
-                    if end_of_list:
-                        break
-
-    buckets = []
-    if bucket_list != '':
-        for b in bucket_list.replace(' ','').replace('"','').split(','):
-            buckets.append(b)
-
-    return {'buckets': sorted(buckets)}
-
-def parse_couchbase_chronicle(cbcollect_dir):
-    logging.debug('parsing couchbase.log (Chronicle config)')
-    in_config = False
-    in_buckets = False
-    bucket_list = ''
-    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r') as file:
-        for full_line in file:
-            line = full_line.rstrip()
-            if not in_config and line == 'Chronicle dump':
-                in_config = True
-            elif in_config:
-                # Names of bucket can be on a single or multiple lines
-                bucket_list = ''
-                possible_buckets = ''
-                if not in_buckets:
-                    m = re.match('(^\s*{bucket_names,{\[)(.*)', line)
-                    if m:
-                        in_buckets = True
-                        possible_buckets = m.group(2)
-                elif in_buckets:
-                    possible_buckets = line
-                if possible_buckets != '':
-                    m = re.match('^([^\]]*)\].*', possible_buckets)
-                    if m:
-                        bucket_list += m.group(1)
-                        break
-                    bucket_list += possible_buckets
-    buckets = []
-    if bucket_list != '':
-        for b in bucket_list.replace(' ','').replace('"','').split(','):
-            buckets.append(b)
-    logging.debug('found buckets:{}'.format(buckets))
-    return {'buckets': sorted(buckets)}
-
-def parse_couchbase_log(cbcollect_dir):
-    config = parse_couchbase_chronicle(cbcollect_dir)
-    if config['buckets'] == []:
-        config = parse_couchbase_chronicle_older_version(cbcollect_dir)
-        if config['buckets'] == []:
-            config = parse_couchbase_ns_config(cbcollect_dir)
-    return config
 
 def main():
     parser = argparse.ArgumentParser()
@@ -449,6 +316,9 @@ def main():
         sys.exit(1)
     logging.info('using grafana home path:{} '.format(args.grafana_home_path))
 
+    grafana_port = args.grafana_port
+    prometheus_base_port = grafana_port + 1
+
     cbcollects = get_cbcollect_dirs()
     if len(cbcollects) == 0:
         if os.path.isdir(STATS_SNAPSHOT_DIR_NAME):
@@ -460,20 +330,26 @@ def main():
                           'directories or "{}" directory found'.format(
                               STATS_SNAPSHOT_DIR_NAME))
             sys.exit(1)
+    data_source_names = get_data_source_names(cbcollects)
+    stats_sources = []
+    for idx in range(len(cbcollects)):
+        cbcollect_dir = cbcollects[idx]
+        name = data_source_names[idx]
+        source = cbstats.Source(cbcollect_dir,
+                                name,
+                                prometheus_base_port + idx)
+        stats_sources.append(source)
 
     if not args.buckets:
-        config = parse_couchbase_log(cbcollects[0])
+        buckets = stats_sources[0].get_buckets()
     else:
-        config = {'buckets': sorted(args.buckets.split(','))}
+        buckets = sorted(args.buckets.split(','))
 
-    times = get_prometheus_min_and_max_times(cbcollects)
+    times = cbstats.Source.get_prometheus_min_and_max_times(stats_sources)
 
-    grafana_port = args.grafana_port
-    prometheus_base_port = grafana_port + 1
     prepare_grafana(grafana_port,
-                    prometheus_base_port,
-                    cbcollects,
-                    config['buckets'],
+                    stats_sources,
+                    buckets,
                     times)
 
     if args.prom_bin:
@@ -485,8 +361,9 @@ def main():
             PROMETHEUS_BIN))
         sys.exit(1)
 
-    processes = start_prometheuses(cbcollects, prometheus_base_port,
-                                   PROMTIMER_LOGS_DIR)
+    cbstats.Source.PROMETHEUS_BIN = PROMETHEUS_BIN
+    processes = cbstats.Source.start_stats_servers(stats_sources,
+                                                   PROMTIMER_LOGS_DIR)
     processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     time.sleep(0.1)
