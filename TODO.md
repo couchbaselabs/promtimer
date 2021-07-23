@@ -14,8 +14,6 @@
 
 ## Grafana Integration
 
-#### Guess where Grafana is when homepath not provided
-
 ## Prometheus Integration
 
 #### Support accessing Prometheus instances other than from cbcollects

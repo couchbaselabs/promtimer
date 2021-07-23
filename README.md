@@ -80,9 +80,12 @@ ls collectinfo*.zip | xargs -n 1 unzip
 Start Promtimer:
 
 ```
-bin/promtimer --grafana-home <path-to-grafana-shared-config-home>
-     [--prometheus <path-to-prometheus-binary>]
+bin/promtimer [--prometheus <path-to-prometheus-binary>]
+     [--grafana-home <path-to-grafana-shared-config-home>]
 ```
+
+The `path-to-prometheus-binary` specifies the path to the prometheus binary and
+must be specified if the binary you wish to use isn't on your PATH.
 
 The `path-to-grafana-shared-config-home` is what is known in Grafana terminology as the
 "homepath". This is the out-of-the-box Grafana shared config path. On brew-installed
@@ -94,8 +97,9 @@ On linux systems the homepath should usually be:
 
     /usr/share/grafana
 
-The `path-to-prometheus-binary` specifies the path to the prometheus binary
-and is needed if the binary isn't locatable via your default search path.
+Promtimer defaults the Grafana homepath to these locations on these platforms. However,
+if you're on a different platform or want to use a different homepath you'll need to
+explicitly specify it.
 
 The Grafana dashboards page should open for you automatically. If not, navigate
 to `localhost:13300/dashboards` in your browser and begin exploring the

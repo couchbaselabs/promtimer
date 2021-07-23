@@ -398,12 +398,19 @@ def parse_couchbase_log(cbcollect_dir):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-g', '--grafana-home', dest='grafana_home_path', required=True,
+    grafana_home_default = None
+    if sys.platform == 'darwin':
+        grafana_home_default = '/usr/local/share/grafana'
+    elif sys.platform == 'linux':
+        grafana_home_default = '/usr/share/grafana'
+
+    parser.add_argument('-g', '--grafana-home', dest='grafana_home_path',
+                        default=grafana_home_default,
                         help='''
                         Grafana configuration "homepath"; should be set to the
                         out-of-the-box Grafana config path. On brew-installed Grafana on
                         Macs this is something like:
-                            /usr/local/Cellar/grafana/x.y.z/share/grafana
+                            /usr/local/share/grafana
                         On linux systems the homepath should usually be:
                             /usr/share/grafana
                         ''')
@@ -433,9 +440,14 @@ def main():
                             stream_handler
                             ]
                         )
+    if args.grafana_home_path is None:
+        logging.error('Please specify the Grafana home directory as it '
+                      'cant\'t be defaulted on this platform')
+        sys.exit(1)
     if not os.path.isdir(args.grafana_home_path):
         logging.error('Invalid grafana path: {}'.format(args.grafana_home_path))
         sys.exit(1)
+    logging.info('using grafana home path:{} '.format(args.grafana_home_path))
 
     cbcollects = get_cbcollect_dirs()
     if len(cbcollects) == 0:
