@@ -345,7 +345,7 @@ def main():
     else:
         buckets = sorted(args.buckets.split(','))
 
-    times = cbstats.Source.get_prometheus_min_and_max_times(stats_sources)
+    times = cbstats.Source.compute_min_and_max_times(stats_sources)
 
     prepare_grafana(grafana_port,
                     stats_sources,

@@ -79,7 +79,7 @@ class Source:
             self._config = parse_couchbase_log(self._cbcollect_dir)
         return self._config['buckets']
 
-    def get_prometheus_times(self):
+    def get_min_and_max_times(self):
         """
         Returns a 2-tuple containing an estimate of the min and max POSIX timestamps
         times associated with this stats Source
@@ -88,8 +88,8 @@ class Source:
         return get_prometheus_times(self._cbcollect_dir)
 
     @staticmethod
-    def get_prometheus_min_and_max_times(sources):
-        times = [s.get_prometheus_times() for s in sources]
+    def compute_min_and_max_times(sources):
+        times = [s.get_min_and_max_times() for s in sources]
         return min([t[0] for t in times]), max([t[1] for t in times])
 
     @staticmethod
