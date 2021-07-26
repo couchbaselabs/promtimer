@@ -22,12 +22,10 @@ from os import path
 import time
 import json
 import datetime
-import re
 import webbrowser
-import logging
 import sys
-import zipfile
-import pathlib
+import getpass
+import logging
 
 # local imports
 import util
@@ -40,85 +38,9 @@ PROMETHEUS_BIN = 'prometheus'
 PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
-STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
-COUCHBASE_LOG = 'couchbase.log'
-
-def make_snapshot_dir_path(candidate_cbcollect_dir):
-    """
-    Returns a path representing the 'stats_snapshot' directory in
-    candidate_cbcollect_dir.
-    :type candidate_cbcollect_dir: pathlib.Path
-    :rtype: pathlib.Path
-    """
-    return candidate_cbcollect_dir / '{}'.format(STATS_SNAPSHOT_DIR_NAME)
-
-def snapshot_dir_exists(candidate_cbcollect_dir):
-    """
-    Returns whether or not the 'stats_snapshot' directory inside
-    candidate_cbcollect_dir exists.
-    :type candidate_cbcollect_dir: ,lib.Path
-    """
-    return make_snapshot_dir_path(candidate_cbcollect_dir).exists()
-
-def is_cbcollect_dir(candidate_path):
-    """
-    Returns a guess as to whether candidate_path represents a
-    cbcollect directory by checking whether the 'stats_snapshot' directory exists
-    inside it.
-    :type candidate_path: pathlib.Path
-    """
-    return candidate_path.is_dir() and snapshot_dir_exists(candidate_path)
 
 def is_executable_file(candidate_file):
     return os.path.isfile(candidate_file) and os.access(candidate_file, os.X_OK)
-
-def find_cbcollect_dirs():
-    cbcollects = sorted(glob.glob('cbcollect_info*'))
-    return [f for f in cbcollects if is_cbcollect_dir(pathlib.Path(f))]
-
-def is_stats_snapshot_file(filename):
-    """
-    Returns whether filename contains 'stats_snapshot' (and thus is a file we
-    probably want to extract from a cbcollect zip).
-    :type filename: string
-    :rtype: bool
-    """
-    return filename.find('/{}/'.format(STATS_SNAPSHOT_DIR_NAME)) >= 0
-
-def maybe_extract_from_zipfile(zip_file):
-    """
-    Extract files needed for Promtimer to run if necessary. Files needed by Promtimer are:
-    * everything under the stats_snapshot directory; nothing is extracted if the
-      stats_snapshot directory is already present
-    * couchbase.log: extracted if not present
-    """
-    root = zipfile.Path(zip_file)
-    for p in root.iterdir():
-        if is_cbcollect_dir(p):
-            stats_snapshot_exists = snapshot_dir_exists(pathlib.Path(p.name))
-            logging.debug("{}/stats_snapshot exists: {}".format(p.name, stats_snapshot_exists))
-            extracting = False
-            for item in zip_file.infolist():
-                item_path = path.join(*item.filename.split('/'))
-                should_extract = False
-                if is_stats_snapshot_file(item.filename):
-                    should_extract = not stats_snapshot_exists
-                elif item.filename.endswith(COUCHBASE_LOG):
-                    should_extract = not path.exists(item_path)
-                if should_extract:
-                    logging.debug("zipfile item:{}, exists:{}".format(item_path, path.exists(item_path)))
-                    if not extracting:
-                        extracting = True
-                        logging.info('extracting stats, couchbase.log from cbcollect zip:{}'
-                                     .format(zip_file.filename))
-                    zip_file.extract(item)
-
-def get_cbcollect_dirs():
-    zips = sorted(glob.glob('*.zip'))
-    for z in zips:
-        with zipfile.ZipFile(z) as zip_file:
-            maybe_extract_from_zipfile(zip_file)
-    return find_cbcollect_dirs()
 
 def get_data_source_template():
     with open(path.join(util.get_root_dir(), 'data-source.yaml'), 'r') as file:
@@ -166,10 +88,8 @@ def make_dashboards_yaml():
         with open(path.join(get_dashboards_dir(), 'dashboards.yaml'), 'w') as file_to_write:
             file_to_write.write(contents)
 
-def make_dashboards(stats_sources, buckets, times):
+def make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh_string):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
-    min_time = datetime.datetime.fromtimestamp(times[0] / 1000.0)
-    max_time = datetime.datetime.fromtimestamp(times[1] / 1000.0)
     data_sources = [s.short_name() for s in stats_sources]
     template_params = \
         [{'type': 'data-source-name', 'values': data_sources},
@@ -179,7 +99,11 @@ def make_dashboards(stats_sources, buckets, times):
         with open(meta_file_name, 'r') as meta_file:
             meta = json.loads(meta_file.read())
             base_file_name = path.basename(meta_file_name)
-            dash = dashboard.make_dashboard(meta, template_params, min_time, max_time)
+            dash = dashboard.make_dashboard(meta,
+                                            template_params,
+                                            min_time_string,
+                                            max_time_string,
+                                            refresh_string)
             dash['uid'] = base_file_name[:-len('.json')]
             with open(path.join(get_dashboards_dir(), base_file_name), 'w') as file:
                 file.write(json.dumps(dash, indent=2))
@@ -189,46 +113,31 @@ def make_data_sources(stats_sources):
     os.makedirs(datasources_dir, exist_ok=True)
     template = get_data_source_template()
     for i, stats_source in enumerate(stats_sources):
+        auth_required = stats_source.requires_auth()
+        user = ''
+        password = ''
+        if auth_required:
+            user = stats_source.basic_auth_user()
+            password = stats_source.basic_auth_password()
         data_source_name = stats_source.short_name()
         replacement_map = {'data-source-name': data_source_name,
-                           'data-source-port' : str(stats_source.port())}
-        filename = path.join(datasources_dir, 'ds-{}.yaml'.format(data_source_name))
-        with open(filename, 'w') as file:
+                           'data-source-host': stats_source.host(),
+                           'data-source-port': str(stats_source.port()),
+                           'data-source-path': stats_source.stats_url_path(),
+                           'data-source-basic-auth': str(auth_required),
+                           'data-source-basic-auth-user': user,
+                           'data-source-basic-auth-password': password}
+        filename = 'ds-{}.yaml'.format(data_source_name).replace(':', '_')
+        fullname = path.join(datasources_dir, filename)
+        with open(fullname, 'w') as file:
             file.write(templating.replace(template, replacement_map))
 
-def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
-    data_sources = []
-    for cbcollect in cbcollect_dirs:
-        m = re.match(pattern, cbcollect)
-        name = cbcollect
-        if m:
-            name = name_format.format(*m.groups())
-        data_sources.append(name)
-    if len(set(data_sources)) == len(data_sources):
-        return data_sources
-    return None
-
-def get_data_source_names(cbcollect_dirs):
-    """
-    Returns a list of names of data sources for the given list of cbcollect directories.
-    This function attempts to make short names uniquely identifying each cbcollect
-    directory in the given list. Frequently the node name embedded in the name of
-    the cbcollect directory will be sufficient to uniquely identify the directory,
-    however it may be necessary to use the full name of the directory.
-    :type cbcollect_dirs: list of names of directories, there should be no duplicate
-                          entries
-    :rtype: list of names of data sources; if cbcollect_dirs contains no duplicates the
-            returned list is guaranteed to also contain no duplicates
-    """
-    regex = re.compile('cbcollect_info_ns_(\d+)\@(.*)_(\d+)-(\d+)')
-    formats = ['{1}', 'ns_{0}@{1}', '{1}-{2}-{3}', 'ns_{0}-{1}-{2}-{3}']
-    for fmt in formats:
-        result = try_get_data_source_names(cbcollect_dirs, regex, fmt)
-        if result:
-            return result
-    return cbcollect_dirs
-
-def prepare_grafana(grafana_port, stats_sources, buckets, times):
+def prepare_grafana(grafana_port,
+                    stats_sources,
+                    buckets,
+                    min_time_string,
+                    max_time_string,
+                    refresh):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -238,7 +147,7 @@ def prepare_grafana(grafana_port, stats_sources, buckets, times):
     make_home_dashboard()
     make_data_sources(stats_sources)
     make_dashboards_yaml()
-    make_dashboards(stats_sources, buckets, times)
+    make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh)
 
 def start_grafana(grafana_home_path, grafana_port):
     args = [GRAFANA_BIN,
@@ -286,10 +195,22 @@ def main():
     parser.add_argument('--grafana-port', dest='grafana_port', type=int,
                         help='http port on which Grafana should listen (default: 13300)',
                         default=13300)
+    parser.add_argument('-c', '--cluster', dest='cluster',
+                        help='URL of Couchbase Server cluster to connect to; if specified '
+                             'then this instance of Promtimer does not run against cbcollect '
+                             'snapshots and runs against Couchbase Server cluster '
+                             'directly')
+    parser.add_argument('--user', dest='user',
+                        help='user to authenticate with when running against a Couchbase '
+                             'Server cluster (and required in this case)')
+    parser.add_argument('--password', dest='password',
+                        help='password of user when running against a Couchbase Server '
+                             'cluster; will be prompted for if not specified')
     parser.add_argument('--buckets', dest='buckets',
                         help='comma-separated list of buckets to build bucket dashboards '
                              'for; if this option is provided, auto-detection of the '
-                             'buckets by parsing couchbase.log will be skipped')
+                             'buckets by parsing couchbase.log (or by querying a running '
+                             'Couchbase Server node directly) will be skipped')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
     args = parser.parse_args()
@@ -307,6 +228,13 @@ def main():
                             stream_handler
                             ]
                         )
+    if args.cluster and not args.user:
+        logging.error('User must be specified when running Promtimer directly '
+                      'against a Couchbase Server cluster')
+        sys.exit(1)
+
+    if args.cluster and args.user and not args.password:
+        args.password = getpass.getpass(prompt='Password: ')
     if args.grafana_home_path is None:
         logging.error('Please specify the Grafana home directory as it '
                       'cant\'t be defaulted on this platform')
@@ -319,38 +247,35 @@ def main():
     grafana_port = args.grafana_port
     prometheus_base_port = grafana_port + 1
 
-    cbcollects = get_cbcollect_dirs()
-    if len(cbcollects) == 0:
-        if os.path.isdir(STATS_SNAPSHOT_DIR_NAME):
-            # Found stats directory, assume we're inside an unzip'd cbcollect
-            # directory
-            cbcollects.append(".")
-        else:
-            logging.error('No "collectinfo*.zip" files or "cbcollect_info*" '
-                          'directories or "{}" directory found'.format(
-                              STATS_SNAPSHOT_DIR_NAME))
-            sys.exit(1)
-    data_source_names = get_data_source_names(cbcollects)
-    stats_sources = []
-    for idx in range(len(cbcollects)):
-        cbcollect_dir = cbcollects[idx]
-        name = data_source_names[idx]
-        source = cbstats.Source(cbcollect_dir,
-                                name,
-                                prometheus_base_port + idx)
-        stats_sources.append(source)
+    if not args.cluster:
+        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
+        times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
+        min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
+        max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
+        refresh = ''
+    else:
+        stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
+                                                             args.user,
+                                                             args.password)
+        min_time = 'now-30m'
+        max_time = 'now'
+        refresh = '5s'
+
+    if not stats_sources:
+        logging.error("No sources of statistics found")
+        sys.exit(1)
 
     if not args.buckets:
         buckets = stats_sources[0].get_buckets()
     else:
         buckets = sorted(args.buckets.split(','))
 
-    times = cbstats.Source.compute_min_and_max_times(stats_sources)
-
     prepare_grafana(grafana_port,
                     stats_sources,
                     buckets,
-                    times)
+                    min_time,
+                    max_time,
+                    refresh)
 
     if args.prom_bin:
         global PROMETHEUS_BIN
@@ -362,15 +287,17 @@ def main():
         sys.exit(1)
 
     cbstats.Source.PROMETHEUS_BIN = PROMETHEUS_BIN
-    processes = cbstats.Source.start_stats_servers(stats_sources,
-                                                   PROMTIMER_LOGS_DIR)
+    processes = cbstats.Source.maybe_start_stats_servers(stats_sources,
+                                                         PROMTIMER_LOGS_DIR)
     processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     time.sleep(0.1)
     result = util.poll_processes(processes, 1)
     if result is None:
         open_browser(grafana_port)
-        annotations.create_annotations(grafana_port)
+        if not args.cluster:
+            # only create annotations against cbcollects
+            annotations.create_annotations(grafana_port)
         util.poll_processes(processes)
 
 if __name__ == '__main__':

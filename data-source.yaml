@@ -21,7 +21,13 @@ datasources:
     # if not specified will be generated automatically
     uid: {data-source-name}
     # <string> url
-    url: http://localhost:{data-source-port}
+    url: http://{data-source-host}:{data-source-port}/{data-source-path}
+    # <bool> enable/disable basic auth
+    basicAuth: {data-source-basic-auth}
+    # <string> basic auth username
+    basicAuthUser: {data-source-basic-auth-user}
+    # <string> basic auth password
+    basicAuthPassword: {data-source-basic-auth-password}
     version: 1
     # <bool> allow users to edit datasources from the UI.
     editable: true

@@ -166,9 +166,14 @@ def maybe_expand_templating(dashboard, template_params):
                             element['current'] = option_json
                         options.append(option_json)
 
-def make_dashboard(dashboard_meta, template_params, min_time, max_time):
-    replacements = {'dashboard-from-time': min_time.isoformat(),
-                    'dashboard-to-time': max_time.isoformat()}
+def make_dashboard(dashboard_meta,
+                   template_params,
+                   min_time_string,
+                   max_time_string,
+                   refresh):
+    replacements = {'dashboard-from-time': min_time_string,
+                    'dashboard-to-time': max_time_string,
+                    'dashboard-refresh': refresh}
     template_string = get_template(dashboard_meta['_base'])
     template_string = metaify_template_string(template_string, dashboard_meta)
     dashboard_string = templating.replace(template_string, replacements)

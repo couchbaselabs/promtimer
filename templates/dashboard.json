@@ -24,7 +24,7 @@
     }
   ],
   "panels": [],
-  "refresh": false,
+  "refresh": "{dashboard-refresh}",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
