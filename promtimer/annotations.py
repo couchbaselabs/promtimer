@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from os import path
+import os
 import json
 import logging
 from dateutil import parser as dateparser
@@ -85,11 +85,12 @@ EVENT_TAGS = {
     'XDCR_replication_remove_successful': 'success',
 }
 
-def check_no_existing_annotations(url):
-    annotations_json = util.retry_get_url(url, 5)
-    if annotations_json is not None:
+def check_no_existing_annotations(host_url, path):
+    response = util.get_url(host_url, path, retries=5)
+    payload = response.read()
+    if payload is not None:
         logging.info('Successfully connected to Grafana')
-        annotations_json = json.loads(annotations_json)
+        annotations_json = json.loads(payload)
         if len(annotations_json) > 0:
             logging.info('Found existing annotations, skipping annotation adding')
             return False
@@ -154,11 +155,13 @@ def parse_events(url):
             logging.error('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
 
 def create_annotations(grafana_port):
-    url = 'http://localhost:{}/api/annotations'.format(grafana_port)
-    if check_no_existing_annotations(url):
-        if not path.isfile(FILENAME):
+    top_level_url = 'http://localhost:{}'.format(grafana_port)
+    path = 'api/annotations'
+    if check_no_existing_annotations(top_level_url, path):
+        if not os.path.isfile(FILENAME):
             logging.info('No events.log, skipping annotation adding')
         else:
             logging.info('Adding annotations from events.log')
-            parse_events(url)
+
+            parse_events('{}/{}'.format(top_level_url, path))
             logging.info('Annotations added')

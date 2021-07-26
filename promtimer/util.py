@@ -20,6 +20,8 @@ import atexit
 import time
 from os import path
 import urllib.request
+import ssl
+import re
 import logging
 
 ROOT_DIR = path.join(path.dirname(__file__), '..')
@@ -62,16 +64,36 @@ def poll_processes(processes, count=-1):
         time.sleep(0.1)
         check += 1
 
-def retry_get_url(url, retries):
-    req = urllib.request.Request(url=url, data=None)
-    success = False
-    get = None
-    while (not success) and (retries > 0):
+def get_url(url, path, username=None, password=None, retries=0):
+    m = re.match('https?://', url, re.IGNORECASE)
+    if m:
+        scheme = m.group(0).lower()
+    else:
+        url = 'http://{}'.format(url)
+        scheme = 'http://'
+
+    handlers = []
+    if username is not None:
+        password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+        password_mgr.add_password(None, url, username, password)
+        handlers.append(urllib.request.HTTPBasicAuthHandler(password_mgr))
+
+    if scheme == 'https://':
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        handlers.append(urllib.request.HTTPSHandler(context=ctx))
+
+    opener = urllib.request.build_opener(*handlers)
+    if not path.startswith('/'):
+        path = '/' + path
+    while retries >= 0:
         try:
-            get = urllib.request.urlopen(req).read()
-            success = True
+            response = opener.open('{}{}'.format(url, path))
+            return response
         except:
-            logging.debug('Attempting connection to {}, retrying... {} retries left'.format(url, retries))
+            logging.debug('Attempting connection to {}, '
+                          'retrying... {} retries left'.format(url, retries))
             retries -= 1
             time.sleep(0.5)
-    return get
+    return None
