@@ -281,7 +281,7 @@ def main():
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
 
-    if not is_executable_file(PROMETHEUS_BIN):
+    if not args.cluster and not is_executable_file(PROMETHEUS_BIN):
         logging.error('Invalid prometheus executable path: {}'.format(
             PROMETHEUS_BIN))
         sys.exit(1)
