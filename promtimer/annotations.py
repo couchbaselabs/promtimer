@@ -18,7 +18,7 @@
 import os
 import json
 import logging
-from dateutil import parser as dateparser
+import datetime
 import urllib.request
 
 # local imports
@@ -106,6 +106,10 @@ def post_annotation(url, data):
     post = urllib.request.urlopen(req).read()
     return post
 
+def parse_event_date(date_string):
+    # event log dates are in the following form: 2021-05-08T05:43:57.894-07:00
+    return datetime.datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f%z')
+
 def parse_events(url):
     ongoing_events = {}
     with open(FILENAME, 'r') as file:
@@ -113,7 +117,7 @@ def parse_events(url):
             event = json.loads(line)
             event_timestamp = event['timestamp']
             event_type = event['event_type']
-            unix_time_ms = int(dateparser.parse(event_timestamp).timestamp()*1000)
+            unix_time_ms = int(parse_date(event_timestamp).timestamp()*1000)
             try:
                 tag = EVENT_TAGS[event_type]
                 if event_type in EVENTS_START:
