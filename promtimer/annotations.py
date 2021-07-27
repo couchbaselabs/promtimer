@@ -117,7 +117,7 @@ def parse_events(url):
             event = json.loads(line)
             event_timestamp = event['timestamp']
             event_type = event['event_type']
-            unix_time_ms = int(parse_date(event_timestamp).timestamp()*1000)
+            unix_time_ms = int(parse_event_date(event_timestamp).timestamp()*1000)
             try:
                 tag = EVENT_TAGS[event_type]
                 if event_type in EVENTS_START:
