@@ -91,9 +91,11 @@ def get_url(url, path, username=None, password=None, retries=0):
         try:
             response = opener.open('{}{}'.format(url, path))
             return response
-        except:
+        except urllib.request.URLError as ue:
             logging.debug('Attempting connection to {}, '
                           'retrying... {} retries left'.format(url, retries))
             retries -= 1
+            if retries < 0:
+                raise
             time.sleep(0.5)
     return None

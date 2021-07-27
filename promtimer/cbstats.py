@@ -322,7 +322,7 @@ class CBCollect(Source):
                 # directory
                 cbcollects.append(".")
             else:
-                logging.error('No "collectinfo*.zip" files or "cbcollect_info*" '
+                logging.error('error: no "collectinfo*.zip" files or "cbcollect_info*" '
                               'directories or "{}" directory found'.format(
                     STATS_SNAPSHOT_DIR_NAME))
                 return result
@@ -411,17 +411,21 @@ class ServerNode(Source):
     @staticmethod
     def get_stats_sources(cluster, user, password):
         result = []
-        response = util.get_url(cluster, 'pools/default/nodeServices', user, password)
-        node_services = json.loads(response.read())
-        for node in node_services['nodesExt']:
-            host = node.get('hostname')
-            if host is None:
-                host = '127.0.0.1'
-            services = node['services']
-            port = services['mgmt']
-            source = ServerNode(host, port, user, password)
-            result.append(source)
-        return result
+        try:
+            response = util.get_url(cluster, 'pools/default/nodeServices', user, password)
+            node_services = json.loads(response.read())
+            for node in node_services['nodesExt']:
+                host = node.get('hostname')
+                if host is None:
+                    host = '127.0.0.1'
+                services = node['services']
+                port = services['mgmt']
+                source = ServerNode(host, port, user, password)
+                result.append(source)
+            return result
+        except OSError as err:
+            logging.error('error: can\'t access cluster: {}'.format(err))
+            return []
 
 
 def parse_couchbase_ns_config(cbcollect_dir):

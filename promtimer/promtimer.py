@@ -242,13 +242,14 @@ def main():
     if not os.path.isdir(args.grafana_home_path):
         logging.error('Invalid grafana path: {}'.format(args.grafana_home_path))
         sys.exit(1)
-    logging.info('using grafana home path:{} '.format(args.grafana_home_path))
 
     grafana_port = args.grafana_port
     prometheus_base_port = grafana_port + 1
 
     if not args.cluster:
         stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
+        if not stats_sources:
+            sys.exit(1)
         times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
         min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
         max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
@@ -257,19 +258,18 @@ def main():
         stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
                                                              args.user,
                                                              args.password)
+        if not stats_sources:
+            sys.exit(1)
         min_time = 'now-30m'
         max_time = 'now'
         refresh = '5s'
-
-    if not stats_sources:
-        logging.error("No sources of statistics found")
-        sys.exit(1)
 
     if not args.buckets:
         buckets = stats_sources[0].get_buckets()
     else:
         buckets = sorted(args.buckets.split(','))
 
+    logging.info('using grafana home path:{} '.format(args.grafana_home_path))
     prepare_grafana(grafana_port,
                     stats_sources,
                     buckets,
