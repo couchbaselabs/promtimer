@@ -381,9 +381,9 @@ class ServerNode(Source):
         Returns the list of buckets associated with this stats Source
         :return: list of buckets
         """
-        response = util.get_url('{}:{}'.format(self.host(), self.port()),
+        response = util.execute_request('{}:{}'.format(self.host(), self.port()),
                                 'pools/default/buckets',
-                                self._user, self._password)
+                                username=self._user, password=self._password)
         bucket_list = json.loads(response.read())
         result = []
         for bucket in bucket_list:
@@ -412,7 +412,8 @@ class ServerNode(Source):
     def get_stats_sources(cluster, user, password):
         result = []
         try:
-            response = util.get_url(cluster, 'pools/default/nodeServices', user, password)
+            response = util.execute_request(cluster, 'pools/default/nodeServices',
+                                            username=user, password=password)
             node_services = json.loads(response.read())
             for node in node_services['nodesExt']:
                 host = node.get('hostname')

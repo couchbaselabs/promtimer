@@ -64,7 +64,9 @@ def poll_processes(processes, count=-1):
         time.sleep(0.1)
         check += 1
 
-def get_url(url, path, username=None, password=None, retries=0):
+def execute_request(url, path, method='GET', data=None,
+                    username=None, password=None, headers=None,
+                    retries=0):
     m = re.match('https?://', url, re.IGNORECASE)
     if m:
         scheme = m.group(0).lower()
@@ -89,7 +91,14 @@ def get_url(url, path, username=None, password=None, retries=0):
         path = '/' + path
     while retries >= 0:
         try:
-            response = opener.open('{}{}'.format(url, path))
+            url = '{}{}'.format(url, path)
+            if headers is None:
+                headers = {}
+            request = urllib.request.Request(url=url,
+                                             method=method,
+                                             data=data,
+                                             headers=headers)
+            response = opener.open(request)
             return response
         except urllib.request.URLError as ue:
             logging.debug('Attempting connection to {}, '

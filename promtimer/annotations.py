@@ -84,9 +84,10 @@ EVENT_TAGS = {
     'XDCR_replication_remove_failed': 'failure',
     'XDCR_replication_remove_successful': 'success',
 }
+ANNOTATIONS_API_PATH = 'api/annotations'
 
-def check_no_existing_annotations(host_url, path):
-    response = util.get_url(host_url, path, retries=5)
+def check_no_existing_annotations(host_url):
+    response = util.execute_request(host_url, ANNOTATIONS_API_PATH, retries=5)
     payload = response.read()
     if payload is not None:
         logging.info('Successfully connected to Grafana')
@@ -100,17 +101,21 @@ def check_no_existing_annotations(host_url, path):
         logging.error('Unable to connect to Grafana, skipping annotation adding')
         return False
 
-def post_annotation(url, data):
+def post_annotation(top_level_url, data):
     payload = json.dumps(data).encode('utf-8')
-    req = urllib.request.Request(url=url, data=payload, headers=HEADERS)
-    post = urllib.request.urlopen(req).read()
-    return post
+    response = util.execute_request(top_level_url,
+                                    ANNOTATIONS_API_PATH,
+                                    method='POST',
+                                    data=payload,
+                                    headers=HEADERS)
+    result = response.read()
+    return result
 
 def parse_event_date(date_string):
     # event log dates are in the following form: 2021-05-08T05:43:57.894-07:00
     return datetime.datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f%z')
 
-def parse_events(url):
+def parse_events(top_level_url):
     ongoing_events = {}
     with open(FILENAME, 'r') as file:
         for line in file:
@@ -141,7 +146,7 @@ def parse_events(url):
                             tag,
                         ],
                     }
-                post = post_annotation(url, data)
+                post = post_annotation(top_level_url, data)
                 logging.debug('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
             except KeyError:
                 logging.debug('{} event type not accepted, skipping'.format(event_type))
@@ -154,18 +159,17 @@ def parse_events(url):
                     'unfinished',
                 ]
             }
-            post = post_annotation(url, data)
+            post = post_annotation(top_level_url, data)
             logging.error('Could not find {} event end time! Adding start time...'.format(event))
             logging.error('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
 
 def create_annotations(grafana_port):
     top_level_url = 'http://localhost:{}'.format(grafana_port)
-    path = 'api/annotations'
-    if check_no_existing_annotations(top_level_url, path):
+    if check_no_existing_annotations(top_level_url):
         if not os.path.isfile(FILENAME):
             logging.info('No events.log, skipping annotation adding')
         else:
             logging.info('Adding annotations from events.log')
 
-            parse_events('{}/{}'.format(top_level_url, path))
+            parse_events(top_level_url)
             logging.info('Annotations added')
