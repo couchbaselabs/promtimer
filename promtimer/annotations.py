@@ -108,14 +108,14 @@ def post_annotation(top_level_url, data):
                                     method='POST',
                                     data=payload,
                                     headers=HEADERS)
-    result = response.read()
-    return result
+    return response
 
 def parse_event_date(date_string):
     # event log dates are in the following form: 2021-05-08T05:43:57.894-07:00
     return datetime.datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f%z')
 
-def parse_events(top_level_url):
+def parse_events():
+    result = []
     ongoing_events = {}
     with open(FILENAME, 'r') as file:
         for line in file:
@@ -146,8 +146,7 @@ def parse_events(top_level_url):
                             tag,
                         ],
                     }
-                post = post_annotation(top_level_url, data)
-                logging.debug('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+                result.append(data)
             except KeyError:
                 logging.debug('{} event type not accepted, skipping'.format(event_type))
         for event in ongoing_events:
@@ -159,9 +158,17 @@ def parse_events(top_level_url):
                     'unfinished',
                 ]
             }
-            post = post_annotation(top_level_url, data)
+            result.apppend(data)
             logging.error('Could not find {} event end time! Adding start time...'.format(event))
-            logging.error('{} - {} - {} - {}'.format(json.loads(post), event_timestamp, data['text'], data['tags']))
+        return result
+
+def post_events(top_level_url, events):
+    for event in events:
+        post = post_annotation(top_level_url, event)
+        logging.debug('{} - {} - {} - {}'.format(json.loads(post.read()),
+                                                 event['time'],
+                                                 event['text'],
+                                                 event['tags']))
 
 def create_annotations(grafana_port):
     top_level_url = 'http://localhost:{}'.format(grafana_port)
@@ -170,6 +177,6 @@ def create_annotations(grafana_port):
             logging.info('No events.log, skipping annotation adding')
         else:
             logging.info('Adding annotations from events.log')
-
-            parse_events(top_level_url)
+            events = parse_events()
+            post_events(top_level_url, events)
             logging.info('Annotations added')
