@@ -1,5 +1,37 @@
 {
   "title": "NS Server Dashboard",
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#ffffff",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Topology",
+        "showIn": 0,
+        "tags": [
+          "topology"
+        ],
+        "type": "tags"
+      },
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#115fd4",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Buckets",
+        "showIn": 0,
+        "tags": [
+          "buckets"
+        ],
+        "type": "tags"
+      }
+    ]
+  },
   "_base": "dashboard",
   "_panels": [
     {

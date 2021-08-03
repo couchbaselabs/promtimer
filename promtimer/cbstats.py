@@ -593,7 +593,7 @@ def parse_user_log(stream):
                 in_flight['text'] = match.group(2)
         elif in_flight:
             # print('in_flight: {}'.format(in_flight))
-            in_flight['text'] = in_flight['text'] + line
+            in_flight['text'] = in_flight['text'] + '\n' + line
     if in_flight:
         result.append(in_flight)
     return result

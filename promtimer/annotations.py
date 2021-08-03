@@ -130,40 +130,65 @@ def create_annotation(timestamp, text, end_timestamp=None, extra_text=None, tags
         result['timeEnd'] = end_timestamp
     return result
 
+def concat(*args):
+    result = ''
+    for arg in args:
+        if arg:
+            result = '{}\n{}'.format(result, arg)
+    return result
 
 def parse_events(events):
     result = []
     ongoing_events = {}
     for event in events:
-        event_timestamp = event['timestamp']
         event_type = event.get('event_type')
+        tags = event.get('tags')
+        event_timestamp = event['timestamp']
         unix_time_ms = int(parse_event_date(event_timestamp).timestamp() * 1000)
-        tag = EVENT_TAGS.get(event_type)
-        if event_type is None or tag is None:
+        event['timestamp_ms'] = unix_time_ms
+        if not tags:
+            tags = EVENT_TAGS.get(event_type)
+            if isinstance(tags, list):
+                tags = tags[:]
+            elif tags:
+                tags = [tags]
+        if event_type is None or tags is None:
             logging.debug('{} event type not accepted, skipping'.format(event_type))
             continue
-        if event_type in EVENTS_START:
-            ongoing_events[EVENTS_START[event_type]] = unix_time_ms
+        elif event_type in EVENTS_START:
+            ongoing_events[EVENTS_START[event_type]] = event
             continue
-        elif event_type in EVENTS_END and EVENTS_END[event_type] in ongoing_events:
-            timestamp = ongoing_events.pop(EVENTS_END[event_type])
-            data = create_annotation(timestamp=timestamp,
-                                     text=EVENTS_END[event_type],
-                                     end_timestamp=unix_time_ms,
-                                     extra_text=event.get('extra_text'),
-                                     tags=[tag])
         else:
-            data = create_annotation(timestamp=unix_time_ms,
-                                     text=event_type,
-                                     extra_text=event.get('extra_text'),
-                                     tags=[tag])
+            if event_type in EVENTS_END and EVENTS_END[event_type] in ongoing_events:
+                start_event = ongoing_events.pop(EVENTS_END[event_type])
+                extra_text = concat(start_event.get('extra_text'),
+                                    event.get('extra_text'))
+                data = create_annotation(timestamp=start_event['timestamp_ms'],
+                                         text=EVENTS_END[event_type],
+                                         end_timestamp=unix_time_ms,
+                                         extra_text=extra_text,
+                                         tags=tags)
+            else:
+                data = create_annotation(timestamp=unix_time_ms,
+                                         text=event_type,
+                                         extra_text=event.get('extra_text'),
+                                         tags=tags)
+        logging.debug('append data: {}'.format(data))
         result.append(data)
-    for event in ongoing_events:
-        data = create_annotation(timestamp=ongoing_events[event],
-                                 text=event + ' (no end time)',
-                                 tags=['failure', 'unfinished'])
+    for event_type in ongoing_events:
+        event = ongoing_events[event_type]
+        tags = event.get('tags')
+        if tags:
+            tags = tags + ['unfinished']
+        else:
+            tags = ['unfinished']
+        data = create_annotation(timestamp=event['timestamp_ms'],
+                                 text=event_type + ' (no end time)',
+                                 extra_text=event.get('extra_text'),
+                                 tags=tags)
         result.append(data)
-        logging.error('Could not find {} event end time! Adding start time...'.format(event))
+        logging.error('Could not find {} event end time! '
+                      'Adding start time...'.format(event['event_type']))
     return result
 
 def post_events(top_level_url, events):
@@ -180,55 +205,65 @@ def events_log_reader(filename):
             yield event
 
 USER_LOGS_REGEX_MAP = {
-    'Starting rebalance': {
-        'type': 'rebalance_start'
+    'Starting rebalance.*KeepNodes(.*)EjectNodes': {
+        'type': 'rebalance_start',
+        'extra_text': 'Starting rebalance\nKeep nodes: {0}',
+        'tags': ['topology']
     },
     'Rebalance completed successfully': {
         'type': 'rebalance_finish',
-        'extra_text': '\nCompleted successfully'
+        'extra_text': '\nCompleted successfully',
+        'tags': ['info', 'topology']
     },
     'Rebalance stopped by user': {
         'type': 'rebalance_finish',
-        'extra_text': '\nStopped by user'
+        'extra_text': '\nStopped by user',
+        'tags': ['topology']
     },
     'Rebalance exited with reason (.*)\n': {
         'type': 'rebalance_finish',
-        'extra_text': '\nRebalance exited with reason:\n{0}'
+        'extra_text': '\nRebalance exited with reason:\n{0}',
+        'tags': ['topology']
     },
-    'Starting failover of nodes (.*).': {
+    'Starting failover of nodes (.*). Operation Id': {
         'type': 'failover_start',
-        'extra_text': '\nStarted failing over:\n{0}'
+        'extra_text': '\nStarted failing over:\n{0}',
+        'tags': ['warning', 'topology']
     },
     'Failover completed successfully': {
         'type': 'failover_finish',
-        'extra_text': '\nFailover completed successfully\n'
+        'extra_text': '\nFailover completed successfully\n',
+        'tags': ['warning', 'topology']
     },
-    'Starting graceful failover of nodes (.*).': {
+    'Starting graceful failover of nodes (.*). Operation Id': {
         'type': 'graceful_failover_start',
-        'extra_text': '\nStarted gracefully failing over:\n{0}'
+        'extra_text': '\nStarted gracefully failing over:\n{0}',
+        'tags': ['info', 'topology']
     },
     'Graceful failover completed successfully': {
         'type': 'graceful_failover_finish',
-        'extra_text': '\nGraceful failover completed successfully'
+        'extra_text': '\nGraceful failover completed successfully',
+        'tags': ['info', 'topology']
     },
     'Created bucket \"(\S+)\" of type: (\S+)': {
         'type': 'bucket_created',
-        'extra_text': '\nname: {0}, type:{1}'
+        'extra_text': '\nname: {0}, type:{1}',
+        'tags': ['info', 'buckets']
     },
     'Deleted bucket \"(\S+)\"': {
         'type': 'bucket_deleted',
-        'extra_text': '\nname: {0}'
+        'extra_text': '\nname: {0}',
+        'tags': ['info', 'buckets']
     }
 }
 
 def decorate_user_logs(event_logs):
     re_map = {}
     for pattern, tag in USER_LOGS_REGEX_MAP.items():
-        re_map[re.compile(pattern, re.M)] = tag
+        re_map[re.compile(pattern, re.M|re.S)] = tag
     for event in event_logs:
         event['timestamp'] = event['tstamp']
         text = event['text']
-        # print('considering: {}'.format(text))
         for regex in re_map:
             result = regex.search(text)
             if result:
@@ -237,6 +272,9 @@ def decorate_user_logs(event_logs):
                 extra_text = map_obj.get('extra_text')
                 if extra_text:
                     event['extra_text'] = extra_text.format(*result.groups())
+                tags = map_obj.get('tags')
+                if tags:
+                    event['tags'] = tags
                 break
         yield event
 
