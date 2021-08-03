@@ -160,17 +160,20 @@ def start_grafana(grafana_home_path, grafana_port):
     # otherwise the output is duplicated.
     return util.start_process(args, None, PROMTIMER_DIR)
 
-def open_browser(grafana_http_port):
+def maybe_open_browser(grafana_http_port, dont_open_browser):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
     # Helpful for those who accidently close the browser
-    logging.info('starting browser using {}'.format(url))
-    try:
-        # For some reason this sometimes throws an OSError with no
-        # apparent side-effects. Probably related to forking processes
-        webbrowser.open_new_tab(url)
-    except OSError:
-        logging.error("Hit `OSError` opening web browser")
-        pass
+    if not dont_open_browser:
+        logging.info('starting browser using {}'.format(url))
+        try:
+            # For some reason this sometimes throws an OSError with no
+            # apparent side-effects. Probably related to forking processes
+            webbrowser.open_new_tab(url)
+        except OSError:
+            logging.error("Hit `OSError` opening web browser")
+            pass
+    else:
+        logging.info('not opening browser; navigate to {}'.format(url))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -211,6 +214,9 @@ def main():
                              'for; if this option is provided, auto-detection of the '
                              'buckets by parsing couchbase.log (or by querying a running '
                              'Couchbase Server node directly) will be skipped')
+    parser.add_argument('--dont-open-browser', dest='dont_open_browser', default=False,
+                        action='store_true',
+                        help='don\'t open browser tab automatically on start')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
     args = parser.parse_args()
@@ -294,7 +300,7 @@ def main():
     time.sleep(0.1)
     result = util.poll_processes(processes, 1)
     if result is None:
-        open_browser(grafana_port)
+        maybe_open_browser(grafana_port, args.dont_open_browser)
         if not args.cluster:
             # only create annotations against cbcollects
             annotations.create_annotations(grafana_port)
