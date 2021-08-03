@@ -19,7 +19,7 @@ import glob
 import json
 import pathlib
 import zipfile
-import sys
+import io
 import time
 import os
 from os import path
@@ -27,6 +27,7 @@ from os import path
 import util
 
 COUCHBASE_LOG = 'couchbase.log'
+DIAG_LOG = 'diag.log'
 STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
 
 class Source:
@@ -108,6 +109,7 @@ class Source:
         """
         return None
 
+
     @staticmethod
     def maybe_start_stats_servers(stats_sources, log_dir):
         nodes = []
@@ -123,11 +125,12 @@ class CBCollect(Source):
     Represents a source of stats data that is a Prometheus instance running against
     the stats snapshot in a cbcollect.
     """
-    def __init__(self, cbcollect_dir, short_name, prometheus_port):
+    def __init__(self, cbcollect_dir, short_name, prometheus_port, zipfile=None):
         super(CBCollect, self).__init__(prometheus_port)
         self._short_name = short_name
         self._cbcollect_dir = cbcollect_dir
         self._config = None
+        self._zipfile = zipfile
 
     def short_name(self):
         return self._short_name
@@ -180,6 +183,18 @@ class CBCollect(Source):
         """
         return candidate_cbcollect_dir / '{}'.format(STATS_SNAPSHOT_DIR_NAME)
 
+    def get_my_user_log(self):
+        if self._zipfile:
+            with zipfile.ZipFile(self._zipfile) as zip:
+                filename = path.join(self._cbcollect_dir, DIAG_LOG)
+                with zip.open(filename, 'r') as filestream:
+                    filereader = io.TextIOWrapper(filestream, 'UTF-8')
+                    return parse_user_log(filereader)
+        else:
+            filename = path.join(self._cbcollect_dir, DIAG_LOG)
+            with open(filename, 'r') as filestream:
+                return parse_user_log(filestream)
+
     @staticmethod
     def snapshot_dir_exists(candidate_cbcollect_dir):
         """
@@ -205,35 +220,19 @@ class CBCollect(Source):
         return [f for f in cbcollects if CBCollect.is_cbcollect_dir(pathlib.Path(f))]
 
     @staticmethod
-    def get_stats_sources():
-        result = []
-        cbcollects = CBCollect.get_cbcollect_dirs()
-        if len(cbcollects) == 0:
-            if os.path.isdir(STATS_SNAPSHOT_DIR_NAME):
-                # Found stats directory, assume we're inside an unzip'd cbcollect
-                # directory
-                cbcollects.append(".")
-            else:
-                logging.error('No "collectinfo*.zip" files or "cbcollect_info*" '
-                              'directories or "{}" directory found'.format(
-                    STATS_SNAPSHOT_DIR_NAME))
-                sys.exit(1)
-        data_source_names = get_data_source_names(cbcollects)
-        for idx in range(len(cbcollects)):
-            cbcollect_dir = cbcollects[idx]
-            name = data_source_names[idx]
-            source = cbstats.CBCollect(cbcollect_dir,
-                                       name,
-                                       prometheus_base_port + idx)
-            stats_sources.append(source)
-
-    @staticmethod
     def get_cbcollect_dirs():
         zips = sorted(glob.glob('*.zip'))
+        dirs = {}
         for z in zips:
             with zipfile.ZipFile(z) as zip_file:
-                CBCollect.maybe_extract_from_zipfile(zip_file)
-        return CBCollect.find_cbcollect_dirs()
+                dir = CBCollect.maybe_extract_from_zipfile(zip_file)
+                dirs[dir] = z
+        cbcollect_dirs = CBCollect.find_cbcollect_dirs()
+        result = []
+        for cbcollect_dir in cbcollect_dirs:
+            result.append((cbcollect_dir, dirs.get(cbcollect_dir)))
+        return result
+
 
     @staticmethod
     def is_stats_snapshot_file(filename):
@@ -253,13 +252,16 @@ class CBCollect(Source):
         * everything under the stats_snapshot directory; nothing is extracted if the
           stats_snapshot directory is already present
         * couchbase.log: extracted if not present
+        :return: the name of the cbcollect directory into which files will be extracted
         """
         root = zipfile.Path(zip_file)
+        root_dir = None
         for p in root.iterdir():
             if CBCollect.is_cbcollect_dir(p):
                 snapshot_exists = CBCollect.snapshot_dir_exists(pathlib.Path(p.name))
                 logging.debug("{}/stats_snapshot exists: {}".format(p.name,
                                                                     snapshot_exists))
+                root_dir = p.name
                 extracting = False
                 for item in zip_file.infolist():
                     item_path = path.join(*item.filename.split('/'))
@@ -277,6 +279,7 @@ class CBCollect(Source):
                                          ' zip:{}'
                                          .format(zip_file.filename))
                         zip_file.extract(item)
+        return root_dir
 
     @staticmethod
     def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
@@ -320,19 +323,20 @@ class CBCollect(Source):
             if os.path.isdir(STATS_SNAPSHOT_DIR_NAME):
                 # Found stats directory, assume we're inside an unzip'd cbcollect
                 # directory
-                cbcollects.append(".")
+                cbcollects.append(('.', None))
             else:
                 logging.error('error: no "collectinfo*.zip" files or "cbcollect_info*" '
                               'directories or "{}" directory found'.format(
                     STATS_SNAPSHOT_DIR_NAME))
                 return result
-        data_source_names = CBCollect.get_data_source_names(cbcollects)
+        data_source_names = CBCollect.get_data_source_names([c[0] for c in cbcollects])
         for idx in range(len(cbcollects)):
-            cbcollect_dir = cbcollects[idx]
+            (cbcollect_dir, zipfile) = cbcollects[idx]
             name = data_source_names[idx]
             source = CBCollect(cbcollect_dir,
                                name,
-                               base_port + idx)
+                               base_port + idx,
+                               zipfile)
             result.append(source)
         return result
 
@@ -408,6 +412,10 @@ class ServerNode(Source):
     def password(self):
         return self._password
 
+    def get_my_user_log(self):
+        return ServerNode.get_user_log('{}:{}'.format(self._cluster_host, self.port()),
+                                       self._user, self._password)
+
     @staticmethod
     def get_stats_sources(cluster, user, password):
         result = []
@@ -424,6 +432,17 @@ class ServerNode(Source):
                 source = ServerNode(host, port, user, password)
                 result.append(source)
             return result
+        except OSError as err:
+            logging.error('error: can\'t access cluster: {}'.format(err))
+            return []
+
+    @staticmethod
+    def get_user_log(cluster, user, password):
+        try:
+            response = util.execute_request(cluster, 'logs',
+                                            username=user, password=password)
+            json_response = json.loads(response.read())
+            return json_response['list']
         except OSError as err:
             logging.error('error: can\'t access cluster: {}'.format(err))
             return []
@@ -549,4 +568,33 @@ def get_prometheus_times(cbcollect_dir):
             min_times.append(meta['minTime'] / 1000.0)
             max_times.append(meta['maxTime'] / 1000.0)
     return min(min_times), max(max_times)
+
+def parse_user_log(stream):
+    result = []
+    in_flight = {}
+    log_re = re.compile('^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\d\S+), (.*)')
+    found_logs = False
+    while True:
+        line = stream.readline()
+        if not line:
+            break
+        line = line.strip()
+        # print('line: {}'.format(line))
+        match = log_re.match(line)
+        if found_logs and line == '-------------------------------':
+            break
+        if match:
+            found_logs = True
+            if in_flight:
+                result.append(in_flight)
+                in_flight = {'tstamp': match.group(1), 'text': match.group(2)}
+            else:
+                in_flight['tstamp'] = match.group(1)
+                in_flight['text'] = match.group(2)
+        elif in_flight:
+            # print('in_flight: {}'.format(in_flight))
+            in_flight['text'] = in_flight['text'] + line
+    if in_flight:
+        result.append(in_flight)
+    return result
 
