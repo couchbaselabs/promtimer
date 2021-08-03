@@ -23,6 +23,7 @@ import urllib.request
 
 # local imports
 import util
+import re
 
 FILENAME = 'events.log'
 HEADERS = {
@@ -32,10 +33,12 @@ HEADERS = {
 EVENTS_START = {
     'rebalance_start': 'rebalance',
     'failover_start': 'failover',
+    'graceful_failover_start': 'graceful_failover',
 }
 EVENTS_END = {
     'rebalance_finish': 'rebalance',
     'failover_finish': 'failover',
+    'graceful_failover_finish': 'graceful_failover',
 }
 EVENT_TAGS = {
     'analytics_index_created': 'success',
@@ -55,7 +58,10 @@ EVENT_TAGS = {
     'rebalance_finish': 'info',
 
     'failover_start': 'warning',
-    'failover_end': 'warning',
+    'failover_finish': 'warning',
+
+    'graceful_failover_start': 'info',
+    'graceful_failover_finish': 'info',
 
     'node_joined': 'success',
     'node_went_down': 'warning',
@@ -86,20 +92,18 @@ EVENT_TAGS = {
 }
 ANNOTATIONS_API_PATH = 'api/annotations'
 
-def check_no_existing_annotations(host_url):
+def get_existing_annotations(host_url):
     response = util.execute_request(host_url, ANNOTATIONS_API_PATH, retries=5)
     payload = response.read()
     if payload is not None:
         logging.info('Successfully connected to Grafana')
-        annotations_json = json.loads(payload)
-        if len(annotations_json) > 0:
-            logging.info('Found existing annotations, skipping annotation adding')
-            return False
-        else:
-            return True
+        try:
+            return json.loads(payload)
+        except json.decoder.JSONDecodeError as err:
+            logging.error('Error decoding JSON response: {} for payload {}'.format(err, payload))
     else:
         logging.error('Unable to connect to Grafana, skipping annotation adding')
-        return False
+    return None
 
 def post_annotation(top_level_url, data):
     payload = json.dumps(data).encode('utf-8')
@@ -110,57 +114,58 @@ def post_annotation(top_level_url, data):
                                     headers=HEADERS)
     return response
 
-def parse_event_date(date_string):
+def parse_event_date(date_repr):
+    if type(date_repr) == int:
+        return datetime.datetime.fromtimestamp(date_repr / 1000)
     # event log dates are in the following form: 2021-05-08T05:43:57.894-07:00
-    return datetime.datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f%z')
+    return datetime.datetime.strptime(date_repr, '%Y-%m-%dT%H:%M:%S.%f%z')
 
-def parse_events():
+def create_annotation(timestamp, text, end_timestamp=None, extra_text=None, tags=None):
+    if extra_text:
+        text = '{}: {}'.format(text, extra_text)
+    result = {'time': timestamp,
+              'text': text}
+    if tags:
+        result['tags'] = tags
+    if end_timestamp:
+        result['timeEnd'] = end_timestamp
+    return result
+
+
+def parse_events(events):
     result = []
     ongoing_events = {}
-    with open(FILENAME, 'r') as file:
-        for line in file:
-            event = json.loads(line)
-            event_timestamp = event['timestamp']
-            event_type = event['event_type']
-            unix_time_ms = int(parse_event_date(event_timestamp).timestamp()*1000)
-            try:
-                tag = EVENT_TAGS[event_type]
-                if event_type in EVENTS_START:
-                    ongoing_events[EVENTS_START[event_type]] = unix_time_ms
-                    continue
-                elif event_type in EVENTS_END and EVENTS_END[event_type] in ongoing_events:
-                    data = {
-                        'time': ongoing_events[EVENTS_END[event_type]],
-                        'timeEnd': unix_time_ms,
-                        'text': EVENTS_END[event_type],
-                        'tags': [
-                            tag,
-                        ],
-                    }
-                    ongoing_events.pop(EVENTS_END[event_type])
-                else:
-                    data = {
-                        'time': unix_time_ms,
-                        'text': event_type,
-                        'tags': [
-                            tag,
-                        ],
-                    }
-                result.append(data)
-            except KeyError:
-                logging.debug('{} event type not accepted, skipping'.format(event_type))
-        for event in ongoing_events:
-            data = {
-                'time': ongoing_events[event],
-                'text': event + ' (no end time)',
-                'tags': [
-                    'failure',
-                    'unfinished',
-                ]
-            }
-            result.apppend(data)
-            logging.error('Could not find {} event end time! Adding start time...'.format(event))
-        return result
+    for event in events:
+        event_timestamp = event['timestamp']
+        event_type = event.get('event_type')
+        unix_time_ms = int(parse_event_date(event_timestamp).timestamp() * 1000)
+        tag = EVENT_TAGS.get(event_type)
+        if event_type is None or tag is None:
+            logging.debug('{} event type not accepted, skipping'.format(event_type))
+            continue
+        if event_type in EVENTS_START:
+            ongoing_events[EVENTS_START[event_type]] = unix_time_ms
+            continue
+        elif event_type in EVENTS_END and EVENTS_END[event_type] in ongoing_events:
+            timestamp = ongoing_events.pop(EVENTS_END[event_type])
+            data = create_annotation(timestamp=timestamp,
+                                     text=EVENTS_END[event_type],
+                                     end_timestamp=unix_time_ms,
+                                     extra_text=event.get('extra_text'),
+                                     tags=[tag])
+        else:
+            data = create_annotation(timestamp=unix_time_ms,
+                                     text=event_type,
+                                     extra_text=event.get('extra_text'),
+                                     tags=[tag])
+        result.append(data)
+    for event in ongoing_events:
+        data = create_annotation(timestamp=ongoing_events[event],
+                                 text=event + ' (no end time)',
+                                 tags=['failure', 'unfinished'])
+        result.append(data)
+        logging.error('Could not find {} event end time! Adding start time...'.format(event))
+    return result
 
 def post_events(top_level_url, events):
     for event in events:
@@ -169,14 +174,104 @@ def post_events(top_level_url, events):
                                                  event['time'],
                                                  event['text'],
                                                  event['tags']))
+def events_log_reader(filename):
+    with open(filename, 'r') as file:
+        for line in file:
+            event = json.loads(line)
+            yield event
 
-def create_annotations(grafana_port):
+USER_LOGS_REGEX_MAP = {
+    'Starting rebalance': {
+        'type': 'rebalance_start'
+    },
+    'Rebalance completed successfully': {
+        'type': 'rebalance_finish',
+        'extra_text': '\nCompleted successfully'
+    },
+    'Rebalance stopped by user': {
+        'type': 'rebalance_finish',
+        'extra_text': '\nStopped by user'
+    },
+    'Rebalance exited with reason (.*)\n': {
+        'type': 'rebalance_finish',
+        'extra_text': '\nRebalance exited with reason:\n{0}'
+    },
+    'Starting failover of nodes (.*).': {
+        'type': 'failover_start',
+        'extra_text': '\nStarted failing over:\n{0}'
+    },
+    'Failover completed successfully': {
+        'type': 'failover_finish',
+        'extra_text': '\nFailover completed successfully\n'
+    },
+    'Starting graceful failover of nodes (.*).': {
+        'type': 'graceful_failover_start',
+        'extra_text': '\nStarted gracefully failing over:\n{0}'
+    },
+    'Graceful failover completed successfully': {
+        'type': 'graceful_failover_finish',
+        'extra_text': '\nGraceful failover completed successfully'
+    },
+    'Created bucket \"(\S+)\" of type: (\S+)': {
+        'type': 'bucket_created',
+        'extra_text': '\nname: {0}, type:{1}'
+    },
+    'Deleted bucket \"(\S+)\"': {
+        'type': 'bucket_deleted',
+        'extra_text': '\nname: {0}'
+    }
+}
+
+def decorate_user_logs(event_logs):
+    re_map = {}
+    for pattern, tag in USER_LOGS_REGEX_MAP.items():
+        re_map[re.compile(pattern, re.M)] = tag
+    for event in event_logs:
+        event['timestamp'] = event['tstamp']
+        text = event['text']
+        # print('considering: {}'.format(text))
+        for regex in re_map:
+            result = regex.search(text)
+            if result:
+                map_obj = re_map[regex]
+                event['event_type'] = map_obj['type']
+                extra_text = map_obj.get('extra_text')
+                if extra_text:
+                    event['extra_text'] = extra_text.format(*result.groups())
+                break
+        yield event
+
+def filter_existing(existing, proposed_new):
+    result = []
+    existing_map = {}
+    for annotation in existing:
+        existing_map[annotation['time']] = annotation
+    for annotation in proposed_new:
+        exists = existing_map.get(annotation['time'])
+        if not exists or exists['text'] != annotation['text']:
+            result.append(annotation)
+    return result
+
+def create_annotations(grafana_port, events):
     top_level_url = 'http://localhost:{}'.format(grafana_port)
-    if check_no_existing_annotations(top_level_url):
-        if not os.path.isfile(FILENAME):
-            logging.info('No events.log, skipping annotation adding')
-        else:
-            logging.info('Adding annotations from events.log')
-            events = parse_events()
-            post_events(top_level_url, events)
-            logging.info('Annotations added')
+    parsed = parse_events(events)
+    if parsed:
+        logging.info('Potential annotations: {}'.format(len(parsed)))
+        existing = get_existing_annotations(top_level_url)
+        if existing:
+            parsed = filter_existing(existing, parsed)
+        post_events(top_level_url, parsed)
+        logging.info('Annotations added: {}'.format(len(parsed)))
+    else:
+        logging.info('No annotations to add')
+
+def get_and_create_annotations(grafana_port, stats_sources, consult_events_log):
+    events = []
+    if consult_events_log:
+        if os.path.isfile(FILENAME):
+            events = events_log_reader(FILENAME)
+    if not events:
+        first = stats_sources[0]
+        log_entries = first.get_my_user_log()
+        events = decorate_user_logs(log_entries)
+    create_annotations(grafana_port, events)

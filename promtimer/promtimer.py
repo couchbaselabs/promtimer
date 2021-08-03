@@ -301,9 +301,7 @@ def main():
     result = util.poll_processes(processes, 1)
     if result is None:
         maybe_open_browser(grafana_port, args.dont_open_browser)
-        if not args.cluster:
-            # only create annotations against cbcollects
-            annotations.create_annotations(grafana_port)
+        annotations.get_and_create_annotations(grafana_port, stats_sources, not args.cluster)
         util.poll_processes(processes)
 
 if __name__ == '__main__':
