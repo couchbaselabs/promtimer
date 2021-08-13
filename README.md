@@ -33,6 +33,7 @@ Promtimer:
 
 You will need:
 
+* Python 3.8 or later
 * Grafana (version 7.1 or later)
 * Promtimer
 
