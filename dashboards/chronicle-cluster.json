@@ -52,6 +52,18 @@
         }
       ],
       "description": "Number of chronicle appends performed per second. Computed as:\n`irate(cm_chronicle_append_num_total[5m])`"
+    },
+    {
+      "title": "maximum number of appends batched at the storage over 1 minute",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "cm_chronicle_append_batch_size_1m_max",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ]
     }
   ]
 }
