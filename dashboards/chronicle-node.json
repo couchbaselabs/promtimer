@@ -1,0 +1,74 @@
+{
+  "_base": "dashboard",
+  "title": "Chronicle Node",
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": "Node",
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
+  },
+  "_panels": [
+    {
+      "title": "chronicle disk operations taking over 1 second",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "cm_chronicle_disk_latency_seconds_bucket{le=\"+Inf\"} - ignoring(le) cm_chronicle_disk_latency_seconds_bucket{le=\"1.0\"}",
+          "legendFormat": "{{op}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "chronicle disk operations per second",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(cm_chronicle_disk_latency_seconds_count[5m])",
+          "legendFormat": "{{op}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of chronicle disk operations per second by type.\nComputed as: `irate(cm_chronicle_disk_latency_seconds_count[5m])`"
+    },
+    {
+      "title": "average chronicle sync latency (ms)",
+      "legend": {"show": false},
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "1000 * irate(cm_chronicle_disk_latency_seconds_sum{op=\"sync\"}[5m]) / ignoring(name) irate(cm_chronicle_disk_latency_seconds_count{op=\"sync\"}[5m])",
+          "_base": "target"
+        }
+      ],
+      "description": "Average chronicle fsync latency (i.e. total time waiting for fsyncs\ndivided by the number of fsyncs in the period. Computed as: `1000 * irate(cm_chronicle_disk_latency_seconds_sum{op=\"sync\"}[5m]) /\nignoring(name) irate(cm_chronicle_disk_latency_seconds_count{op=\"sync\"}[5m])`"
+    },
+    {
+      "title": "number of chronicle appends / s",
+      "legendFormat": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(cm_chronicle_append_num_total[5m])",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of chronicle appends performed per second. Computed as:\n`irate(cm_chronicle_append_num_total[5m])`"
+    }
+  ]
+}
