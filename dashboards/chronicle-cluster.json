@@ -1,6 +1,24 @@
 {
   "_base": "dashboard",
   "title": "Chronicle Cluster",
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#ffffff",
+        "limit": 100,
+        "matchAny": true,
+        "name": "Topology",
+        "showIn": 0,
+        "tags": [
+          "topology"
+        ],
+        "type": "tags"
+      }
+    ]
+  },
   "_panels": [
     {
       "title": "chronicle disk operations taking over 1 second",

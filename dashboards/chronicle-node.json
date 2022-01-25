@@ -1,6 +1,24 @@
 {
   "_base": "dashboard",
   "title": "Chronicle Node",
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#ffffff",
+        "limit": 100,
+        "matchAny": true,
+        "name": "Topology",
+        "showIn": 0,
+        "tags": [
+          "topology"
+        ],
+        "type": "tags"
+      }
+    ]
+  },
   "templating": {
     "list": [
       {
