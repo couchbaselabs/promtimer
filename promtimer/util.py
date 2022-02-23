@@ -99,7 +99,7 @@ def execute_request(url, path, method='GET', data=None,
                                              headers=headers)
             response = opener.open(request)
             return response
-        except urllib.request.URLError as ue:
+        except (urllib.request.URLError, urllib.request.HTTPError):
             logging.debug('Attempting connection to {}, '
                           'retrying... {} retries left'.format(url, retries))
             retries -= 1
