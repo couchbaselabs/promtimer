@@ -88,9 +88,9 @@ def execute_request(url, path, method='GET', data=None,
     opener = urllib.request.build_opener(*handlers)
     if not path.startswith('/'):
         path = '/' + path
+    url = '{}{}'.format(url, path)
     while retries >= 0:
         try:
-            url = '{}{}'.format(url, path)
             if headers is None:
                 headers = {}
             request = urllib.request.Request(url=url,
