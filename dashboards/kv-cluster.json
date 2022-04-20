@@ -155,13 +155,19 @@
       "description": "For each node computed as:\n`sum(irate(kv_ep_bg_fetched[5m]))`"
     },
     {
-      "title": "90th Percentile GET or GAT latencies",
+      "title": "Percentile GET or GAT latencies",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
           "expr": "histogram_quantile(0.90, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))",
-          "legendFormat": "{data-source-name} GET/GAT",
+          "legendFormat": "90th {data-source-name} GET/GAT",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.50, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))",
+          "legendFormat": "50th {data-source-name} GET/GAT",
           "_base": "target"
         }
       ],
