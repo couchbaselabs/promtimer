@@ -84,36 +84,85 @@
       "_base": "row"
     },
     {
-      "title": "Total kv_ops",
+      "title": "Total kv_ops by bucket",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sum(irate(kv_ops[1m]))",
-          "legendFormat": "{sum(irate(kv_ops[1m]))",
+          "expr": "sum by (bucket) (irate(kv_ops[5m]))",
+          "legendFormat": "{{bucket}}",
           "_base": "target"
         }
       ],
-      "description": "For each node, computed as:\n`sum(irate(kv_ops[1m]))`"
+      "description": "Computed as:\n`sum by (bucket) (irate(kv_ops[5m]))`",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "w": 8
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
-      "title": "KV Gets and Mutations",
+      "title": "KV Gets by Bucket",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sum(irate(kv_ops{op=\"get\"}[1m]))",
-          "legendFormat": "GETS",
-          "_base": "target"
-        },
-        {
-          "datasource": "{data-source-name}",
-          "expr": "sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))",
-          "legendFormat": "MUTATIONS",
+          "expr": "sum by (bucket) (irate(kv_ops{op=\"get\"}[5m]))",
+          "legendFormat": "{{bucket}}",
           "_base": "target"
         }
       ],
-      "description": "Gets computed as: `sum(irate(kv_ops{op=\"get\"}[1m]))`\nMutations computed as:`sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))`"
+      "description": "Computed as: `sum by (bucket) (irate(kv_ops{op=\"get\"}[5m]))`",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "w": 8
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "KV Mutations by Bucket",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by (bucket) (irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[5m]))",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Computed as:`sum by (bucket) (irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[5m]))`",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "w": 8
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Total BG Fetches",
