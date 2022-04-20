@@ -80,200 +80,6 @@
   },
   "_panels": [
     {
-      "title": "Collections",
-      "_base": "row"
-    },
-    {
-      "title": "Memory Used by Collection",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(kv_collection_mem_used_bytes) by (collection)",
-          "legendFormat": "{{collection}}",
-          "_base": "target"
-        }
-      ],
-      "description": "Memory used per collection in bytes\n\nkv_collection_mem_used_bytes",
-      "stack": true
-    },
-    {
-      "title": "Operations Run on Collection",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(kv_collection_ops) by (collection)",
-          "legendFormat": "{{collection}}",
-          "_base": "target"
-        }
-      ],
-      "description": "Operations run on a particular collection\n\nkv_collection_ops"
-    },
-    {
-      "title": "Connections",
-      "_base": "row"
-    },
-    {
-      "title": "Connections Ever Opened",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_total_connections",
-          "legendFormat": "Connections",
-          "_base": "target"
-        }
-      ],
-      "description": "Connections that have ever been opened\n\nkv_total_connections"
-    },
-    {
-      "title": "Current Connections",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_curr_connections",
-          "legendFormat": "Current",
-          "_base": "target"
-        },
-        {
-          "expr": "kv_daemon_connections",
-          "legendFormat": "Daemon",
-          "_base": "target"
-        },
-        {
-          "expr": "kv_system_connections",
-          "legendFormat": "System",
-          "_base": "target"
-        }
-      ],
-      "description": "kv_curr_connections, kv_daemon_connections, kv_system_connections",
-      "stack": true
-    },
-    {
-      "title": "Number of Auth Errors",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_auth_errors",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ],
-      "description": "Number of auth errors\n\nkv_auth_errors"
-    },
-    {
-      "title": "DCP",
-      "_base": "row"
-    },
-    {
-      "title": "Backoff Events",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_dcp_backoff",
-          "legendFormat": "{{bucket}} ({{connection_type}})",
-          "_base": "target"
-        }
-      ],
-      "description": "Total number of backoff events\n\nkv_dcp_backoff"
-    },
-    {
-      "title": "Idle Timeout",
-      "type": "gauge",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_ep_dcp_idle_timeout",
-          "legendFormat": "{{bucket}}",
-          "_base": "target"
-        }
-      ],
-      "description": "DCP idle timeout value\n\nkv_ep_dcp_idle_timeout",
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "title": "Producer Count",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_dcp_producer_count",
-          "legendFormat": "{{bucket}} ({{connection_type}})",
-          "_base": "target"
-        }
-      ],
-      "description": "Number of DCP Producers\n\nkv_dcp_producer_count"
-    },
-    {
-      "title": "Remaining Items",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_dcp_items_remaining",
-          "legendFormat": "{{bucket}} ({{connection_type}})",
-          "_base": "target"
-        }
-      ],
-      "description": "Total items remaining to be sent\n\nkv_dcp_items_remaining"
-    },
-    {
-      "title": "Sent Items",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "rate(kv_dcp_items_sent[1m])",
-          "legendFormat": "{{bucket}} ({{connection_type}})",
-          "_base": "target"
-        }
-      ],
-      "description": "Total items sent\n\nkv_dcp_items_sent"
-    },
-    {
-      "title": "Total Connections",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_dcp_connection_count",
-          "legendFormat": "{{bucket}} ({{connection_type}})",
-          "_base": "target"
-        }
-      ],
-      "description": "Connection count\n\nkv_dcp_connection_count"
-    },
-    {
-      "title": "Total Data Size",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_dcp_total_data_size_bytes",
-          "legendFormat": "{{bucket}} ({{connection_type}})",
-          "_base": "target"
-        }
-      ],
-      "description": "kv_dcp_total_data_size_bytes"
-    },
-    {
       "title": "Data",
       "_base": "row"
     },
@@ -314,7 +120,18 @@
           "_base": "target"
         }
       ],
-      "description": "couch_docs_actual_disk_size"
+      "description": "couch_docs_actual_disk_size",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Number of Docs (inc. Replicas)",
@@ -327,7 +144,18 @@
           "_base": "target"
         }
       ],
-      "description": "kv_curr_items_tot"
+      "description": "kv_curr_items_tot",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Percentage Memory Resident",
@@ -340,7 +168,13 @@
           "_base": "target"
         }
       ],
-      "description": "kv_vb_perc_mem_resident_ratio"
+      "description": "kv_vb_perc_mem_resident_ratio",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Rate of Deletes",
@@ -679,6 +513,115 @@
       "description": "kv_ep_warmup_oop"
     },
     {
+      "title": "DCP",
+      "_base": "row"
+    },
+    {
+      "title": "Backoff Events",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_backoff",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
+          "_base": "target"
+        }
+      ],
+      "description": "Total number of backoff events\n\nkv_dcp_backoff"
+    },
+    {
+      "title": "Idle Timeout",
+      "type": "gauge",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_dcp_idle_timeout",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "DCP idle timeout value\n\nkv_ep_dcp_idle_timeout",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Producer Count",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_producer_count",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of DCP Producers\n\nkv_dcp_producer_count"
+    },
+    {
+      "title": "Remaining Items",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_items_remaining",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
+          "_base": "target"
+        }
+      ],
+      "description": "Total items remaining to be sent\n\nkv_dcp_items_remaining"
+    },
+    {
+      "title": "Sent Items",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(kv_dcp_items_sent[1m])",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
+          "_base": "target"
+        }
+      ],
+      "description": "Total items sent\n\nkv_dcp_items_sent"
+    },
+    {
+      "title": "Total Connections",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_connection_count",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
+          "_base": "target"
+        }
+      ],
+      "description": "Connection count\n\nkv_dcp_connection_count"
+    },
+    {
+      "title": "Total Data Size",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_dcp_total_data_size_bytes",
+          "legendFormat": "{{bucket}} ({{connection_type}})",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_dcp_total_data_size_bytes"
+    },
+    {
       "title": "vBuckets",
       "_base": "row"
     },
@@ -742,6 +685,91 @@
         }
       ],
       "description": "kv_num_vbuckets"
+    },
+    {
+      "title": "Collections",
+      "_base": "row"
+    },
+    {
+      "title": "Memory Used by Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_collection_mem_used_bytes) by (collection)",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Memory used per collection in bytes\n\nkv_collection_mem_used_bytes",
+      "stack": true
+    },
+    {
+      "title": "Operations Run on Collection",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(kv_collection_ops) by (collection)",
+          "legendFormat": "{{collection}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Operations run on a particular collection\n\nkv_collection_ops"
+    },
+    {
+      "title": "Connections",
+      "_base": "row"
+    },
+    {
+      "title": "Connections Ever Opened",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_total_connections",
+          "legendFormat": "Connections",
+          "_base": "target"
+        }
+      ],
+      "description": "Connections that have ever been opened\n\nkv_total_connections"
+    },
+    {
+      "title": "Current Connections",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_curr_connections",
+          "legendFormat": "Current",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_daemon_connections",
+          "legendFormat": "Daemon",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_system_connections",
+          "legendFormat": "System",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_curr_connections, kv_daemon_connections, kv_system_connections",
+      "stack": true
+    },
+    {
+      "title": "Number of Auth Errors",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_auth_errors",
+          "legendFormat": "{{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Number of auth errors\n\nkv_auth_errors"
     }
   ]
 }

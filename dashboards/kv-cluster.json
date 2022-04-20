@@ -106,6 +106,68 @@
       "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}"
     },
     {
+      "title": "Ops",
+      "_base": "row"
+    },
+    {
+      "title": "Total kv_ops",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ops[1m]))",
+          "legendFormat": "{data-source-name} {sum(irate(kv_ops[1m]))",
+          "_base": "target"
+        }
+      ],
+      "description": "For each node, computed as:\n`sum(irate(kv_ops[1m]))`"
+    },
+    {
+      "title": "KV Gets and Mutations",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ops{op=\"get\"}[1m]))",
+          "legendFormat": "{data-source-name} GETS",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))",
+          "legendFormat": "{data-source-name} MUTATIONS",
+          "_base": "target"
+        }
+      ],
+      "description": "Gets computed as: `sum(irate(kv_ops{op=\"get\"}[1m]))`\nMutations computed as:`sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))`"
+    },
+    {
+      "title": "Total BG Fetches",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_ep_bg_fetched[5m]))",
+          "legendFormat": "{data-source-name} BG Fetches",
+          "_base": "target"
+        }
+      ],
+      "description": "For each node computed as:\n`sum(irate(kv_ep_bg_fetched[5m]))`"
+    },
+    {
+      "title": "90th Percentile GET or GAT latencies",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.90, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))",
+          "legendFormat": "{data-source-name} GET/GAT",
+          "_base": "target"
+        }
+      ],
+      "description": "For each node computed as:\n`histogram_quantile(0.90, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))`"
+    },
+    {
       "title": "Connections",
       "_base": "row"
     },
