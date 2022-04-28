@@ -68,6 +68,7 @@
     },
     {
       "title": "KV CPU Utilization",
+      "description": "KV service CPU Utilization of all cores summed up, in percent\n\nsysproc_cpu_utilization{proc=\"memcached\"}",
       "_base": "panel",
       "_targets": [
         {
@@ -77,10 +78,24 @@
           "_base": "target"
         }
       ],
-      "description": "KV service CPU Utilization of all cores summed up, in percent\n\nsysproc_cpu_utilization{proc=\"memcached\"}"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "KV Uptime",
+      "description": "KV service uptime in seconds\n\nkv_uptime_seconds",
       "_base": "panel",
       "_targets": [
         {
@@ -90,10 +105,24 @@
           "_base": "target"
         }
       ],
-      "description": "KV service uptime in seconds\n\nkv_uptime_seconds"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "s"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "KV Memory Usage",
+      "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}",
       "_base": "panel",
       "_targets": [
         {
@@ -103,7 +132,20 @@
           "_base": "target"
         }
       ],
-      "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Ops",
@@ -111,6 +153,7 @@
     },
     {
       "title": "Total kv_ops",
+      "description": "For each node, computed as:\n`sum(irate(kv_ops[1m]))`",
       "_base": "panel",
       "_targets": [
         {
@@ -120,10 +163,24 @@
           "_base": "target"
         }
       ],
-      "description": "For each node, computed as:\n`sum(irate(kv_ops[1m]))`"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "KV Gets and Mutations",
+      "description": "Gets computed as: `sum(irate(kv_ops{op=\"get\"}[1m]))`\nMutations computed as:`sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))`",
       "_base": "panel",
       "_targets": [
         {
@@ -139,10 +196,24 @@
           "_base": "target"
         }
       ],
-      "description": "Gets computed as: `sum(irate(kv_ops{op=\"get\"}[1m]))`\nMutations computed as:`sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))`"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Total BG Fetches",
+      "description": "For each node computed as:\n`sum(irate(kv_ep_bg_fetched[5m]))`",
       "_base": "panel",
       "_targets": [
         {
@@ -152,10 +223,24 @@
           "_base": "target"
         }
       ],
-      "description": "For each node computed as:\n`sum(irate(kv_ep_bg_fetched[5m]))`"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Percentile GET or GAT latencies",
+      "description": "For each node computed as:\n`histogram_quantile(0.90, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))`",
       "_base": "panel",
       "_targets": [
         {
@@ -171,7 +256,20 @@
           "_base": "target"
         }
       ],
-      "description": "For each node computed as:\n`histogram_quantile(0.90, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))`"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "s"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Connections",
@@ -179,6 +277,7 @@
     },
     {
       "title": "Accumulated Connections",
+      "description": "Number of KV service connections accumulated over time\n\nkv_total_connections",
       "_base": "panel",
       "_targets": [
         {
@@ -188,10 +287,24 @@
           "_base": "target"
         }
       ],
-      "description": "Number of KV service connections accumulated over time\n\nkv_total_connections"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Current Connections",
+      "description": "Number of KV service connections currently open\n\nkv_curr_connections, kv_daemon_connections, kv_system_connections",
       "_base": "panel",
       "_targets": [
         {
@@ -201,7 +314,20 @@
           "_base": "target"
         }
       ],
-      "description": "Number of KV service connections currently open\n\nkv_curr_connections, kv_daemon_connections, kv_system_connections"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Audit Daemon",
@@ -209,6 +335,7 @@
     },
     {
       "title": "Audit Daemon Enabled",
+      "description": "Whether the audit daemon is enabled\n\nkv_audit_enabled",
       "type": "bargauge",
       "_base": "panel",
       "_targets": [
@@ -219,7 +346,6 @@
           "_base": "target"
         }
       ],
-      "description": "Whether the audit daemon is enabled\n\nkv_audit_enabled",
       "fieldConfig": {
         "defaults": {
           "max": 1,
@@ -238,6 +364,7 @@
     },
     {
       "title": "Dropped Events",
+      "description": "kv_audit_dropped_events",
       "_base": "panel",
       "_targets": [
         {
@@ -247,7 +374,20 @@
           "_base": "target"
         }
       ],
-      "description": "kv_audit_dropped_events"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     }
   ]
 }
