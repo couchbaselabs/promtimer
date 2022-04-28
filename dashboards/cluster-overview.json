@@ -12,7 +12,21 @@
           "legendFormat": "{data-source-name} sys_cpu_utilization_rate",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "sys_mem_limit and used",
@@ -30,7 +44,21 @@
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "sys_mem_free",
@@ -42,7 +70,21 @@
           "legendFormat": "{data-source-name} sys_mem_free",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "total kv_ops",
@@ -54,7 +96,21 @@
           "legendFormat": "{data-source-name} sum(irate(kv_ops[1m]))",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "kv gets and mutations",
@@ -72,7 +128,21 @@
           "legendFormat": "{data-source-name} sum(irate(kv_ops{op=~set|set_meta|cas|delete|...}[1m]))",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "sum(kv_mem_used_bytes)",
@@ -84,7 +154,21 @@
           "legendFormat": "{data-source-name} sum(kv_mem_used_bytes)",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "irate(n1ql_requests[1m])",
@@ -96,7 +180,21 @@
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "n1ql selects, updates & inserts",
@@ -120,7 +218,21 @@
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "short"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "index items",
@@ -132,7 +244,21 @@
           "legendFormat": "{data-source-name} sum(index_items_count)",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "index scans / second",
@@ -144,7 +270,21 @@
           "legendFormat": "{data-source-name} sum(irate(index_num_rows_scanned[1m]))",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "sum(index_memory_used)",
@@ -156,7 +296,21 @@
           "legendFormat": "{data-source-name} sum(index_memory_used)",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     },
     {
       "title": "Disk usage summed over buckets",
@@ -168,7 +322,21 @@
           "legendFormat": "{data-source-name} sum(couch_docs_actual_disk_size)",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     }
   ]
 }
