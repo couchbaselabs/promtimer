@@ -1,7 +1,39 @@
 {
     "title": "Search Dashboard",
     "_base": "dashboard",
-    "_panels": [
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#ffffff",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Topology",
+        "showIn": 0,
+        "tags": [
+          "topology"
+        ],
+        "type": "tags"
+      },
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#115fd4",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Buckets",
+        "showIn": 0,
+        "tags": [
+          "buckets"
+        ],
+        "type": "tags"
+      }
+    ]
+  },
+  "_panels": [
         {
             "title": "fts_num_bytes_used_ram",
             "_base": "panel",
