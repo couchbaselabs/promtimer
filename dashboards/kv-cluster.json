@@ -148,6 +148,30 @@
       "type": "timeseries"
     },
     {
+      "title": "Disk Usage",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(couch_docs_actual_disk_size)",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "description": "couch_docs_actual_disk_size",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
       "title": "Ops",
       "_base": "row"
     },

@@ -264,7 +264,7 @@
       "description": "couch_docs_actual_disk_size",
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
+          "unit": "bytes"
         }
       },
       "options": {
