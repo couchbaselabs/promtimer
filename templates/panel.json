@@ -6,7 +6,8 @@
   "datasource": "-- Mixed --",
   "fieldConfig": {
     "defaults": {
-      "custom": {}
+      "custom": {},
+      "unit": "short"
     },
     "overrides": []
   },
@@ -30,6 +31,11 @@
   "lines": true,
   "linewidth": 1,
   "nullPointMode": "null",
+  "options": {
+    "tooltip": {
+      "mode": "multi"
+    }
+  },
   "percentage": false,
   "pluginVersion": "7.1.5",
   "pointradius": 2,
@@ -50,7 +56,7 @@
     "sort": 0,
     "value_type": "individual"
   },
-  "type": "graph",
+  "type": "timeseries",
   "xaxis": {
     "buckets": null,
     "mode": "time",
