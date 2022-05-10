@@ -61,7 +61,12 @@
           "legendFormat": "",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      }
     },
     {
       "title": "sysproc_cpu_utilization",
@@ -73,7 +78,12 @@
           "legendFormat": "{{proc}}",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      }
     },
     {
       "title": "sysproc_mem_resident",
@@ -85,7 +95,12 @@
           "legendFormat": "{{proc}}",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
     },
     {
       "title": "kv_curr_items",
@@ -150,7 +165,12 @@
           "legendFormat": "{{bucket}}-latency",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      }
     },
     {
       "title": "rate ns-server rest requests served",
@@ -186,7 +206,12 @@
           "legendFormat": "{{type}}",
           "_base": "target"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      }
     }
   ]
 }
