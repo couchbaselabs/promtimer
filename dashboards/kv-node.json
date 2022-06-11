@@ -265,12 +265,46 @@
       "_base": "panel",
       "_targets": [
         {
-          "expr": "sum(kv_vb_perc_mem_resident_ratio) by (bucket)",
-          "legendFormat": "{{bucket}}",
+          "expr": "kv_vb_perc_mem_resident_ratio",
+          "legendFormat": "{{bucket}} {{state}}",
           "_base": "target"
         }
       ],
       "description": "kv_vb_perc_mem_resident_ratio",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Compaction write & read bytes",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "irate(kv_ep_io_compaction_write_bytes_bytes[5m])",
+          "legendFormat": "{{bucket}} write bytes",
+          "_base": "target"
+        },
+        {
+          "expr": "irate(kv_ep_io_compaction_read_bytes_bytes[5m])",
+          "legendFormat": "{{bucket}} read bytes",
+          "_base": "target"
+        }
+      ],
+      "description": "irate(kv_ep_io_compaction_write_bytes_bytes[5m]) and irate(kv_ep_io_compaction_read_bytes_bytes[5m])",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
       "options": {
         "tooltip": {
           "mode": "multi"
