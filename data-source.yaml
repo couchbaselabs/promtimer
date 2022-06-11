@@ -26,10 +26,12 @@ datasources:
     basicAuth: {data-source-basic-auth}
     # <string> basic auth username
     basicAuthUser: {data-source-basic-auth-user}
-    # <string> basic auth password
-    basicAuthPassword: {data-source-basic-auth-password}
     version: 1
     # <bool> allow users to edit datasources from the UI.
     editable: true
     jsonData:
       timeInterval: 1s
+    # <string> json object of data that will be encrypted.
+    secureJsonData:
+      # <string> basic auth password
+      basicAuthPassword: {data-source-basic-auth-password}
