@@ -58,7 +58,7 @@
   },
   "_panels": [
     {
-      "title": "sum(irate(kv_ops[1m]))",
+      "title": "$bucket: sum(irate(kv_ops[1m]))",
       "_base": "panel",
       "_targets": [
         {
@@ -70,19 +70,19 @@
       ]
     },
     {
-      "title": "90th percentile GET latency",
+      "title": "$bucket: 90th percentile GET latency",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
           "expr": "histogram_quantile(0.90, irate(kv_cmd_duration_seconds_bucket{opcode=\"GET\",bucket=\"$bucket\"}[5m]))",
-          "legendFormat": "{{bucket}} GET latency",
+          "legendFormat": "{data-source-name} GET latency",
           "_base": "target"
         }
       ]
     },
     {
-      "title": "irate(kv_ep_bg_fetched[1m]))",
+      "title": "$bucket: irate(kv_ep_bg_fetched[1m]))",
       "_base": "panel",
       "_targets": [
         {
@@ -94,7 +94,7 @@
       ]
     },
     {
-      "title": "kv_ep_diskqueue_items",
+      "title": "$bucket: kv_ep_diskqueue_items",
       "_base": "panel",
       "_targets": [
         {
@@ -106,7 +106,7 @@
       ]
     },
     {
-      "title": "kv_vb_ops_create",
+      "title": "$bucket: kv_vb_ops_create",
       "_base": "panel",
       "_targets": [
         {
@@ -118,82 +118,131 @@
       ]
     },
     {
+      "title": "$bucket: Percentage Memory Resident",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_vb_perc_mem_resident_ratio{bucket=\"$bucket\"}",
+          "legendFormat": "{data-source-name} {{state}}",
+          "_base": "target"
+        }
+      ],
+      "description": "kv_vb_perc_mem_resident_ratio",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        }
+      }
+    },
+    {
       "title": "{data-source-name} irate(kv_ops[1m])",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
           "expr": "irate(kv_ops{bucket=\"$bucket\"}[1m])",
-          "legendFormat": "irate(kv_ops[1m]) {{op}}-{{result}}",
+          "legendFormat": "{{op}}-{{result}}",
           "_base": "target"
         }
       ]
     },
     {
-      "title": "{data-source-name} kv_memory",
-      "datasource": "{data-source-name}",
+      "title": "kv_memory",
       "_base": "panel",
       "_targets": [
         {
+          "datasource": "{data-source-name}",
           "expr": "kv_mem_used_bytes{bucket=\"$bucket\"}",
           "interval": "",
-          "legendFormat": "mem_used {{bucket}}",
+          "legendFormat": "{data-source-name} mem_used",
           "_base": "target"
         },
         {
+          "datasource": "{data-source-name}",
           "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"}",
           "interval": "",
-          "legendFormat": "high watermark {{bucket}}",
+          "legendFormat": "{data-source-name} high watermark",
           "_base": "target"
         },
         {
+          "datasource": "{data-source-name}",
           "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"}",
           "interval": "",
-          "legendFormat": "low watermark {{bucket}}",
+          "legendFormat": "{data-source-name} low watermark",
           "_base": "target"
         },
         {
+          "datasource": "{data-source-name}",
           "expr": "sysproc_mem_resident{proc=\"memcached\"}",
           "interval": "",
-          "legendFormat": "memcached RSS",
+          "legendFormat": "{data-source-name} memcached RSS",
           "_base": "target"
         }
       ]
     },
     {
-      "title": "{data-source-name} kv_disk",
-      "datasource": "{data-source-name}",
+      "title": "kv items",
       "_base": "panel",
       "_targets": [
         {
+          "datasource": "{data-source-name}",
+          "expr": "kv_vb_curr_items{state=~\"active|replica\",bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "{data-source-name} {{state}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "KV Mutations",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\",bucket=\"$bucket\"}[5m]))",
+          "legendFormat": "{{op}}-{{result}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Computed as:`(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[5m]))`"
+    },
+    {
+      "title": "kv_disk",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
           "expr": "kv_ep_diskqueue_items{bucket=\"$bucket\"}",
           "interval": "",
-          "legendFormat": "Disk Queue {{bucket}}",
+          "legendFormat": "{data-source-name} disk queue",
           "_base": "target"
         }
       ]
     },
     {
-      "title": "{data-source-name} kv resident items",
-      "datasource": "{data-source-name}",
+      "title": "kv resident items",
       "_base": "panel",
       "_targets": [
         {
+          "datasource": "{data-source-name}",
           "expr": "kv_curr_items_tot{bucket=\"$bucket\"} - ignoring(name) kv_ep_num_non_resident{bucket=\"$bucket\"}",
           "interval": "",
-          "legendFormat": "Items Resident (a+r) {{bucket}}",
+          "legendFormat": "{data-source-name} Items Resident (a+r) {{bucket}}",
           "_base": "target"
         },
         {
+          "datasource": "{data-source-name}",
           "expr": "kv_vb_curr_items{state=\"replica\",bucket=\"$bucket\"} - ignoring(name) kv_vb_num_non_resident{state=\"replica\",bucket=\"$bucket\"}",
           "interval": "",
-          "legendFormat": "Replica Items Resident {{bucket}}",
+          "legendFormat": "{data-source-name} Replica Items Resident {{bucket}}",
           "_base": "target"
         },
         {
+          "datasource": "{data-source-name}",
           "expr": "kv_vb_curr_items{state=\"active\",bucket=\"$bucket\"} - ignoring(name) kv_vb_num_non_resident{state=\"active\",bucket=\"$bucket\"}",
           "interval": "",
-          "legendFormat": "Active Items Resident {{bucket}}",
+          "legendFormat": "{data-source-name} Active Items Resident {{bucket}}",
           "_base": "target"
         }
       ]
