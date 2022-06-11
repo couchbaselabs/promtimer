@@ -202,7 +202,8 @@ class CBCollect(Source):
         candidate_cbcollect_dir exists.
         :type candidate_cbcollect_dir: ,lib.Path
         """
-        return CBCollect.make_snapshot_dir_path(candidate_cbcollect_dir).exists()
+        return CBCollect.make_snapshot_dir_path(candidate_cbcollect_dir).exists() or \
+               CBCollect.make_snapshot_dir_path(candidate_cbcollect_dir  / '.').exists()
 
     @staticmethod
     def is_cbcollect_dir(candidate_path):
