@@ -1,0 +1,817 @@
+{
+  "_base": "dashboard",
+  "title": "Magma - Node & Bucket",
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "bucket",
+        "options": [
+          {
+            "selected": false,
+            "text": "{bucket}",
+            "value": "{bucket}"
+          }
+        ],
+        "query": "",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "_panels": [
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "title": "OPS rate",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "rate(kv_ep_magma_gets{bucket=\"$bucket\"}[20s])",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "gets",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "rate(kv_ep_magma_sets{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "sets",
+          "refId": "E"
+        },
+        {
+          "exemplar": true,
+          "expr": "rate(kv_ep_magma_inserts{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "inserts",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "_base": "panel",
+      "title": "Memory",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_write_cache_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "write cache",
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_bloom_filter_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "filter",
+          "range": true,
+          "refId": "H"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_block_cache_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "block cache",
+          "range": true,
+          "refId": "G"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_table_meta_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "table meta",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_table_object_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "table object",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_buffer_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "buffer",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_wal_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "wal",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_total_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "total",
+          "range": true,
+          "refId": "F"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_histogram_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "histogram",
+          "range": true,
+          "refId": "K"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_lsmtree_object_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "lsmtree object",
+          "range": true,
+          "refId": "I"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_tree_snapshot_mem_used_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "tree snapshot",
+          "range": true,
+          "refId": "J"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kv_domain_memory_used_bytes{domain=\"secondary\", bucket=\"$bucket\"}",
+          "hide": false,
+          "legendFormat": "secondary domain",
+          "range": true,
+          "refId": "L"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kv_domain_memory_used_bytes{domain=\"primary\", bucket=\"$bucket\"}",
+          "hide": false,
+          "legendFormat": "primary domain",
+          "range": true,
+          "refId": "M"
+        }
+      ]
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "rate(kv_ep_magma_write_bytes_bytes{bucket=\"$bucket\"}[20s])",
+          "interval": "",
+          "legendFormat": "total",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_write_bytes_compact_bytes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "compactions",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Write bytes rate"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_read_bytes_bytes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "total",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_read_bytes_compact_bytes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "compactions",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_read_bytes_get_bytes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "gets",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_bytes_outgoing_bytes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "outgoing",
+          "range": true,
+          "refId": "F"
+        }
+      ],
+     
+      "title": "Read bytes rate"
+    },
+    {
+      "_base": "panel",
+      "title": "Read IO rate",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_readio{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "readio",
+          "range": true,
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_logical_data_size_bytes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "data",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_logical_disk_size_bytes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "disk",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_history_logical_data_size{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "history data",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_history_logical_disk_size{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "history disk",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Logical size"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "kv_ep_magma_data_blocks_uncompressed_size{bucket=\"$bucket\"}",
+          "hide": false,
+          "legendFormat": "uncompressed",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kv_ep_magma_data_blocks_compressed_size{bucket=\"$bucket\"}",
+          "hide": false,
+          "legendFormat": "compressed",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kv_ep_magma_data_blocks_space_reduction_estimate_pct_ratio{bucket=\"$bucket\"}*100",
+          "hide": false,
+          "legendFormat": "space reduction %",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Data block compression"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "kv_ep_magma_tables{bucket=\"$bucket\"}",
+          "legendFormat": "tables",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_tables_created{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "creation rate",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_tables_deleted{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "deletion rate",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Tables"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_total_disk_usage_bytes{bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "total",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_wal_disk_usage{bucket=\"$bucket\"}",
+          "interval": "",
+          "legendFormat": "wal",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kv_ep_magma_checkpoint_disk_usage{bucket=\"$bucket\"}",
+          "hide": false,
+          "legendFormat": "checkpoint",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kv_ep_magma_active_disk_usage{bucket=\"$bucket\"}",
+          "hide": false,
+          "legendFormat": "active",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Disk usage"
+    },
+    {
+      "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "rate(kv_ep_magma_block_cache_hits{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "hit rate",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "rate(kv_ep_magma_block_cache_misses{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "miss rate",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_index_resident_ratio_ratio{bucket=\"$bucket\"}*100",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "index resident %",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Block cache",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "total",
+            "binary": {
+              "left": "hit rate",
+              "reducer": "sum",
+              "right": "miss rate"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "hit ratio",
+            "binary": {
+              "left": "hit rate",
+              "operator": "/",
+              "reducer": "sum",
+              "right": "total"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "hit%",
+            "binary": {
+              "left": "hit ratio",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "100"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "kv_ep_magma_fragmentation_ratio{bucket=\"$bucket\"}*100",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "fragmentation%",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Fragmentation %"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "compactions",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_keyindex_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "key",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_seqindex_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "seq",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_ttl_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "ttl",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_filecount_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "filecount",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_keyindex_filecount_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "key filecount",
+          "range": true,
+          "refId": "F"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_seqindex_filecount_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "seq filecount",
+          "range": true,
+          "refId": "G"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_writer_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "writer",
+          "range": true,
+          "refId": "H"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_keyindex_writer_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "key writer",
+          "range": true,
+          "refId": "I"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_seqindex_writer_compactions{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "seq writer",
+          "range": true,
+          "refId": "J"
+        }
+      ],
+      "title": "Compaction rate"
+    },
+    {
+      "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_flushes{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "flushes",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Flush rate"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_history_size_evicted{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "size",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_history_time_evicted{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "legendFormat": "time",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "History eviction rate"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "kv_ep_db_history_start_timestamp{bucket=\"$bucket\"}",
+          "legendFormat": "timestamp",
+          "refId": "A"
+        }
+      ],
+      "title": "History start timestamp"
+    }
+  ]
+}
