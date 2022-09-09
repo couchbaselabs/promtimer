@@ -182,6 +182,19 @@
       ]
     },
     {
+      "title": "kv_ep_db_data_size_bytes",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_ep_db_data_size_bytes",
+          "interval": "",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "kv items",
       "_base": "panel",
       "_targets": [
