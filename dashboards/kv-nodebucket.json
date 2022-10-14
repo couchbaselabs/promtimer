@@ -144,6 +144,14 @@
         },
         {
           "exemplar": true,
+          "expr": "kv_ep_ht_item_memory_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Mem used - Hashtable",
+          "refId": "K"
+        },
+        {
+          "exemplar": true,
           "expr": "kv_memory_overhead_bytes{bucket=\"$bucket\"}",
           "hide": false,
           "interval": "",
