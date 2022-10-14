@@ -297,6 +297,14 @@
           "interval": "",
           "legendFormat": "unreferenced_{{state}}",
           "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "kv_ep_checkpoint_memory_pending_destruction_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Pending dealloc",
+          "refId": "I"
         }
       ],
       "thresholds": [],
