@@ -165,6 +165,14 @@
           "interval": "",
           "legendFormat": "Magma total mem used",
           "refId": "J"
+        },
+        {
+          "exemplar": true,
+          "expr": "kv_dcp_ready_queue_size_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "DCP readyQ",
+          "refId": "L"
         }
       ],
       "thresholds": [],
