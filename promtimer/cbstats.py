@@ -1,4 +1,5 @@
-# Copyright (c) 2020-2021 Couchbase, Inc All rights reserved.
+#
+# Copyright (c) 2020-Present Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,11 +22,15 @@ import pathlib
 import zipfile
 import io
 import time
+import datetime
 import os
 from os import path
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
+import dateutil.parser
+from abc import ABC, abstractmethod
 
+# Local Imports
 import util
 
 COUCHBASE_LOG = 'couchbase.log'
@@ -33,13 +38,14 @@ DIAG_LOG = 'diag.log'
 STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
 
 
-class Source:
+class Source(ABC):
     """
     Represents a source of Couchbase stats data.
     """
     def __init__(self, port):
         self._port = port
 
+    @abstractmethod
     def short_name(self):
         """
         :return: a convenient short name for this source
@@ -54,6 +60,7 @@ class Source:
         """
         return self._port
 
+    @abstractmethod
     def scheme(self):
         """
         :return: the scheme (i.e. HTTP or HTTPS) that should be used to access this
@@ -61,6 +68,7 @@ class Source:
         """
         return None
 
+    @abstractmethod
     def host(self):
         """
         Returns the host on which this Prometheus-like instance that serves the stats
@@ -118,6 +126,13 @@ class Source:
         :return: 2-tuple (min time, max time)
         """
         return None
+
+    def time_interval(self):
+        """
+        :return: the time interval that's recommended for use with this stats source;
+                 defaults to 10s.
+        """
+        return '10s'
 
     @staticmethod
     def maybe_start_stats_servers(stats_sources, log_dir):
@@ -550,6 +565,83 @@ class ServerNode(Source):
         except OSError as err:
             logging.error('error: can\'t access cluster: {}'.format(err))
             return []
+
+
+class BackupStatsFiles(Source):
+    """
+    Represents a source of stats data that is a Prometheus instance running
+    against the stats data from cbbackupmgr runs.
+    """
+    def __init__(self, prometheus_tsdb_path, short_name, prometheus_port):
+        super().__init__(prometheus_port)
+        self._short_name = short_name
+        self._prometheus_tsdb_path = prometheus_tsdb_path
+        self._config = None
+
+    def short_name(self):
+        return self._short_name
+
+    def host(self):
+        return '127.0.0.1'
+
+    def scheme(self):
+        return util.HTTP
+
+    def time_interval(self):
+        return '1s'
+
+    def maybe_start(self, log_dir):
+        """
+        Starts the Prometheus instance that serves stats for this source.
+        """
+        log_path = path.join(log_dir, f'prom-{self._short_name}.log')
+        listen_addr = f'0.0.0.0:{self.port()}'
+        args = [Source.PROMETHEUS_BIN,
+                '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
+                '--storage.tsdb.path', self._prometheus_tsdb_path,
+                '--storage.tsdb.no-lockfile',
+                '--storage.tsdb.retention.time', '10y',
+                '--query.lookback-delta', '600s',
+                '--web.listen-address', listen_addr]
+        logging.info((f'starting prometheus server on {listen_addr} against '
+            f'{self._prometheus_tsdb_path}; logging to {log_path}'))
+        return util.start_process(args, log_path)
+
+    @staticmethod
+    def compute_min_and_max_times(archive_path):
+        """
+        Returns a 2-tuple containing an estimate of the min and max POSIX
+        timestamps times associated with this stats Source
+        :return: 2-tuple (min time, max time)
+        """
+        cpu_stats_dir = path.join(archive_path, 'logs', 'stats', 'cpu')
+
+        stat_files = []
+        for file in os.listdir(cpu_stats_dir):
+            if path.isfile(path.join(cpu_stats_dir, file)) and file[0] != '.':
+                stat_files.append(file)
+
+        if len(stat_files) == 0:
+            raise FileNotFoundError('No cpu stat files present in ' + cpu_stats_dir)
+
+        get_date_time = lambda x: datetime.datetime.fromtimestamp(int(x[x.rfind('-')+1:]))
+        stat_files.sort(key=get_date_time)
+
+        first_stat_file_name = stat_files[0]
+        first_stat_file_timestamp = get_date_time(first_stat_file_name)
+
+        last_stat_file = os.path.join(cpu_stats_dir, stat_files[-1])
+        last_stat_file_timestamp = dateutil.parser.parse(util.read_last_line(last_stat_file).split(';')[0])
+
+        return add_padding_to_timestamps(first_stat_file_timestamp, last_stat_file_timestamp)
+
+
+def add_padding_to_timestamps(first_timestamp, last_timestamp):
+    # Padding makes the graph look better
+    start_timestamp = first_timestamp - datetime.timedelta(minutes=1)
+    end_timestamp = last_timestamp + datetime.timedelta(minutes=11)
+
+    return start_timestamp, end_timestamp
 
 
 def parse_couchbase_ns_config(cbcollect_dir):

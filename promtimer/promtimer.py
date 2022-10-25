@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2020-2021 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-Present Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,17 +27,19 @@ import getpass
 import logging
 import hashlib
 
-# local imports
-import util
-import templating
-import dashboard
+# Local Imports
 import annotations
+import backupstats
 import cbstats
+import dashboard
+import templating
+import util
 
 PROMETHEUS_BIN = os.environ.get('PROM_BIN', 'prometheus')
 PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
+CBMSTATPARSER_BIN = 'cbmstatparser'
 
 
 def is_executable_file(candidate_file):
@@ -100,17 +102,24 @@ def make_dashboards_yaml():
             file_to_write.write(contents)
 
 
-def make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh_string):
+def make_dashboards(stats_sources,
+                    buckets,
+                    min_time_string,
+                    max_time_string,
+                    refresh_string,
+                    dashboard_name_predicate):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     data_sources = [s.short_name() for s in stats_sources]
     template_params = \
         [{'type': 'data-source-name', 'values': data_sources},
-         {'type': 'bucket', 'values': buckets}]
+         {'type': 'bucket', 'values': buckets if buckets else []}]
     meta_file_names = glob.glob(path.join(util.get_root_dir(), 'dashboards', '*.json'))
     for meta_file_name in meta_file_names:
         with open(meta_file_name, 'r') as meta_file:
             meta = json.loads(meta_file.read())
             base_file_name = path.basename(meta_file_name)
+            if dashboard_name_predicate and not dashboard_name_predicate(base_file_name):
+                continue
             dash = dashboard.make_dashboard(meta,
                                             template_params,
                                             min_time_string,
@@ -143,7 +152,9 @@ def make_data_sources(stats_sources):
                            'data-source-path': stats_source.stats_url_path(),
                            'data-source-basic-auth': str(auth_required),
                            'data-source-basic-auth-user': user,
-                           'data-source-basic-auth-password': password}
+                           'data-source-basic-auth-password': password,
+                           'data-source-time-interval': stats_source.time_interval()}
+
         filename = 'ds-{}.yaml'.format(data_source_name).replace(':', '_')
         fullname = path.join(datasources_dir, filename)
         with open(fullname, 'w') as file:
@@ -155,7 +166,8 @@ def prepare_grafana(grafana_port,
                     buckets,
                     min_time_string,
                     max_time_string,
-                    refresh):
+                    refresh,
+                    dashboard_name_predicate):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -165,7 +177,11 @@ def prepare_grafana(grafana_port,
     make_home_dashboard()
     make_data_sources(stats_sources)
     make_dashboards_yaml()
-    make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh)
+    make_dashboards(
+        stats_sources, buckets,
+        min_time_string, max_time_string, refresh,
+        dashboard_name_predicate
+    )
 
 
 def start_grafana(grafana_home_path, grafana_port):
@@ -204,8 +220,9 @@ def connect_to_grafana(grafana_port):
     return resp
 
 
-def maybe_open_browser(grafana_http_port, dont_open_browser):
-    url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
+def maybe_open_browser(grafana_http_port, dont_open_browser, url_path):
+    url = f'http://localhost:{grafana_http_port}/{url_path}'
+
     # Helpful for those who accidently close the browser
     if not dont_open_browser:
         logging.info('starting browser using {}'.format(url))
@@ -273,6 +290,10 @@ def main():
                         help='Default to connect to nodes using HTTPS and secure ports if these are not'
                              'explicitly specified in the -c or -n options. '
                              'Only applicable if connecting to a live cluster')
+    parser.add_argument("--backup-archive-path", dest='backup_archive_path',
+                        help="Path to backup archive")
+    parser.add_argument('--cbmstatparser-path', dest='cbmstatparser_bin',
+                        help='path to cbmstatparser binary if it\'s not available on $PATH')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
     args = parser.parse_args()
@@ -309,15 +330,18 @@ def main():
     prometheus_base_port = grafana_port + 1
     live_cluster = args.cluster or args.nodes
 
-    if not live_cluster:
-        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
-        if not stats_sources:
-            sys.exit(1)
-        times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
-        min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
-        max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
-        refresh = ''
-    else:
+    if live_cluster and args.backup_archive_path:
+        print("--cluster and --backup-archive-path are mutually exclusive options")
+        sys.exit(1)
+
+    BACKUPMGR_STATS = 'cbbackupmgr-stats'
+    buckets = None
+
+    if args.cbmstatparser_bin:
+        global CBMSTATPARSER_BIN
+        CBMSTATPARSER_BIN = args.cbmstatparser_bin
+
+    if live_cluster:
         if args.nodes:
             secure = args.secure or any([util.has_secure_scheme(n) for n in args.nodes])
             nodes = []
@@ -338,19 +362,39 @@ def main():
         min_time = 'now-30m'
         max_time = 'now'
         refresh = args.refresh or '5s'
-
-    if not args.buckets:
-        buckets = stats_sources[0].get_buckets()
+    elif args.backup_archive_path:
+        stats_sources, min_time, max_time, refresh = backupstats.handle_backup_archive_mode(  # Here
+            args.backup_archive_path,
+            CBMSTATPARSER_BIN,
+            prometheus_base_port
+        )
     else:
+        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
+        if not stats_sources:
+            sys.exit(1)
+        times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
+        min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
+        max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
+        refresh = ''
+
+    if not args.buckets and not args.backup_archive_path:
+        buckets = stats_sources[0].get_buckets()
+    elif args.buckets:
         buckets = sorted(args.buckets.split(','))
 
     logging.info('using grafana home path:{} '.format(args.grafana_home_path))
+
+    dashboard_name_predicate = lambda x: not x.startswith(BACKUPMGR_STATS)
+    if args.backup_archive_path:
+        dashboard_name_predicate = lambda x: x.startswith(BACKUPMGR_STATS)
+
     prepare_grafana(grafana_port,
                     stats_sources,
                     buckets,
                     min_time,
                     max_time,
-                    refresh)
+                    refresh,
+                    dashboard_name_predicate)
 
     if args.prom_bin:
         global PROMETHEUS_BIN
@@ -370,9 +414,13 @@ def main():
         connect_to_grafana(grafana_port)
         process = util.Process.poll_processes(processes, 1)
         if process is None:
-            maybe_open_browser(grafana_port, args.dont_open_browser)
-            annotations.get_and_create_annotations(grafana_port, stats_sources,
-                                                   not args.cluster)
+            url_path = 'dashboards'
+            if args.backup_archive_path:
+                url_path = f'd/{BACKUPMGR_STATS}/{BACKUPMGR_STATS}-dashboard'
+            maybe_open_browser(grafana_port, args.dont_open_browser, url_path)
+            if not args.backup_archive_path:
+                annotations.get_and_create_annotations(grafana_port, stats_sources,
+                                                       not args.cluster)
             process = util.Process.poll_processes(processes)
 
         logging.info('process {} exited with status {}'.format(process.name(),
