@@ -1,0 +1,445 @@
+{
+  "_base": "dashboard",
+  "title": "cbbackupmgr Stats Dashboard",
+  "annotations": {
+      "list": [
+        {
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Stats",
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "_panels": [
+      {
+        "_base": "row",
+        "title": "CPU"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "expr": "global_usage{type=\"cpu\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Global Usage"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "expr": "process_usage{type=\"cpu\"}",
+            "legendFormat": "__auto",
+            "refId": "A"
+          }
+        ],
+        "title": "Process Usage"
+      },
+      {
+        "_base": "row",
+        "title": "Disk"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "expr": "io_time{type=\"disk\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "IO Time"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "read_bytes",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Read Bytes"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "expr": "write_bytes{type=\"disk\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Write Bytes"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "read_count{type=\"disk\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Read Count"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "expr": "write_count{type=\"disk\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Write Count"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "read_time{type=\"disk\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Read Time"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "write_time{type=\"disk\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Write Time"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "read_time{type=\"disk\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Read Time"
+      },
+      {
+        "_base": "row",
+        "title": "Memory"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "total{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Total"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "available{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Available"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "active{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Active"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "inactive{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Inactive"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "free{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Free"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "used{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Used"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "used_percent{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Used %"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "wired{type=\"memory\", stat=\"vm\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "VM - Wired"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "rss{type=\"memory\", stat=\"process\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Process - RSS"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "vms{type=\"memory\", stat=\"process\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Process - VMS"
+      },
+      {
+        "_base": "row",
+        "title": "Network"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "packets_sent{type=\"net\", stat=\"global_net_stats\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Packets Sent"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "packets_received{type=\"net\", stat=\"global_net_stats\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Packets Received"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "bytes_sent{type=\"net\", stat=\"global_net_stats\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Bytes Sent"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "bytes_received{type=\"net\", stat=\"global_net_stats\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Bytes Received"
+      },
+      {
+        "_base": "panel",
+        "gridPos": {
+          "h": 8
+        },
+        "_targets": [
+          {
+            "_base": "target",
+            "datasource": "{data-source-name}",
+            "editorMode": "builder",
+            "expr": "dropout{type=\"net\", stat=\"global_net_stats\"}",
+            "legendFormat": "__auto"
+          }
+        ],
+        "title": "Dropout"
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "timepicker": {},
+    "timezone": "",
+    "version": 4,
+    "weekStart": ""
+}

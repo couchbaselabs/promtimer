@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-Present Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -306,3 +306,20 @@ def read_last_n_lines(filename, line_count=1):
         except OSError:
             f.seek(0)
         return f.read().decode('UTF-8').splitlines()
+
+
+def read_last_line(filepath):
+    with open(filepath, 'rb') as f:
+        # Only read last line of file:
+        try:
+            f.seek(-2, os.SEEK_END)  # Skip last byte in case it is a newline char
+            while f.read(1) != b'\n':  # Read 1 byte
+                f.seek(-2, os.SEEK_CUR)
+        except OSError:
+            f.seek(0)
+
+        last_line = f.readline().decode()
+        if not last_line:
+            raise ValueError(f'CPU stats file at \'{filepath}\' is empty!')
+
+        return last_line

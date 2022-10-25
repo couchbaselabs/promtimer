@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-Present Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,13 +18,15 @@ from os import path
 import json
 import logging
 
-# local imports
+# Local Imports
 import util
 import templating
+
 
 def get_template(name):
     with open(path.join(util.get_root_dir(), 'templates', name + '.json'), 'r') as file:
         return file.read()
+
 
 def merge_meta_into_template(template, meta):
     for k in meta:
@@ -39,10 +41,12 @@ def merge_meta_into_template(template, meta):
             else:
                 template[k] = val
 
+
 def metaify_template_string(template_string, meta):
     template = json.loads(template_string)
     merge_meta_into_template(template, meta)
     return json.dumps(template)
+
 
 def make_dashboard_part(part_meta, template_params, sub_part_function=None):
     base_part = part_meta['_base']
@@ -85,16 +89,19 @@ def make_dashboard_part(part_meta, template_params, sub_part_function=None):
             result.append(part)
     return result
 
+
 def make_targets(target_metas, template_params):
     result = []
     for target_meta in target_metas:
         result += make_dashboard_part(target_meta, template_params)
     return result
 
+
 def add_targets_to_panel(panel, targets):
     for i, target in enumerate(targets):
         target['refId'] = chr(65 + i)
         panel['targets'].append(target)
+
 
 def get_all_param_value_combinations(template_params):
     if not template_params:
@@ -112,10 +119,12 @@ def get_all_param_value_combinations(template_params):
                 result.append(head_value + rest_permutation)
     return result
 
+
 def make_and_add_targets(panel, panel_meta, template_params):
     if '_targets' in panel_meta:
         targets = make_targets(panel_meta['_targets'], template_params)
         add_targets_to_panel(panel, targets)
+
 
 def make_panels(panel_metas, template_params):
     result = []
@@ -123,6 +132,7 @@ def make_panels(panel_metas, template_params):
         result += make_dashboard_part(panel_meta, template_params,
                                       make_and_add_targets)
     return result
+
 
 def maybe_substitute_templating_variables(dashboard, template_params):
     template_params = [p.copy() for p in template_params]
@@ -139,6 +149,7 @@ def maybe_substitute_templating_variables(dashboard, template_params):
                                 templating['type'] == 'custom':
                     template_param['values'] = ['$' + variable]
     return template_params
+
 
 def maybe_expand_templating(dashboard, template_params):
     dashboard_template = dashboard.get('templating')
@@ -164,6 +175,7 @@ def maybe_expand_templating(dashboard, template_params):
                             option_json['selected'] = True
                             element['current'] = option_json
                         options.append(option_json)
+
 
 def make_dashboard(dashboard_meta,
                    template_params,
@@ -204,8 +216,3 @@ def make_dashboard(dashboard_meta,
         panel_id += 1
         dashboard['panels'].append(panel)
     return dashboard
-
-
-
-
-

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-Present Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ def find_parameter(string, parameter, start_idx=0):
         return -1
     return idx
 
+
 def replace_parameter(string, to_find, to_replace):
     idx = find_parameter(string, to_find)
     if idx < 0:
@@ -37,6 +38,7 @@ def replace_parameter(string, to_find, to_replace):
         idx = find_parameter(string, to_find, prev_idx)
     result.append(string[prev_idx:])
     return ''.join(result)
+
 
 def replace(string, replacement_map):
     for k, v in replacement_map.items():

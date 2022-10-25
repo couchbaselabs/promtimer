@@ -1,4 +1,5 @@
 *.iml
 *.iml~
+.vscode
 promtimer/__pycache__/
 .promtimer
