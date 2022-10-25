@@ -26,6 +26,7 @@ import sys
 import getpass
 import logging
 import hashlib
+import subprocess
 
 # local imports
 import util
@@ -163,7 +164,8 @@ def prepare_grafana(grafana_port,
     os.makedirs(get_notifiers_dir(), exist_ok=True)
     make_custom_ini(grafana_port)
     make_home_dashboard()
-    make_data_sources(stats_sources)
+    if stats_sources is not None:
+        make_data_sources(stats_sources)
     make_dashboards_yaml()
     make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh)
 
@@ -273,6 +275,11 @@ def main():
                         help='Default to connect to nodes using HTTPS and secure ports if these are not'
                              'explicitly specified in the -c or -n options. '
                              'Only applicable if connecting to a live cluster')
+    parser.add_argument("--stats-archive-path", dest='stats_archive_path',
+                        help="Path to backup archive")
+    parser.add_argument("--stats-tsdb-path", dest='stats_tsdb_path',
+                        help='Path to directory meant to hold Prometheus tsdb created '
+                        'by cbstatsanalyser')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
     args = parser.parse_args()
@@ -309,7 +316,38 @@ def main():
     prometheus_base_port = grafana_port + 1
     live_cluster = args.cluster or args.nodes
 
-    if not live_cluster:
+    cbbackupmgr_stats_mode = False
+
+    if (args.stats_archive_path and not args.stats_tsdb_path) or (args.stats_tsdb_path and not args.stats_archive_path):
+        # Maybe use .promtimer as stats_tsdb_path if it's not set?
+        logging.error('both an archive path and a TSDB path must be specified when '
+                      'running Promtimer in cbbackupmgr stats mode')
+        sys.exit(1)
+
+    if args.stats_archive_path and args.stats_tsdb_path:
+        cbbackupmgr_stats_mode = True
+        # os.tempfile for tsdb
+
+        # Check that stats_tsdb_path exists and is an empty dir
+        if not os.path.isdir(args.stats_tsdb_path) or (len(os.listdir(args.stats_tsdb_path)) != 0):
+            logging.error('directory supplied as stats_tsdb_path either does not exist or is not empty')
+            sys.exit(1)
+
+        cbmstatparser_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'backup', 'build', 'bin')
+        result = subprocess.run(
+            ["./cbmstatparser", "parse", "-a", args.stats_archive_path, "-t", args.stats_tsdb_path],
+            cwd=cbmstatparser_dir,
+            check=True, # Raises exception if exit code is not 0
+        )
+
+        # Make maybe_start use this new tsdb
+        prometheus_path = get_prometheus_bin_path()
+        prometheus_process = start_prometheus_server(args.stats_tsdb_path, prometheus_path)
+
+        # Make prepare_grafana use the relevant dashboard
+        print("Bonjour, le Monde!")
+
+    if not live_cluster and not cbbackupmgr_stats_mode:
         stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
         if not stats_sources:
             sys.exit(1)
@@ -327,7 +365,7 @@ def main():
                                                                             args.user,
                                                                             args.password,
                                                                             secure)
-        else:
+        if not cbbackupmgr_stats_mode:
             secure = args.secure or util.has_secure_scheme(args.cluster)
             stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
                                                                  args.user,
@@ -339,18 +377,22 @@ def main():
         max_time = 'now'
         refresh = args.refresh or '5s'
 
-    if not args.buckets:
+    if not args.buckets and not cbbackupmgr_stats_mode:
         buckets = stats_sources[0].get_buckets()
-    else:
+    elif args.buckets:
         buckets = sorted(args.buckets.split(','))
 
     logging.info('using grafana home path:{} '.format(args.grafana_home_path))
-    prepare_grafana(grafana_port,
-                    stats_sources,
-                    buckets,
-                    min_time,
-                    max_time,
-                    refresh)
+
+    if not cbbackupmgr_stats_mode:
+        prepare_grafana(grafana_port,
+                        stats_sources,
+                        buckets,
+                        min_time,
+                        max_time,
+                        refresh)
+    else:
+        prepare_grafana_cbmstatparser_mode(grafana_port, min_time, max_time, refresh)
 
     if args.prom_bin:
         global PROMETHEUS_BIN
@@ -361,10 +403,16 @@ def main():
             PROMETHEUS_BIN))
         sys.exit(1)
 
+    # if not cbbackupmgr_stats_mode:
     cbstats.Source.PROMETHEUS_BIN = PROMETHEUS_BIN
-    processes = cbstats.Source.maybe_start_stats_servers(stats_sources,
-                                                         PROMTIMER_LOGS_DIR)
-    processes.append(start_grafana(args.grafana_home_path, grafana_port))
+
+    if not cbbackupmgr_stats_mode:
+        processes = cbstats.Source.maybe_start_stats_servers(stats_sources,
+                                                             PROMTIMER_LOGS_DIR)
+    else:
+        processes = start_prometheus_server(args.stats_tsdb_path, "/Users/lackshan/scratch")
+
+    # processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     try:
         connect_to_grafana(grafana_port)
@@ -388,6 +436,25 @@ def main():
         # do nothing and let the program quietly expire
         pass
 
+
+def get_prometheus_bin_path():
+    result = subprocess.run(["which", "prometheus"], capture_output=True, text=True)
+    return result.stdout.replace("\n", "")
+
+def start_prometheus_server(tsdb_path, prometheus_bin):
+    """
+    Starts the Prometheus instance that serves stats for this source.
+    """
+    port = 13002
+
+    listen_address = '127.0.0.1:{}'.format(port)
+    args = [prometheus_bin,
+            '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
+            '--storage.tsdb.path', tsdb_path,
+            '--storage.tsdb.no-lockfile',
+            '--web.listen-address', listen_address]
+
+    return util.start_process(args, None)
 
 if __name__ == '__main__':
     main()
