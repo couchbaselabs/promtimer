@@ -551,6 +551,50 @@ class ServerNode(Source):
             logging.error('error: can\'t access cluster: {}'.format(err))
             return []
 
+class BackupStatsFiles(Source):
+    """
+    Represents a source of stats data that is a Prometheus instance running against
+    the stats data from cbbackupmgr runs.
+    """
+    def __init__(self, prometheus_tsdb_path, short_name, prometheus_port):
+        super(BackupStatsFiles, self).__init__(prometheus_port)
+        self._short_name = short_name
+        self._prometheus_tsdb_path = prometheus_tsdb_path
+        self._config = None
+
+    def short_name(self):
+        return self._short_name
+
+    def host(self):
+        return '127.0.0.1'
+
+    def maybe_start(self, log_dir):
+        """
+        Starts the Prometheus instance that serves stats for this source.
+        """
+        log_path = path.join(log_dir, 'prom-{}.log'.format(self._short_name))
+        listen_addr = '0.0.0.0:{}'.format(self.port())
+        args = [Source.PROMETHEUS_BIN,
+                '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
+                '--storage.tsdb.path', self._prometheus_tsdb_path,
+                '--storage.tsdb.no-lockfile',
+                '--storage.tsdb.retention.time', '10y',
+                '--query.lookback-delta', '600s',
+                '--web.listen-address', listen_addr]
+        logging.info('starting prometheus server on {} against {}; logging to {}'
+                     .format(listen_addr,
+                             self._prometheus_tsdb_path,
+                             log_path))
+        return util.start_process(args, log_path)
+
+    def get_min_and_max_times(self):
+        """
+        Returns a 2-tuple containing an estimate of the min and max POSIX timestamps
+        times associated with this stats Source
+        :return: 2-tuple (min time, max time)
+        """
+        # return get_prometheus_times(self._cbcollect_dir)
+        return None
 
 def parse_couchbase_ns_config(cbcollect_dir):
     logging.debug('parsing couchbase.log (Couchbase config)')
