@@ -1,4 +1,4 @@
-# Copyright (c) 2020-2021 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-2022 Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import pathlib
 import zipfile
 import io
 import time
+import datetime
 import os
 from os import path
 from urllib.parse import urlparse, urlunparse
@@ -587,14 +588,38 @@ class BackupStatsFiles(Source):
                              log_path))
         return util.start_process(args, log_path)
 
-    def get_min_and_max_times(self):
+    @staticmethod
+    def compute_min_and_max_times(self, archive_path):
         """
         Returns a 2-tuple containing an estimate of the min and max POSIX timestamps
         times associated with this stats Source
         :return: 2-tuple (min time, max time)
         """
-        # return get_prometheus_times(self._cbcollect_dir)
-        return None
+        cpu_stats_dir = path.join(archive_path, 'logs', 'stats', 'cpu')
+
+        stat_files = []
+        for file in os.listdir(cpu_stats_dir):
+            if path.isfile(path.join(cpu_stats_dir, file)) and file[0] != '.':
+                stat_files.append(file)
+
+        timestamps = []
+        for file in stat_files:
+            # The timestamp in the filename indicates when the backup started
+            timestamps.append(datetime.datetime.fromtimestamp(int(file.split('-')[2])))
+        timestamps.sort()
+
+        if len(timestamps) == 0:
+            raise FileNotFoundError('No cpu stat files present in ' + cpu_stats_dir)
+
+        start_timestamp = timestamps[0] - datetime.timedelta(minutes=5)
+
+        if len(timestamps) == 1:
+            end_timestamp = timestamps[0] + datetime.timedelta(minutes=45)
+
+        if len(timestamps) > 1:
+            end_timestamp = timestamps[-1] + datetime.timedelta(minutes=45)
+
+        return (start_timestamp, end_timestamp)
 
 def parse_couchbase_ns_config(cbcollect_dir):
     logging.debug('parsing couchbase.log (Couchbase config)')

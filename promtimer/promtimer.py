@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2020-2021 Couchbase, Inc All rights reserved.
+# Copyright (c) 2020-2022 Couchbase, Inc All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ PROMETHEUS_BIN = os.environ.get('PROM_BIN', 'prometheus')
 PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
+# The UID of a dashboard is required in order to build a URL pointing to it.
+GRAFANA_DASHBOARD_UID = 'trFCfNIVz'
 
 
 def is_executable_file(candidate_file):
@@ -121,7 +123,7 @@ def make_dashboards(stats_sources, buckets, min_time_string, max_time_string, re
             with open(path.join(get_dashboards_dir(), base_file_name), 'w') as file:
                 file.write(json.dumps(dash, indent=2))
 
-def make_cbbackupmgr_dashboard(stats_sources, min_time_string, max_time_string, refresh_string):
+def make_cbbackupmgr_dashboard(stats_sources, min_time_string, max_time_string, refresh_string, dashboard_uid):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     data_source = stats_sources[0].short_name()
     meta_file_name = path.join(util.get_root_dir(), 'dashboards', 'cbbackupmgr-stats.json')
@@ -129,7 +131,12 @@ def make_cbbackupmgr_dashboard(stats_sources, min_time_string, max_time_string, 
     with open(meta_file_name, 'r') as meta_file:
         with open(path.join(get_dashboards_dir(), base_file_name), 'w') as dash_file:
             for line in meta_file:
-                dash_file.write(line.replace("{data-source-name}", data_source))
+                dash_file.write(
+                    line.replace("{data-source-name}", data_source)
+                        .replace("{min-time}", min_time_string)
+                        .replace("{max-time}", max_time_string)
+                        .replace("{dashboard-uid}", dashboard_uid)
+                )
 
 def make_data_sources(stats_sources):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
@@ -176,9 +183,13 @@ def prepare_grafana(grafana_port,
     make_data_sources(stats_sources)
     make_dashboards_yaml()
     if buckets is not None:
-        make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh)
+        make_dashboards(
+            stats_sources, buckets, min_time_string, max_time_string, refresh
+        )
     else:
-        make_cbbackupmgr_dashboard(stats_sources, min_time_string, max_time_string, refresh)
+        make_cbbackupmgr_dashboard(
+            stats_sources, min_time_string, max_time_string, refresh, GRAFANA_DASHBOARD_UID
+        )
 
 
 def start_grafana(grafana_home_path, grafana_port):
@@ -217,8 +228,11 @@ def connect_to_grafana(grafana_port):
     return resp
 
 
-def maybe_open_browser(grafana_http_port, dont_open_browser):
+def maybe_open_browser(grafana_http_port, dont_open_browser, cbbackupmgr_stats_mode=False):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
+    if cbbackupmgr_stats_mode:
+        url = 'http://localhost:{}/d/{}/cbbackupmgr-stats-dashboard'.format(grafana_http_port, GRAFANA_DASHBOARD_UID)
+
     # Helpful for those who accidently close the browser
     if not dont_open_browser:
         logging.info('starting browser using {}'.format(url))
@@ -361,9 +375,14 @@ def main():
             cbstats.BackupStatsFiles(
                 args.stats_tsdb_path,
                 'cbmstatparser-prometheus-tsdb',
-                13002
+                prometheus_base_port
             )
         ]
+
+        times = cbstats.BackupStatsFiles.compute_min_and_max_times(stats_sources[0], args.stats_archive_path)
+        min_time = times[0].isoformat()
+        max_time = times[1].isoformat()
+        refresh = ''
 
     if not live_cluster and not cbbackupmgr_stats_mode:
         stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
@@ -451,7 +470,5 @@ if __name__ == '__main__':
     main()
 
 # ToDo:
-# 1) Populate time range at bottom of dashboard with relevant time range
-# This may require a change to cbmstatparser to make it generate a summary file
-# 2) Use .promtimer as stats_tsdb_path if it's not set. If it's set, check for tsdb. If present, display that, else, generate it with cbmstatparser
-# Can also use os.tempfile for tsdb
+# 2) Use os.tempfile to create tsdb unless stats_tsdb_path is set. If it's set, use tsdb in the directory, error out if it isn't there.
+# 4) Allow cbbackupmgr_collect logs zip files to be used

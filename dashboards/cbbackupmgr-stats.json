@@ -2153,13 +2153,13 @@
       "list": []
     },
     "time": {
-      "from": "2022-10-03T14:21:43.346Z",
-      "to": "2022-10-03T14:22:33.296Z"
+      "from": "{min-time}",
+      "to": "{max-time}"
     },
     "timepicker": {},
     "timezone": "",
     "title": "cbbackupmgr Stats Dashboard",
-    "uid": "trFCfNIVz",
+    "uid": "{dashboard-uid}",
     "version": 4,
     "weekStart": ""
   }
