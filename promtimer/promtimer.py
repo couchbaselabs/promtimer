@@ -26,7 +26,9 @@ import sys
 import getpass
 import logging
 import hashlib
+import shutil
 import subprocess
+import tempfile
 
 # local imports
 import util
@@ -302,9 +304,6 @@ def main():
                              'Only applicable if connecting to a live cluster')
     parser.add_argument("--stats-archive-path", dest='stats_archive_path',
                         help="Path to backup archive")
-    parser.add_argument("--stats-tsdb-path", dest='stats_tsdb_path',
-                        help='Path to directory meant to hold Prometheus tsdb created '
-                        'by cbstatsanalyser')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
     args = parser.parse_args()
@@ -344,36 +343,43 @@ def main():
     cbbackupmgr_stats_mode = False
     buckets = None
 
-    if (args.stats_archive_path and not args.stats_tsdb_path) or \
-    (args.stats_tsdb_path and not args.stats_archive_path):
-        logging.error('both an archive path and a TSDB path must be specified when '
-                      'running Promtimer in cbbackupmgr stats mode')
-        sys.exit(1)
+    # if (args.stats_archive_path and not args.stats_tsdb_path) or \
+    # (args.stats_tsdb_path and not args.stats_archive_path):
+    #     logging.error('both an archive path and a TSDB path must be specified when '
+    #                   'running Promtimer in cbbackupmgr stats mode')
+    #     sys.exit(1)
 
-    if args.stats_archive_path and args.stats_tsdb_path:
+    if args.stats_archive_path:
         cbbackupmgr_stats_mode = True
 
-        # Check that stats_tsdb_path exists and is an empty dir
-        if not os.path.isdir(args.stats_tsdb_path) or \
-            (len(os.listdir(args.stats_tsdb_path)) != 0):
+        # Check that stats_archive_path exists and is not an empty dir
+        if not os.path.isdir(args.stats_archive_path) or \
+            (len(os.listdir(args.stats_archive_path)) == 0):
             logging.error(
-                'directory supplied as stats_tsdb_path either does not exist or is not empty'
+                'directory supplied as stats_archive_path either does not exist or is empty'
             )
             sys.exit(1)
+
+        # Using tempfile.gettempdir() sometimes causes the Prometheus server to take a long time to start up
+        stats_tsdb_path = os.path.join(tempfile.gettempdir(), 'promtimer-tsdb')
+
+        if os.path.exists(stats_tsdb_path):
+            shutil.rmtree(stats_tsdb_path)
+        os.mkdir(stats_tsdb_path)
 
         cbmstatparser_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             '..', 'backup', 'build', 'bin'
         )
         result = subprocess.run(
-            ["./cbmstatparser", "parse", "-a", args.stats_archive_path, "-t", args.stats_tsdb_path],
+            ["./cbmstatparser", "parse", "-a", args.stats_archive_path, "-t", stats_tsdb_path],
             cwd=cbmstatparser_dir,
             check=True, # Raises exception if exit code is not 0
         )
 
         stats_sources = [
             cbstats.BackupStatsFiles(
-                args.stats_tsdb_path,
+                stats_tsdb_path,
                 'cbmstatparser-prometheus-tsdb',
                 prometheus_base_port
             )
@@ -470,5 +476,4 @@ if __name__ == '__main__':
     main()
 
 # ToDo:
-# 2) Use os.tempfile to create tsdb unless stats_tsdb_path is set. If it's set, use tsdb in the directory, error out if it isn't there.
 # 4) Allow cbbackupmgr_collect logs zip files to be used
