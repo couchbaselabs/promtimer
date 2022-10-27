@@ -29,6 +29,7 @@ import hashlib
 import shutil
 import subprocess
 import tempfile
+import zipfile
 
 # local imports
 import util
@@ -343,17 +344,23 @@ def main():
     cbbackupmgr_stats_mode = False
     buckets = None
 
-    # if (args.stats_archive_path and not args.stats_tsdb_path) or \
-    # (args.stats_tsdb_path and not args.stats_archive_path):
-    #     logging.error('both an archive path and a TSDB path must be specified when '
-    #                   'running Promtimer in cbbackupmgr stats mode')
-    #     sys.exit(1)
-
     if args.stats_archive_path:
         cbbackupmgr_stats_mode = True
 
+        archive_path = args.stats_archive_path
+        if zipfile.is_zipfile(args.stats_archive_path):
+            # Using tempfile.gettempdir() sometimes causes the Prometheus server to take a long time to start up
+            archive_path = os.path.join(tempfile.gettempdir(), 'stats-archive')
+            if os.path.exists(archive_path):
+                shutil.rmtree(archive_path)
+            os.mkdir(archive_path)
+
+            with zipfile.ZipFile(args.stats_archive_path, 'r') as zipped_archive:
+                zipped_archive.extractall(archive_path)
+
+            archive_path = os.path.join(archive_path, os.path.splitext(os.path.basename(args.stats_archive_path))[0])
         # Check that stats_archive_path exists and is not an empty dir
-        if not os.path.isdir(args.stats_archive_path) or \
+        elif not os.path.isdir(args.stats_archive_path) or \
             (len(os.listdir(args.stats_archive_path)) == 0):
             logging.error(
                 'directory supplied as stats_archive_path either does not exist or is empty'
@@ -372,7 +379,7 @@ def main():
             '..', 'backup', 'build', 'bin'
         )
         result = subprocess.run(
-            ["./cbmstatparser", "parse", "-a", args.stats_archive_path, "-t", stats_tsdb_path],
+            ["./cbmstatparser", "parse", "-a", archive_path, "-t", stats_tsdb_path],
             cwd=cbmstatparser_dir,
             check=True, # Raises exception if exit code is not 0
         )
@@ -385,7 +392,7 @@ def main():
             )
         ]
 
-        times = cbstats.BackupStatsFiles.compute_min_and_max_times(stats_sources[0], args.stats_archive_path)
+        times = cbstats.BackupStatsFiles.compute_min_and_max_times(stats_sources[0], archive_path)
         min_time = times[0].isoformat()
         max_time = times[1].isoformat()
         refresh = ''
@@ -474,6 +481,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# ToDo:
-# 4) Allow cbbackupmgr_collect logs zip files to be used
