@@ -119,6 +119,18 @@
             ]
           },
           {
+            "title": "fts_num_batches_introduced",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_batches_introduced",
+                "legendFormat": "{data-source-name} fts_num_batches_introduced",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_pct_cpu_gc",
             "_base": "panel",
             "_targets": [
