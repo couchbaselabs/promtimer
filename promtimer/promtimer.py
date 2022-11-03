@@ -16,6 +16,7 @@
 #
 
 import argparse
+import atexit
 import glob
 import os
 from os import path
@@ -43,7 +44,7 @@ PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
 # The UID of a dashboard is required in order to build a URL pointing to it.
-GRAFANA_DASHBOARD_UID = 'trFCfNIVz'
+CBBACKUPMGR_DASHBOARD_UID = 'trFCfNIVz'
 
 
 def is_executable_file(candidate_file):
@@ -191,7 +192,7 @@ def prepare_grafana(grafana_port,
         )
     else:
         make_cbbackupmgr_dashboard(
-            stats_sources, min_time_string, max_time_string, refresh, GRAFANA_DASHBOARD_UID
+            stats_sources, min_time_string, max_time_string, refresh, CBBACKUPMGR_DASHBOARD_UID
         )
 
 
@@ -234,7 +235,7 @@ def connect_to_grafana(grafana_port):
 def maybe_open_browser(grafana_http_port, dont_open_browser, cbbackupmgr_stats_mode=False):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
     if cbbackupmgr_stats_mode:
-        url = 'http://localhost:{}/d/{}/cbbackupmgr-stats-dashboard'.format(grafana_http_port, GRAFANA_DASHBOARD_UID)
+        url = 'http://localhost:{}/d/{}/cbbackupmgr-stats-dashboard'.format(grafana_http_port, CBBACKUPMGR_DASHBOARD_UID)
 
     # Helpful for those who accidently close the browser
     if not dont_open_browser:
@@ -349,11 +350,9 @@ def main():
 
         archive_path = args.stats_archive_path
         if zipfile.is_zipfile(args.stats_archive_path):
-            # Using tempfile.gettempdir() sometimes causes the Prometheus server to take a long time to start up
-            archive_path = os.path.join(tempfile.gettempdir(), 'stats-archive')
-            if os.path.exists(archive_path):
-                shutil.rmtree(archive_path)
-            os.mkdir(archive_path)
+            archive_path_tmpdir = tempfile.TemporaryDirectory()
+            atexit.register(lambda: archive_path_tmpdir.cleanup())
+            archive_path = archive_path_tmpdir.name
 
             with zipfile.ZipFile(args.stats_archive_path, 'r') as zipped_archive:
                 zipped_archive.extractall(archive_path)
@@ -367,12 +366,9 @@ def main():
             )
             sys.exit(1)
 
-        # Using tempfile.gettempdir() sometimes causes the Prometheus server to take a long time to start up
-        stats_tsdb_path = os.path.join(tempfile.gettempdir(), 'promtimer-tsdb')
-
-        if os.path.exists(stats_tsdb_path):
-            shutil.rmtree(stats_tsdb_path)
-        os.mkdir(stats_tsdb_path)
+        stats_tsdb_path_tmpdir = tempfile.TemporaryDirectory()
+        atexit.register(lambda: stats_tsdb_path_tmpdir.cleanup())
+        stats_tsdb_path = stats_tsdb_path_tmpdir.name
 
         cbmstatparser_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
