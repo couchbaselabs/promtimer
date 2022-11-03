@@ -26,6 +26,7 @@ import os
 from os import path
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
+from dateutil.parser import parse
 
 import util
 
@@ -609,13 +610,24 @@ class BackupStatsFiles(Source):
         if len(timestamps) == 0:
             raise FileNotFoundError('No cpu stat files present in ' + cpu_stats_dir)
 
-        start_timestamp = timestamps[0] - datetime.timedelta(minutes=5)
+        start_timestamp = timestamps[0] - datetime.timedelta(minutes=1) # This padding makes the graph look better
 
         if len(timestamps) == 1:
-            end_timestamp = timestamps[0] + datetime.timedelta(minutes=45)
+            last_filename_timestamp = timestamps[0]
 
         if len(timestamps) > 1:
-            end_timestamp = timestamps[-1] + datetime.timedelta(minutes=45)
+            last_filename_timestamp = timestamps[-1]
+
+        last_stat_file = os.path.join(
+            cpu_stats_dir,
+            'repo-backup-' + str(int(time.mktime(last_filename_timestamp.timetuple())))
+        )
+
+        with open(last_stat_file, 'r') as f:
+            lines = f.read().splitlines()
+            last_timestamp = parse(lines[-1].split(';')[0])
+
+        end_timestamp = last_timestamp + datetime.timedelta(minutes=11) # This padding makes the graph look better
 
         return (start_timestamp, end_timestamp)
 
