@@ -132,8 +132,8 @@ def make_cbbackupmgr_dashboard(stats_sources, min_time_string, max_time_string, 
     data_source = stats_sources[0].short_name()
     meta_file_name = path.join(util.get_root_dir(), 'dashboards', 'cbbackupmgr-stats.json')
     base_file_name = path.basename(meta_file_name)
-    with open(meta_file_name, 'r') as meta_file:
-        with open(path.join(get_dashboards_dir(), base_file_name), 'w') as dash_file:
+    with open(meta_file_name, 'r') as meta_file, \
+         open(path.join(get_dashboards_dir(), base_file_name), 'w') as dash_file:
             for line in meta_file:
                 dash_file.write(
                     line.replace("{data-source-name}", data_source)
@@ -176,7 +176,8 @@ def prepare_grafana(grafana_port,
                     buckets,
                     min_time_string,
                     max_time_string,
-                    refresh):
+                    refresh,
+                    cbbackupmgr_stats_mode=False):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -186,7 +187,7 @@ def prepare_grafana(grafana_port,
     make_home_dashboard()
     make_data_sources(stats_sources)
     make_dashboards_yaml()
-    if buckets is not None:
+    if cbbackupmgr_stats_mode is False:
         make_dashboards(
             stats_sources, buckets, min_time_string, max_time_string, refresh
         )
@@ -233,9 +234,9 @@ def connect_to_grafana(grafana_port):
 
 
 def maybe_open_browser(grafana_http_port, dont_open_browser, cbbackupmgr_stats_mode=False):
-    url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
+    url = f'http://localhost:{grafana_http_port}/dashboards'
     if cbbackupmgr_stats_mode:
-        url = 'http://localhost:{}/d/{}/cbbackupmgr-stats-dashboard'.format(grafana_http_port, CBBACKUPMGR_DASHBOARD_UID)
+        url = f'http://localhost:{grafana_http_port}/d/{CBBACKUPMGR_DASHBOARD_UID}/cbbackupmgr-stats-dashboard'
 
     # Helpful for those who accidently close the browser
     if not dont_open_browser:
@@ -360,7 +361,7 @@ def main():
             archive_path = os.path.join(archive_path, os.path.splitext(os.path.basename(args.stats_archive_path))[0])
         # Check that stats_archive_path exists and is not an empty dir
         elif not os.path.isdir(args.stats_archive_path) or \
-            (len(os.listdir(args.stats_archive_path)) == 0):
+            len(os.listdir(args.stats_archive_path)) == 0:
             logging.error(
                 'directory supplied as stats_archive_path either does not exist or is empty'
             )
@@ -388,7 +389,7 @@ def main():
             )
         ]
 
-        times = cbstats.BackupStatsFiles.compute_min_and_max_times(stats_sources[0], archive_path)
+        times = cbstats.BackupStatsFiles.compute_min_and_max_times(archive_path)
         min_time = times[0].isoformat()
         max_time = times[1].isoformat()
         refresh = ''
@@ -435,7 +436,8 @@ def main():
                     buckets,
                     min_time,
                     max_time,
-                    refresh)
+                    refresh,
+                    cbbackupmgr_stats_mode)
 
     if args.prom_bin:
         global PROMETHEUS_BIN

@@ -558,7 +558,7 @@ class BackupStatsFiles(Source):
     the stats data from cbbackupmgr runs.
     """
     def __init__(self, prometheus_tsdb_path, short_name, prometheus_port):
-        super(BackupStatsFiles, self).__init__(prometheus_port)
+        super().__init__(prometheus_port)
         self._short_name = short_name
         self._prometheus_tsdb_path = prometheus_tsdb_path
         self._config = None
@@ -573,7 +573,7 @@ class BackupStatsFiles(Source):
         """
         Starts the Prometheus instance that serves stats for this source.
         """
-        log_path = path.join(log_dir, 'prom-{}.log'.format(self._short_name))
+        log_path = path.join(log_dir, f'prom-{self._short_name}.log')
         listen_addr = '0.0.0.0:{}'.format(self.port())
         args = [Source.PROMETHEUS_BIN,
                 '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
@@ -582,14 +582,12 @@ class BackupStatsFiles(Source):
                 '--storage.tsdb.retention.time', '10y',
                 '--query.lookback-delta', '600s',
                 '--web.listen-address', listen_addr]
-        logging.info('starting prometheus server on {} against {}; logging to {}'
-                     .format(listen_addr,
-                             self._prometheus_tsdb_path,
-                             log_path))
+        logging.info((f'starting prometheus server on {listen_addr} against '
+            f'{self._prometheus_tsdb_path}; logging to {log_path}'))
         return util.start_process(args, log_path)
 
     @staticmethod
-    def compute_min_and_max_times(self, archive_path):
+    def compute_min_and_max_times(archive_path):
         """
         Returns a 2-tuple containing an estimate of the min and max POSIX timestamps
         times associated with this stats Source
