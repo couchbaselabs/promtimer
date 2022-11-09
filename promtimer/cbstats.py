@@ -26,7 +26,7 @@ import os
 from os import path
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
-from dateutil.parser import parse
+import dateutil.parser
 
 import util
 
@@ -575,7 +575,7 @@ class BackupStatsFiles(Source):
         Starts the Prometheus instance that serves stats for this source.
         """
         log_path = path.join(log_dir, f'prom-{self._short_name}.log')
-        listen_addr = '0.0.0.0:{}'.format(self.port())
+        listen_addr = f'0.0.0.0:{self.port()}'
         args = [Source.PROMETHEUS_BIN,
                 '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
                 '--storage.tsdb.path', self._prometheus_tsdb_path,
@@ -612,24 +612,29 @@ class BackupStatsFiles(Source):
 
         start_timestamp = timestamps[0] - datetime.timedelta(minutes=1) # This padding makes the graph look better
 
-        if len(timestamps) == 1:
-            last_filename_timestamp = timestamps[0]
-
-        if len(timestamps) > 1:
-            last_filename_timestamp = timestamps[-1]
-
         last_stat_file = os.path.join(
             cpu_stats_dir,
-            'repo-backup-' + str(int(time.mktime(last_filename_timestamp.timetuple())))
+            'repo-backup-' + str(int(time.mktime(timestamps[-1].timetuple())))
         )
 
-        with open(last_stat_file, 'r') as f:
-            lines = f.read().splitlines()
-            last_timestamp = parse(lines[-1].split(';')[0])
+        with open(last_stat_file, 'rb') as f:
+            # Only read last line of file:
+            try:
+                f.seek(-2, os.SEEK_END) # Skip EOF char at end of file
+                while f.read(1) != b'\n':
+                    f.seek(-2, os.SEEK_CUR)
+            except OSError:
+                f.seek(0)
+
+            last_line = f.readline().decode()
+            if not last_line:
+                raise ValueError(f'CPU stats file at \'{last_stat_file}\' is empty!')
+
+            last_timestamp = dateutil.parser.parse(last_line.split(';')[0])
 
         end_timestamp = last_timestamp + datetime.timedelta(minutes=11) # This padding makes the graph look better
 
-        return (start_timestamp, end_timestamp)
+        return start_timestamp, end_timestamp
 
 def parse_couchbase_ns_config(cbcollect_dir):
     logging.debug('parsing couchbase.log (Couchbase config)')

@@ -187,7 +187,7 @@ def prepare_grafana(grafana_port,
     make_home_dashboard()
     make_data_sources(stats_sources)
     make_dashboards_yaml()
-    if cbbackupmgr_stats_mode is False:
+    if not cbbackupmgr_stats_mode:
         make_dashboards(
             stats_sources, buckets, min_time_string, max_time_string, refresh
         )
@@ -305,7 +305,7 @@ def main():
                         help='Default to connect to nodes using HTTPS and secure ports if these are not'
                              'explicitly specified in the -c or -n options. '
                              'Only applicable if connecting to a live cluster')
-    parser.add_argument("--stats-archive-path", dest='stats_archive_path',
+    parser.add_argument("--backup-archive-path", dest='backup_archive_path',
                         help="Path to backup archive")
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
@@ -346,29 +346,29 @@ def main():
     cbbackupmgr_stats_mode = False
     buckets = None
 
-    if args.stats_archive_path:
+    if args.backup_archive_path:
         cbbackupmgr_stats_mode = True
 
-        archive_path = args.stats_archive_path
-        if zipfile.is_zipfile(args.stats_archive_path):
+        archive_path = args.backup_archive_path
+        if zipfile.is_zipfile(args.backup_archive_path):
             archive_path_tmpdir = tempfile.TemporaryDirectory()
-            atexit.register(lambda: archive_path_tmpdir.cleanup())
+            atexit.register(archive_path_tmpdir.cleanup)
             archive_path = archive_path_tmpdir.name
 
-            with zipfile.ZipFile(args.stats_archive_path, 'r') as zipped_archive:
+            with zipfile.ZipFile(args.backup_archive_path, 'r') as zipped_archive:
                 zipped_archive.extractall(archive_path)
 
-            archive_path = os.path.join(archive_path, os.path.splitext(os.path.basename(args.stats_archive_path))[0])
-        # Check that stats_archive_path exists and is not an empty dir
-        elif not os.path.isdir(args.stats_archive_path) or \
-            len(os.listdir(args.stats_archive_path)) == 0:
+            archive_path = os.path.join(archive_path, os.path.splitext(os.path.basename(args.backup_archive_path))[0])
+        # Check that backup_archive_path exists and is not an empty dir
+        elif not os.path.isdir(args.backup_archive_path) or \
+            len(os.listdir(args.backup_archive_path)) == 0:
             logging.error(
-                'directory supplied as stats_archive_path either does not exist or is empty'
+                'directory supplied as backup_archive_path either does not exist or is empty'
             )
             sys.exit(1)
 
         stats_tsdb_path_tmpdir = tempfile.TemporaryDirectory()
-        atexit.register(lambda: stats_tsdb_path_tmpdir.cleanup())
+        atexit.register(stats_tsdb_path_tmpdir.cleanup)
         stats_tsdb_path = stats_tsdb_path_tmpdir.name
 
         cbmstatparser_dir = os.path.join(
@@ -389,9 +389,8 @@ def main():
             )
         ]
 
-        times = cbstats.BackupStatsFiles.compute_min_and_max_times(archive_path)
-        min_time = times[0].isoformat()
-        max_time = times[1].isoformat()
+        min_time, max_time = cbstats.BackupStatsFiles.compute_min_and_max_times(archive_path)
+        min_time, max_time = min_time.isoformat(), max_time.isoformat()
         refresh = ''
 
     if not live_cluster and not cbbackupmgr_stats_mode:
