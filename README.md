@@ -80,6 +80,14 @@ To get Promtimer, clone this repo locally:
 As to cbcollects, you probably wouldn't be reading this if you didn't already
 have them.
 
+### cbbackupmgr stats files
+For visualisation of cbbackupmgr stats files, you'll also need access to the private
+`backup` repository. You'll need to install it as a submodule by running:
+```bash
+git submodule init
+git submodule update
+```
+
 ## How to Use Promtimer for Offline Analysis
 ### Visualising CBCollects
 Assemble the cbcollects in a directory. It's fine if you unzip them, but it's not

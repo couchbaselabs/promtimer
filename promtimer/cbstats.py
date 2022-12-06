@@ -605,36 +605,41 @@ class BackupStatsFiles(Source):
         for file in stat_files:
             # The timestamp in the filename indicates when the backup started
             timestamps.append(datetime.datetime.fromtimestamp(int(file.split('-')[2])))
-        timestamps.sort()
 
         if len(timestamps) == 0:
             raise FileNotFoundError('No cpu stat files present in ' + cpu_stats_dir)
 
-        start_timestamp = timestamps[0] - datetime.timedelta(minutes=1) # This padding makes the graph look better
+        timestamps.sort()
 
         last_stat_file = os.path.join(
             cpu_stats_dir,
             'repo-backup-' + str(int(time.mktime(timestamps[-1].timetuple())))
         )
 
-        with open(last_stat_file, 'rb') as f:
-            # Only read last line of file:
-            try:
-                f.seek(-2, os.SEEK_END) # Skip EOF char at end of file
-                while f.read(1) != b'\n':
-                    f.seek(-2, os.SEEK_CUR)
-            except OSError:
-                f.seek(0)
+        return add_padding_to_timestamps(timestamps[0], dateutil.parser.parse(read_last_line(last_stat_file)))
 
-            last_line = f.readline().decode()
-            if not last_line:
-                raise ValueError(f'CPU stats file at \'{last_stat_file}\' is empty!')
+def read_last_line(filepath):
+    with open(filepath, 'rb') as f:
+        # Only read last line of file:
+        try:
+            f.seek(-2, os.SEEK_END) # Skip EOF char at end of file
+            while f.read(1) != b'\n': # Read 1 byte
+                f.seek(-2, os.SEEK_CUR)
+        except OSError:
+            f.seek(0)
 
-            last_timestamp = dateutil.parser.parse(last_line.split(';')[0])
+        last_line = f.readline().decode()
+        if not last_line:
+            raise ValueError(f'CPU stats file at \'{filepath}\' is empty!')
 
-        end_timestamp = last_timestamp + datetime.timedelta(minutes=11) # This padding makes the graph look better
+        return last_line.split(';')[0]
 
-        return start_timestamp, end_timestamp
+def add_padding_to_timestamps(first_timestamp, last_timestamp):
+    # Padding makes the graph look better
+    start_timestamp = first_timestamp - datetime.timedelta(minutes=1)
+    end_timestamp = last_timestamp + datetime.timedelta(minutes=11)
+
+    return start_timestamp, end_timestamp
 
 def parse_couchbase_ns_config(cbcollect_dir):
     logging.debug('parsing couchbase.log (Couchbase config)')

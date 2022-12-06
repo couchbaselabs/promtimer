@@ -187,13 +187,13 @@ def prepare_grafana(grafana_port,
     make_home_dashboard()
     make_data_sources(stats_sources)
     make_dashboards_yaml()
-    if not cbbackupmgr_stats_mode:
-        make_dashboards(
-            stats_sources, buckets, min_time_string, max_time_string, refresh
-        )
-    else:
+    if cbbackupmgr_stats_mode:
         make_cbbackupmgr_dashboard(
             stats_sources, min_time_string, max_time_string, refresh, CBBACKUPMGR_DASHBOARD_UID
+        )
+    else:
+        make_dashboards(
+            stats_sources, buckets, min_time_string, max_time_string, refresh
         )
 
 
