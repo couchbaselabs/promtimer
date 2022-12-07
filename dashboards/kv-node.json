@@ -597,19 +597,6 @@
       }
     },
     {
-      "title": "KV Memory Usage",
-      "datasource": "{data-source-name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sysproc_mem_resident{proc=\"memcached\"}",
-          "legendFormat": "Bytes",
-          "_base": "target"
-        }
-      ],
-      "description": "Memory usage by the KV service, in bytes\n\nsysproc_mem_resident{proc=\"memcached\"}"
-    },
-    {
       "title": "Metadata Overhead",
       "datasource": "{data-source-name}",
       "_base": "panel",
