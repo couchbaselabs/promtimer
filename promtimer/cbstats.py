@@ -519,35 +519,32 @@ def parse_couchbase_chronicle_older_version(cbcollect_dir):
 
 def parse_couchbase_chronicle(cbcollect_dir):
     logging.debug('parsing couchbase.log (Chronicle config)')
-    in_config = False
-    in_buckets = False
     bucket_list = ''
     with open(path.join(cbcollect_dir, 'couchbase.log'), 'r') as file:
+        parsing_config = False
+        parsing_bucket_names = False
         for full_line in file:
             line = full_line.rstrip()
-            if not in_config and line == 'Chronicle dump':
-                in_config = True
-            elif in_config:
+            if not parsing_config and line == 'Chronicle dump':
+                parsing_config = True
+            elif parsing_config:
                 # Names of bucket can be on a single or multiple lines
-                bucket_list = ''
-                possible_buckets = ''
-                if not in_buckets:
-                    m = re.match('(^\s*{bucket_names,{\[)(.*)', line)
+                if not parsing_bucket_names:
+                    m = re.match('(^\s*{bucket_names,{\[)([^\]]*)(\])?', line)
                     if m:
-                        in_buckets = True
-                        possible_buckets = m.group(2)
-                elif in_buckets:
-                    possible_buckets = line
-                if possible_buckets != '':
-                    m = re.match('^([^\]]*)\].*', possible_buckets)
+                        parsing_bucket_names = True
+                        bucket_list = m.group(2)
+                        if m.group(3):
+                            # have all the buckets, no need to continue parsing
+                            break
+                else:
+                    m = re.match('^([^\]]*)\].*', line)
                     if m:
                         bucket_list += m.group(1)
                         break
-                    bucket_list += possible_buckets
-    buckets = []
-    if bucket_list != '':
-        for b in bucket_list.replace(' ','').replace('"','').split(','):
-            buckets.append(b)
+                    else:
+                        bucket_list += line
+    buckets = bucket_list.replace(' ', '').replace('"', '').split(',')
     logging.debug('found buckets:{}'.format(buckets))
     return {'buckets': sorted(buckets)}
 
