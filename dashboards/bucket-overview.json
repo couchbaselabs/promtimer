@@ -70,6 +70,18 @@
       ]
     },
     {
+      "title": "$bucket: KV response error rates",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(kv_total_resp_errors{bucket=\"$bucket\"}[1m]))",
+          "legendFormat": "{data-source-name} sum(irate(kv_total_resp_errors[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "$bucket: 90th percentile GET latency",
       "_base": "panel",
       "_targets": [
