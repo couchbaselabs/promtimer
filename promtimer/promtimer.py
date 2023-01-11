@@ -177,7 +177,7 @@ def prepare_grafana(grafana_port,
                     min_time_string,
                     max_time_string,
                     refresh,
-                    cbbackupmgr_stats_mode=False):
+                    backup_archive_mode=False):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -187,7 +187,7 @@ def prepare_grafana(grafana_port,
     make_home_dashboard()
     make_data_sources(stats_sources)
     make_dashboards_yaml()
-    if cbbackupmgr_stats_mode:
+    if backup_archive_mode:
         make_cbbackupmgr_dashboard(
             stats_sources, min_time_string, max_time_string, refresh, CBBACKUPMGR_DASHBOARD_UID
         )
@@ -233,9 +233,9 @@ def connect_to_grafana(grafana_port):
     return resp
 
 
-def maybe_open_browser(grafana_http_port, dont_open_browser, cbbackupmgr_stats_mode=False):
+def maybe_open_browser(grafana_http_port, dont_open_browser, backup_archive_mode=False):
     url = f'http://localhost:{grafana_http_port}/dashboards'
-    if cbbackupmgr_stats_mode:
+    if backup_archive_mode:
         url = f'http://localhost:{grafana_http_port}/d/{CBBACKUPMGR_DASHBOARD_UID}/cbbackupmgr-stats-dashboard'
 
     # Helpful for those who accidently close the browser
@@ -343,11 +343,11 @@ def main():
     prometheus_base_port = grafana_port + 1
     live_cluster = args.cluster or args.nodes
 
-    cbbackupmgr_stats_mode = False
+    backup_archive_mode = False
     buckets = None
 
     if args.backup_archive_path:
-        cbbackupmgr_stats_mode = True
+        backup_archive_mode = True
 
         archive_path = args.backup_archive_path
         if zipfile.is_zipfile(args.backup_archive_path):
@@ -423,7 +423,7 @@ def main():
         max_time = 'now'
         refresh = args.refresh or '5s'
 
-    if not args.buckets and not cbbackupmgr_stats_mode:
+    if not args.buckets and not backup_archive_mode:
         buckets = stats_sources[0].get_buckets()
     elif args.buckets:
         buckets = sorted(args.buckets.split(','))
@@ -436,7 +436,7 @@ def main():
                     min_time,
                     max_time,
                     refresh,
-                    cbbackupmgr_stats_mode)
+                    backup_archive_mode)
 
     if args.prom_bin:
         global PROMETHEUS_BIN
