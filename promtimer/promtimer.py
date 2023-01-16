@@ -118,7 +118,8 @@ def make_data_sources(stats_sources):
         password = ''
         if auth_required:
             user = stats_source.basic_auth_user()
-            password = stats_source.basic_auth_password()
+            # https://github.com/grafana/grafana/issues/17986
+            password = stats_source.basic_auth_password().replace("$", "$$")
         data_source_name = stats_source.short_name()
         replacement_map = {'data-source-name': data_source_name,
                            'data-source-host': stats_source.host(),
