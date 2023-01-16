@@ -220,6 +220,9 @@ def main():
                         help='don\'t open browser tab automatically on start')
     parser.add_argument("--verbose", dest='verbose', action='store_true',
                         default=False, help="verbose output")
+    parser.add_argument('--refresh', dest='refresh',
+                        help='grafana refresh interval; '
+                             'only valid when connecting to live cluster')
     args = parser.parse_args()
 
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
@@ -269,7 +272,7 @@ def main():
             sys.exit(1)
         min_time = 'now-30m'
         max_time = 'now'
-        refresh = '5s'
+        refresh = args.refresh or '5s'
 
     if not args.buckets:
         buckets = stats_sources[0].get_buckets()
