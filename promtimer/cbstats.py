@@ -441,6 +441,29 @@ class ServerNode(Source):
             return []
 
     @staticmethod
+    def get_stats_sources_from_nodes(nodes, user, password):
+        result = []
+        for node in nodes:
+            secure = re.match('https://', node, re.IGNORECASE)
+            try:
+                response = util.execute_request(node, 'nodes/self',
+                                                username=user, password=password)
+                node_services = json.loads(response.read())
+                for node in node_services['nodesExt']:
+                    host = node.get('hostname')
+                    if host is None:
+                        host = '127.0.0.1'
+                    services = node['services']
+                    port = services['mgmtSSL'] if secure else services['mgmt']
+                    source = ServerNode(host, port, user, password, secure)
+                    result.append(source)
+            except OSError as err:
+                logging.error('error: can\'t access node: {}'.format(err))
+                return []
+        return result
+
+
+    @staticmethod
     def get_user_log(cluster, user, password):
         try:
             response = util.execute_request(cluster, 'logs',
