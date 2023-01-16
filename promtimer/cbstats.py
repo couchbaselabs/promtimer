@@ -351,17 +351,19 @@ class ServerNode(Source):
     """
     Represents a source of stats data that is a running Couchbase Server node.
     """
-    def __init__(self, cluster_host, cluster_port, user, password):
+    def __init__(self, cluster_host, cluster_port, user, password, secure=False):
         super(ServerNode, self).__init__(cluster_port)
         self._cluster_host = cluster_host
         self._user = user
         self._password = password
+        self._secure = secure
 
     def short_name(self):
         return '{}:{}'.format(self._cluster_host, self.port())
 
     def host(self):
-        return self._cluster_host
+        scheme = "https" if self._secure else "http"
+        return f"{scheme}://{self._cluster_host}"
 
     def requires_auth(self):
         return True
@@ -414,11 +416,12 @@ class ServerNode(Source):
         return self._password
 
     def get_my_user_log(self):
-        return ServerNode.get_user_log('{}:{}'.format(self._cluster_host, self.port()),
+        return ServerNode.get_user_log('{}:{}'.format(self.host(), self.port()),
                                        self._user, self._password)
 
     @staticmethod
-    def get_stats_sources(cluster, user, password):
+    def get_stats_sources(cluster, user, password, nodes=None):
+        secure = re.match('https://', cluster, re.IGNORECASE)
         result = []
         try:
             response = util.execute_request(cluster, 'pools/default/nodeServices',
@@ -429,8 +432,8 @@ class ServerNode(Source):
                 if host is None:
                     host = '127.0.0.1'
                 services = node['services']
-                port = services['mgmt']
-                source = ServerNode(host, port, user, password)
+                port = services['mgmtSSL'] if secure else services['mgmt']
+                source = ServerNode(host, port, user, password, secure)
                 result.append(source)
             return result
         except OSError as err:
