@@ -31,6 +31,7 @@ datasources:
     editable: true
     jsonData:
       timeInterval: 1s
+      tlsSkipVerify: true
     # <string> json object of data that will be encrypted.
     secureJsonData:
       # <string> basic auth password
