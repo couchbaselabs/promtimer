@@ -351,14 +351,17 @@ class ServerNode(Source):
     """
     Represents a source of stats data that is a running Couchbase Server node.
     """
-    def __init__(self, cluster_host, cluster_port, user, password, secure=False):
+    def __init__(self, cluster_host, cluster_port, user, password, secure=False, short_name=None):
         super(ServerNode, self).__init__(cluster_port)
         self._cluster_host = cluster_host
         self._user = user
         self._password = password
         self._secure = secure
+        self._short_name = short_name
 
     def short_name(self):
+        if self._short_name:
+            return self._short_name
         return '{}:{}'.format(self._cluster_host, self.port())
 
     def host(self):
@@ -445,21 +448,20 @@ class ServerNode(Source):
         result = []
         for node in nodes:
             secure = re.match('https://', node, re.IGNORECASE)
-            try:
-                response = util.execute_request(node, 'nodes/self',
-                                                username=user, password=password)
-                node_services = json.loads(response.read())
-                for node in node_services['nodesExt']:
-                    host = node.get('hostname')
-                    if host is None:
-                        host = '127.0.0.1'
-                    services = node['services']
-                    port = services['mgmtSSL'] if secure else services['mgmt']
-                    source = ServerNode(host, port, user, password, secure)
-                    result.append(source)
-            except OSError as err:
-                logging.error('error: can\'t access node: {}'.format(err))
-                return []
+            response = util.execute_request(node, 'nodes/self',
+                                            username=user, password=password)
+            nodes_self = json.loads(response.read())
+            real_hostname = nodes_self.get('hostname')
+            if real_hostname is None:
+                real_hostname = '127.0.0.1'
+            else:
+                real_hostname = real_hostname.rstrip(':8091')
+            real_port = nodes_self['ports']['httpsMgmt'] if secure else nodes_self['ports']['mgmt']
+            short_name = f'{real_hostname}:{real_port}'
+            host_and_port = node.split('://')[1]
+            host, port = host_and_port.split(':')
+            source = ServerNode(host, port, user, password, secure, short_name)
+            result.append(source)
         return result
 
 
