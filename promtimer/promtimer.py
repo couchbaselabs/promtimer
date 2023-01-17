@@ -223,6 +223,9 @@ def main():
     parser.add_argument('--refresh', dest='refresh',
                         help='grafana refresh interval; '
                              'only valid when connecting to live cluster')
+    parser.add_argument('--nodes', dest='nodes', 
+                        help='comma-separated list of nodes; useful if the nodes '
+                            'are not accessed using their cluster hostnames (e.g. using portforwarding in Capella)')
     args = parser.parse_args()
 
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
@@ -256,7 +259,7 @@ def main():
     grafana_port = args.grafana_port
     prometheus_base_port = grafana_port + 1
 
-    if not args.cluster:
+    if not args.cluster and not args.nodes:
         stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
         if not stats_sources:
             sys.exit(1)
@@ -265,9 +268,14 @@ def main():
         max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
         refresh = ''
     else:
-        stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
-                                                             args.user,
-                                                             args.password)
+        if args.nodes:
+            stats_sources = cbstats.ServerNode.get_stats_sources_from_nodes(args.nodes.split(','),
+                                                                args.user,
+                                                                args.password)
+        else:
+            stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
+                                                                args.user,
+                                                                args.password)
         if not stats_sources:
             sys.exit(1)
         min_time = 'now-30m'
