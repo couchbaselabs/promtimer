@@ -423,8 +423,8 @@ class ServerNode(Source):
                                        self._user, self._password)
 
     @staticmethod
-    def get_stats_sources(cluster, user, password, nodes=None):
-        secure = re.match('https://', cluster, re.IGNORECASE)
+    def get_stats_sources(cluster, user, password):
+        secure = cluster.startswith("https://")
         result = []
         try:
             response = util.execute_request(cluster, 'pools/default/nodeServices',
@@ -447,7 +447,7 @@ class ServerNode(Source):
     def get_stats_sources_from_nodes(nodes, user, password):
         result = []
         for node in nodes:
-            secure = re.match('https://', node, re.IGNORECASE)
+            secure = node.startswith("https://")
             response = util.execute_request(node, 'nodes/self',
                                             username=user, password=password)
             nodes_self = json.loads(response.read())
