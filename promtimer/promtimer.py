@@ -223,9 +223,11 @@ def main():
     parser.add_argument('--refresh', dest='refresh',
                         help='grafana refresh interval; '
                              'only valid when connecting to live cluster')
-    parser.add_argument('--nodes', dest='nodes', 
-                        help='comma-separated list of nodes; useful if the nodes '
-                            'are not accessed using their cluster hostnames (e.g. using portforwarding in Capella)')
+    parser.add_argument('-n', '--node', dest='nodes', nargs="*",
+                        help='Explicit list of nodes to connect to. Supply multiple values for multiple nodes. Useful if the nodes '
+                            'are not accessed using their cluster hostnames (e.g. support using portforwarding in Capella)')
+    parser.add_argument('-s', '--secure', dest='secure', action="store_true",
+                        help='Connect to nodes using secure ports. Only applicable if connecting to a live cluster')
     args = parser.parse_args()
 
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
@@ -269,13 +271,20 @@ def main():
         refresh = ''
     else:
         if args.nodes:
-            stats_sources = cbstats.ServerNode.get_stats_sources_from_nodes(args.nodes.split(','),
-                                                                args.user,
-                                                                args.password)
+            secure = args.secure or any(map(lambda node: node.startswith('https'), args.nodes))
+            nodes = []
+            for node in args.nodes:
+                nodes.extend(node.split(","))
+            stats_sources = cbstats.ServerNode.get_stats_sources_from_nodes(nodes,
+                                                                            args.user,
+                                                                            args.password,
+                                                                            secure)
         else:
+            secure = args.secure or args.cluster.startswith('https')
             stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
-                                                                args.user,
-                                                                args.password)
+                                                                 args.user,
+                                                                 args.password,
+                                                                 secure)
         if not stats_sources:
             sys.exit(1)
         min_time = 'now-30m'
