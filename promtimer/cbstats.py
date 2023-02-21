@@ -23,6 +23,7 @@ import io
 import time
 import os
 from os import path
+from urllib.parse import urlparse
 
 import util
 
@@ -423,12 +424,14 @@ class ServerNode(Source):
                                        self._user, self._password)
 
     @staticmethod
-    def get_stats_sources(cluster, user, password):
-        secure = cluster.startswith("https://")
+    def get_stats_sources(cluster, user, password, secure=False):
+        """
+        Use the given node to determine the stats sources for the whole cluster
+        """
         result = []
         try:
             response = util.execute_request(cluster, 'pools/default/nodeServices',
-                                            username=user, password=password)
+                                            username=user, password=password, secure=secure)
             node_services = json.loads(response.read())
             for node in node_services['nodesExt']:
                 host = node.get('hostname')
@@ -444,22 +447,30 @@ class ServerNode(Source):
             return []
 
     @staticmethod
-    def get_stats_sources_from_nodes(nodes, user, password):
+    def get_stats_sources_from_nodes(nodes, user, password, secure=False):
+        """
+        Use an explicit node list to get the stats sources
+        """
         result = []
         for node in nodes:
-            secure = node.startswith("https://")
+            u = urlparse(node)
+            host = u.hostname
+            if u.port is None:
+                port = 18091 if secure else 8091
+            else:
+                port = u.port
+            # Support use port forwarding when interacting with capella clusters
+            # Replace all localhost:xyz hostnames in the dashboards with the real hostnames used in the cluster
             response = util.execute_request(node, 'nodes/self',
-                                            username=user, password=password)
+                                            username=user, password=password, secure=secure)
             nodes_self = json.loads(response.read())
             real_hostname = nodes_self.get('hostname')
             if real_hostname is None:
-                real_hostname = '127.0.0.1'
+                real_hostname = host
             else:
                 real_hostname = real_hostname.rstrip(':8091')
             real_port = nodes_self['ports']['httpsMgmt'] if secure else nodes_self['ports']['mgmt']
             short_name = f'{real_hostname}:{real_port}'
-            host_and_port = node.split('://')[1]
-            host, port = host_and_port.split(':')
             source = ServerNode(host, port, user, password, secure, short_name)
             result.append(source)
         return result

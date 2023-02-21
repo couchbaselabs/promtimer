@@ -65,13 +65,17 @@ def poll_processes(processes, count=-1):
 
 def execute_request(url, path, method='GET', data=None,
                     username=None, password=None, headers=None,
-                    retries=0):
+                    retries=0, secure=False):
     m = re.match('https?://', url, re.IGNORECASE)
     if m:
         scheme = m.group(0).lower()
     else:
-        url = 'http://{}'.format(url)
-        scheme = 'http://'
+        if secure:
+            url = 'https://{}'.format(url)
+            scheme = 'https://'
+        else:
+            url = 'http://{}'.format(url)
+            scheme = 'http://'
 
     handlers = []
     if username is not None:
