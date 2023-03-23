@@ -530,7 +530,12 @@ def parse_couchbase_chronicle(cbcollect_dir):
             elif parsing_config:
                 # Names of bucket can be on a single or multiple lines
                 if not parsing_bucket_names:
-                    m = re.match('(^\s*{bucket_names,{\[)([^\]]*)(\])?', line)
+                    # E.g. bucket_names may be formatted in the following ways:
+                    #     [{bucket_names,{["bucket-1"],{<<"...,
+                    #      {bucket_names,{["bucket-1"],{<<"...,
+                    #      {bucket_names,{["bucket-1",
+                    #                      "bucket-2"],{<<"...,
+                    m = re.match('(^\s*.{bucket_names,{\[)([^\]]*)(\])?', line)
                     if m:
                         parsing_bucket_names = True
                         bucket_list = m.group(2)
