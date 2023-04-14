@@ -302,6 +302,362 @@
       "type": "timeseries"
     },
     {
+      "title": "Percentile Sync Write latencies",
+      "description": "For each node computed as:`histogram_quantile(0.99|0.50, irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m]))`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.99,irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m]))",
+          "legendFormat": "99th {data-source-name} Sync SET",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.50,irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m]))",
+          "legendFormat": "50th {data-source-name} Sync SET",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "s"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Percentile SET latencies",
+      "description": "For each node computed as:`histogram_quantile(0.99|0.5, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=\"SET\"}[10m])))`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.99, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=\"SET\"}[10m])))",
+          "legendFormat": "99th {data-source-name} Sync SET",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "histogram_quantile(0.50, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=\"SET\"}[10m])))",
+          "legendFormat": "50th {data-source-name} Sync SET",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "s"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "History",
+      "_base": "row"
+    },
+    {
+      "title": "Rate kv_ep_total_enqueued",
+      "description": "`rate(kv_ep_total_enqueued[5m])`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "rate(kv_ep_total_enqueued[5m])",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Rate kv_ep_total_deduplicated, kv_ep_total_deduplicated_flusher",
+      "description": "`rate(kv_ep_total_deduplicated[5m])` and `rate(kv_ep_total_deduplicated_flusher[5m])`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "rate(kv_ep_total_deduplicated[5m])",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "rate(kv_ep_total_deduplicated_flusher[5m])",
+          "legendFormat": "{data-source-name}:flusher",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Data Size",
+      "description": "`kv_ep_db_data_size_bytes` and `kv_ep_magma_logical_data_size_bytes`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_ep_db_data_size_bytes",
+          "legendFormat": "{data-source-name}:db_data_size",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_ep_magma_logical_data_size_bytes",
+          "legendFormat": "{data-source-name}:magma_logical_data_size",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "History Logical Data Size",
+      "description": "`kv_ep_magma_history_logical_data_size_bytes`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_ep_magma_history_logical_data_size_bytes",
+          "legendFormat": "{data-source-name}:history_size",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "History Logical Disk Size",
+      "description": "`kv_ep_magma_history_logical_disk_size_bytes`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_ep_magma_history_logical_disk_size_bytes",
+          "legendFormat": "{data-source-name}:history_size",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "History File Size",
+      "description": "`kv_ep_db_history_file_size_bytes`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_ep_db_history_file_size_bytes",
+          "legendFormat": "{data-source-name}:history_size",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "DCP",
+      "_base": "row"
+    },
+    {
+      "title": "DCP Items Sent",
+      "description": "`kv_dcp_items_sent`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_dcp_items_sent",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Rate DCP Items Sent",
+      "description": "`rate(kv_dcp_items_sent[5m])`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "rate(kv_dcp_items_sent[5m])",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "DCP Total Bytes Sent",
+      "description": "`kv_dcp_total_data_size_bytes`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "kv_dcp_total_data_size_bytes",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Rate DCP Total Bytes Sent",
+      "description": "`rate(kv_dcp_total_data_size_bytes[5m])`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "rate(kv_dcp_total_data_size_bytes[5m])",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
       "title": "Connections",
       "_base": "row"
     },
