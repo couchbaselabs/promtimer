@@ -40,318 +40,133 @@
   "_panels": [
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
+      "title": "OPS rate",
+      "gridPos": {
+        "h": 9
+      },
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "hiddenSeries": false,
-      "id": 0,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true,
-        "tooltip": {
-          "mode": "multi"
+          "custom": {
+            "fillOpacity": 5
+          }
         }
       },
-      "percentage": false,
-      "pluginVersion": "9.1.7",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
+      "_targets": [
         {
-          "exemplar": true,
+          "_base": "target",
           "expr": "rate(kv_ep_magma_gets{bucket=\"$bucket\"}[20s])",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
           "legendFormat": "gets",
           "refId": "A"
         },
         {
-          "exemplar": true,
+          "_base": "target",
           "expr": "rate(kv_ep_magma_sets{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
           "legendFormat": "sets",
           "refId": "E"
         },
         {
-          "exemplar": true,
+          "_base": "target",
           "expr": "rate(kv_ep_magma_inserts{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
           "legendFormat": "inserts",
           "refId": "B"
         }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "OPS rate",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      ]
     },
     {
       "_base": "panel",
-      "aliasColors": {},
       "datasource": "${node}",
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "description": "",
+      "title": "Memory",
+      "gridPos": {
+        "h": 9
+      },
       "fieldConfig": {
         "defaults": {
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "hiddenSeries": false,
-      "id": 1,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true,
-        "tooltip": {
-          "mode": "multi"
+          "custom": {
+            "fillOpacity": 5
+          }
         }
       },
-      "percentage": false,
-      "pluginVersion": "9.1.7",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
+      "_targets": [
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_write_cache_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "write cache",
           "refId": "A"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_bloom_filter_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "filter",
-          "range": true,
           "refId": "H"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_block_cache_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "block cache",
-          "range": true,
           "refId": "G"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_table_meta_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "table meta",
-          "range": true,
           "refId": "B"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_table_object_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "table object",
-          "range": true,
           "refId": "C"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_buffer_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "buffer",
-          "range": true,
           "refId": "D"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_wal_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "wal",
-          "range": true,
           "refId": "E"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_total_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "total",
-          "range": true,
           "refId": "F"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_histogram_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "histogram",
-          "range": true,
           "refId": "K"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_lsmtree_object_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "lsmtree object",
-          "range": true,
           "refId": "I"
         },
         {
-          "editorMode": "code",
-          "exemplar": true,
+          "_base": "target",
           "expr": "kv_ep_magma_tree_snapshot_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
           "legendFormat": "tree snapshot",
-          "range": true,
           "refId": "J"
         },
         {
-          "editorMode": "code",
+          "_base": "target",
           "expr": "kv_domain_memory_used_bytes{domain=\"secondary\", bucket=\"$bucket\"}",
-          "hide": false,
           "legendFormat": "secondary domain",
-          "range": true,
           "refId": "L"
         },
         {
-          "editorMode": "code",
+          "_base": "target",
           "expr": "kv_domain_memory_used_bytes{domain=\"primary\", bucket=\"$bucket\"}",
-          "hide": false,
           "legendFormat": "primary domain",
-          "range": true,
           "refId": "M"
         }
-      ],
-      "thresholds": [],
-      "timeRegions": [],
-      "title": "Memory",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      ]
     },
     {
       "_base": "panel",
