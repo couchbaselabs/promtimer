@@ -34,7 +34,7 @@ import dashboard
 import annotations
 import cbstats
 
-PROMETHEUS_BIN = 'prometheus'
+PROMETHEUS_BIN = os.environ.get('PROM_BIN', 'prometheus')
 PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
