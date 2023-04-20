@@ -898,6 +898,49 @@
         }
       ],
       "description": "Number of auth errors\n\nkv_auth_errors"
+    },
+    {
+      "title": "Data/History Size",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_ep_db_data_size_bytes",
+          "legendFormat": "data size {{bucket}}",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_db_file_size_bytes",
+          "legendFormat": "file size {{bucket}}",
+          "_base": "target"
+        },
+        {
+          "expr": "kv_ep_db_history_file_size_bytes",
+          "legendFormat": "history size {{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "diskinfo sizes",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Fragmentation (couch_docs_fragmentation)",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "100 * (((kv_ep_db_file_size_bytes - on (bucket) kv_ep_db_history_file_size_bytes) - on(bucket) kv_ep_db_data_size_bytes) /  on(bucket) kv_ep_db_file_size_bytes)",
+          "legendFormat": "Fragmentation % {{bucket}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Fragmentation as per couch_docs_fragmentation",
+      "type": "timeseries"
     }
   ]
 }
