@@ -378,7 +378,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "rate(kv_ep_total_enqueued[5m])",
+          "expr": "irate(kv_ep_total_enqueued[5m])",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
@@ -405,13 +405,13 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "rate(kv_ep_total_deduplicated[5m])",
+          "expr": "irate(kv_ep_total_deduplicated[5m])",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "rate(kv_ep_total_deduplicated_flusher[5m])",
+          "expr": "irate(kv_ep_total_deduplicated_flusher[5m])",
           "legendFormat": "{data-source-name}:flusher",
           "_base": "target"
         }
@@ -583,7 +583,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "rate(kv_dcp_items_sent[5m])",
+          "expr": "irate(kv_dcp_items_sent[5m])",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
@@ -637,7 +637,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "rate(kv_dcp_total_data_size_bytes[5m])",
+          "expr": "irate(kv_dcp_total_data_size_bytes[5m])",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
