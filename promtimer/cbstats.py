@@ -23,7 +23,8 @@ import io
 import time
 import os
 from os import path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
+from http.client import HTTPException
 
 import util
 
@@ -359,6 +360,10 @@ class CBCollect(Source):
 
 
 class ServerNode(Source):
+
+    DEFAULT_PORT = 8091
+    DEFAULT_SECURE_PORT = 18091
+
     """
     Represents a source of stats data that is a running Couchbase Server node.
     """
@@ -405,8 +410,10 @@ class ServerNode(Source):
         :return: list of buckets
         """
         response = util.execute_request('{}:{}'.format(self.host(), self.port()),
-                                'pools/default/buckets',
-                                username=self._user, password=self._password)
+                                        'pools/default/buckets',
+                                        username=self._user,
+                                        password=self._password,
+                                        secure=self._secure)
         bucket_list = json.loads(response.read())
         result = []
         for bucket in bucket_list:
@@ -433,7 +440,45 @@ class ServerNode(Source):
 
     def get_my_user_log(self):
         return ServerNode.get_user_log('{}:{}'.format(self.host(), self.port()),
-                                       self._user, self._password)
+                                       self._user, self._password, self._secure)
+
+    @staticmethod
+    def parse_server_url(server_url, secure=False):
+        """
+        :param server_url: the URL of a Couchbase Server node to parse
+        :param secure: whether or not to default a secure scheme and secure port
+                       if those are not present in the supplied server_url
+        :return: a parsed, potentially modified version of server_url with a scheme and port
+                 defaulted depending on the value of secure, if server_url doesn't include a
+                 scheme or port
+        """
+        server_url = util.default_scheme(server_url, util.HTTPS if secure else util.HTTP)
+        u = urlparse(server_url)
+        netloc = u.netloc
+        if u.port is None:
+            port = ServerNode.DEFAULT_SECURE_PORT if secure else ServerNode.DEFAULT_PORT
+            u.netloc = '{}:{}'.format(u.hostname, port)
+        result = urlunparse((u.scheme, netloc, u.path, u.params, u.query, u.fragment))
+        return urlparse(result)
+
+    @staticmethod
+    def fetch_node_services(node, user, password):
+        """
+        :param node: the node (as a URL) against which to execute the request
+        :param user: the user to authenticate with
+        :param password: the password of the user
+        :return: the response payload from pools/default/nodeServices execueted
+                 against the specified server node
+        """
+        try:
+            response = util.execute_request(node, 'pools/default/nodeServices',
+                                            username=user,
+                                            password=password)
+            return json.loads(response.read())
+        except (OSError, HTTPException) as err:
+            logging.error('error: can\'t access {}; error: {} - {}'.format(
+                          node, type(err).__name__, err))
+            return []
 
     @staticmethod
     def get_stats_sources(cluster, user, password, secure=False):
@@ -441,22 +486,18 @@ class ServerNode(Source):
         Use the given node to determine the stats sources for the whole cluster
         """
         result = []
-        try:
-            response = util.execute_request(cluster, 'pools/default/nodeServices',
-                                            username=user, password=password, secure=secure)
-            node_services = json.loads(response.read())
+        url = ServerNode.parse_server_url(cluster, secure)
+        node_services = ServerNode.fetch_node_services(url.geturl(), user, password)
+        if node_services:
             for node in node_services['nodesExt']:
                 host = node.get('hostname')
                 if host is None:
                     host = '127.0.0.1'
                 services = node['services']
                 port = services['mgmtSSL'] if secure else services['mgmt']
-                source = ServerNode(host, port, user, password, secure)
+                source = ServerNode(host, port, user, password, util.is_https(url.scheme))
                 result.append(source)
-            return result
-        except OSError as err:
-            logging.error('error: can\'t access cluster: {}'.format(err))
-            return []
+        return result
 
     @staticmethod
     def get_stats_sources_from_nodes(nodes, user, password, secure=False):
@@ -465,33 +506,32 @@ class ServerNode(Source):
         """
         result = []
         for node in nodes:
-            u = urlparse(node)
-            host = u.hostname
-            if u.port is None:
-                port = 18091 if secure else 8091
-            else:
-                port = u.port
+            url = ServerNode.parse_server_url(node, secure)
             # Support use port forwarding when interacting with capella clusters
             # Replace all localhost:xyz hostnames in the dashboards with the real hostnames used in the cluster
-            response = util.execute_request(node, 'nodes/self',
-                                            username=user, password=password, secure=secure)
-            nodes_self = json.loads(response.read())
-            real_hostname = nodes_self.get('hostname')
-            if real_hostname is None:
-                real_hostname = host
-            else:
-                real_hostname = real_hostname.rstrip(':8091')
-            real_port = nodes_self['ports']['httpsMgmt'] if secure else nodes_self['ports']['mgmt']
-            short_name = f'{real_hostname}:{real_port}'
-            source = ServerNode(host, port, user, password, secure, short_name)
-            result.append(source)
+            node_services = ServerNode.fetch_node_services(url.geturl(), user, password)
+            if node_services:
+                this_node = None
+                for this_node in node_services['nodesExt']:
+                    if this_node.get('thisNode'):
+                        break
+                real_host = this_node.get('hostname')
+                if not real_host:
+                    real_host = '127.0.0.1'
+                services = this_node['services']
+                real_port = services['mgmtSSL'] if secure else services['mgmt']
+                short_name = f'{real_host}:{real_port}'
+                source = ServerNode(url.hostname, url.port, user, password,
+                                    util.is_https(url.scheme),
+                                    short_name)
+                result.append(source)
         return result
 
-
     @staticmethod
-    def get_user_log(cluster, user, password):
+    def get_user_log(cluster, user, password, secure=False):
         try:
-            response = util.execute_request(cluster, 'logs',
+            url = ServerNode.parse_server_url(cluster, secure)
+            response = util.execute_request(url.geturl(), 'logs',
                                             username=user, password=password)
             json_response = json.loads(response.read())
             return json_response['list']

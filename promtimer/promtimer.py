@@ -219,16 +219,19 @@ def main():
     parser.add_argument('--dont-open-browser', dest='dont_open_browser', default=False,
                         action='store_true',
                         help='don\'t open browser tab automatically on start')
-    parser.add_argument("--verbose", dest='verbose', action='store_true',
-                        default=False, help="verbose output")
     parser.add_argument('--refresh', dest='refresh',
                         help='grafana refresh interval; '
                              'only valid when connecting to live cluster')
     parser.add_argument('-n', '--node', dest='nodes', nargs="*",
-                        help='Explicit list of nodes to connect to. Supply multiple values for multiple nodes. Useful if the nodes '
-                            'are not accessed using their cluster hostnames (e.g. support using portforwarding in Capella)')
+                        help='Explicit list of nodes to connect to. Supply multiple values for multiple nodes. '
+                             'Useful if the nodes are not accessed using their cluster hostnames '
+                             '(e.g. support using portforwarding in Capella)')
     parser.add_argument('-s', '--secure', dest='secure', action="store_true",
-                        help='Connect to nodes using secure ports. Only applicable if connecting to a live cluster')
+                        help='Default to connect to nodes using HTTPS and secure ports if these are not'
+                             'explicitly specified in the -c or -n options. '
+                             'Only applicable if connecting to a live cluster')
+    parser.add_argument("--verbose", dest='verbose', action='store_true',
+                        default=False, help="verbose output")
     args = parser.parse_args()
 
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
@@ -261,8 +264,9 @@ def main():
 
     grafana_port = args.grafana_port
     prometheus_base_port = grafana_port + 1
+    live_cluster = args.cluster or args.nodes
 
-    if not args.cluster and not args.nodes:
+    if not live_cluster:
         stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
         if not stats_sources:
             sys.exit(1)
@@ -272,7 +276,7 @@ def main():
         refresh = ''
     else:
         if args.nodes:
-            secure = args.secure or any(map(lambda node: node.startswith('https'), args.nodes))
+            secure = args.secure or any([util.has_secure_scheme(n) for n in args.nodes])
             nodes = []
             for node in args.nodes:
                 nodes.extend(node.split(","))
@@ -281,7 +285,7 @@ def main():
                                                                             args.password,
                                                                             secure)
         else:
-            secure = args.secure or args.cluster.startswith('https')
+            secure = args.secure or util.has_secure_scheme(args.cluster)
             stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
                                                                  args.user,
                                                                  args.password,
@@ -309,7 +313,7 @@ def main():
         global PROMETHEUS_BIN
         PROMETHEUS_BIN = args.prom_bin
 
-    if not args.cluster and not is_executable_file(PROMETHEUS_BIN):
+    if not live_cluster and not is_executable_file(PROMETHEUS_BIN):
         logging.error('Invalid prometheus executable path: {}'.format(
             PROMETHEUS_BIN))
         sys.exit(1)
