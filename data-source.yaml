@@ -21,7 +21,7 @@ datasources:
     # if not specified will be generated automatically
     uid: {data-source-name}
     # <string> url
-    url: {data-source-host}:{data-source-port}/{data-source-path}
+    url: {data-source-scheme}://{data-source-host}:{data-source-port}/{data-source-path}
     # <bool> enable/disable basic auth
     basicAuth: {data-source-basic-auth}
     # <string> basic auth username

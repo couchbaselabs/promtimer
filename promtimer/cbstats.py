@@ -52,6 +52,13 @@ class Source:
         """
         return self._port
 
+    def scheme(self):
+        """
+        :return: the scheme (i.e. HTTP or HTTPS) that should be used to access this
+                 source of stats
+        """
+        return None
+
     def host(self):
         """
         Returns the host on which this Prometheus-like instance that serves the stats
@@ -138,6 +145,9 @@ class CBCollect(Source):
 
     def host(self):
         return '127.0.0.1'
+
+    def scheme(self):
+        return util.HTTP
 
     def maybe_start(self, log_dir):
         """
@@ -366,8 +376,10 @@ class ServerNode(Source):
         return '{}:{}'.format(self._cluster_host, self.port())
 
     def host(self):
-        scheme = "https" if self._secure else "http"
-        return f"{scheme}://{self._cluster_host}"
+        return self._cluster_host
+
+    def scheme(self):
+        return util.HTTPS if self._secure else util.HTTP
 
     def requires_auth(self):
         return True

@@ -122,6 +122,7 @@ def make_data_sources(stats_sources):
             password = stats_source.basic_auth_password().replace("$", "$$")
         data_source_name = stats_source.short_name()
         replacement_map = {'data-source-name': data_source_name,
+                           'data-source-scheme': stats_source.scheme(),
                            'data-source-host': stats_source.host(),
                            'data-source-port': str(stats_source.port()),
                            'data-source-path': stats_source.stats_url_path(),
