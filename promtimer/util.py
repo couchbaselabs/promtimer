@@ -23,7 +23,10 @@ import ssl
 import re
 import logging
 
+HTTP = 'http'
+HTTPS = 'https'
 ROOT_DIR = path.join(path.dirname(__file__), '..')
+
 
 def get_root_dir():
     return ROOT_DIR
@@ -63,19 +66,51 @@ def poll_processes(processes, count=-1):
         time.sleep(0.1)
         check += 1
 
+
+def get_scheme(url):
+    """
+    :param url: the URL to check for a scheme
+    :return: the scheme associated with the URL if any. Else None.
+    """
+    m = re.match('(https?)://', url, re.IGNORECASE)
+    if m:
+        return m.group(1).lower()
+    return None
+
+
+def is_https(scheme):
+    """
+    :param scheme: the URL scheme to check
+    :return: whether or not the scheme is HTTPS
+    """
+    return scheme and scheme.casefold() == HTTPS
+
+
+def has_secure_scheme(url):
+    """
+    :param url: the URL to check
+    :return: whether or not url has a secure scheme (i.e. HTTPS)
+    """
+    return is_https(get_scheme(url))
+
+
+def default_scheme(url, default):
+    """
+    :param url: the URL to prepend a default scheme to, if none is present
+    :param default: the scheme to default to if none is present
+    :return: the url with default_scheme prepended if no scheme is present.
+             Else url is returned unmodified.
+    """
+    scheme = get_scheme(url)
+    if scheme is None:
+        url = '{}://{}'.format(default, url)
+    return url
+
+
 def execute_request(url, path, method='GET', data=None,
                     username=None, password=None, headers=None,
                     retries=0, secure=False):
-    m = re.match('https?://', url, re.IGNORECASE)
-    if m:
-        scheme = m.group(0).lower()
-    else:
-        if secure:
-            url = 'https://{}'.format(url)
-            scheme = 'https://'
-        else:
-            url = 'http://{}'.format(url)
-            scheme = 'http://'
+    url = default_scheme(url, HTTPS if secure else HTTP)
 
     handlers = []
     if username is not None:
@@ -83,7 +118,7 @@ def execute_request(url, path, method='GET', data=None,
         password_mgr.add_password(None, url, username, password)
         handlers.append(urllib.request.HTTPBasicAuthHandler(password_mgr))
 
-    if scheme == 'https://':
+    if has_secure_scheme(url):
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
