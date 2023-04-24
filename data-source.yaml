@@ -3,14 +3,14 @@ apiVersion: 1
 
 # list of datasources that should be deleted from the database
 deleteDatasources:
-  - name: {data-source-name}
+  - name: "{data-source-name}"
     orgId: 1
 
 # list of datasources to insert/update depending
 # what's available in the database
 datasources:
   # <string, required> name of the datasource. Required
-  - name: {data-source-name}
+  - name: "{data-source-name}"
     # <string, required> datasource type. Required
     type: prometheus
     # <string, required> access mode. proxy or direct (Server or Browser in the UI). Required
@@ -19,9 +19,9 @@ datasources:
     orgId: 1
     # <string> custom UID which can be used to reference this datasource in other parts of the configuration,
     # if not specified will be generated automatically
-    uid: {data-source-name}
+    uid: "{data-source-name}"
     # <string> url
-    url: {data-source-scheme}://{data-source-host}:{data-source-port}/{data-source-path}
+    url: "{data-source-scheme}://{data-source-host}:{data-source-port}/{data-source-path}"
     # <bool> enable/disable basic auth
     basicAuth: {data-source-basic-auth}
     # <string> basic auth username
