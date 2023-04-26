@@ -26,6 +26,7 @@ import webbrowser
 import sys
 import getpass
 import logging
+import hashlib
 
 # local imports
 import util
@@ -121,7 +122,9 @@ def make_data_sources(stats_sources):
             # https://github.com/grafana/grafana/issues/17986
             password = stats_source.basic_auth_password().replace("$", "$$")
         data_source_name = stats_source.short_name()
+        uid = hashlib.sha1(data_source_name.encode("UTF-8")).hexdigest()
         replacement_map = {'data-source-name': data_source_name,
+                           'data-source-uid': uid,
                            'data-source-scheme': stats_source.scheme(),
                            'data-source-host': stats_source.host(),
                            'data-source-port': str(stats_source.port()),

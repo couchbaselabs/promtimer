@@ -19,7 +19,7 @@ datasources:
     orgId: 1
     # <string> custom UID which can be used to reference this datasource in other parts of the configuration,
     # if not specified will be generated automatically
-    uid: "{data-source-name}"
+    uid: "{data-source-uid}"
     # <string> url
     url: "{data-source-scheme}://{data-source-host}:{data-source-port}/{data-source-path}"
     # <bool> enable/disable basic auth
