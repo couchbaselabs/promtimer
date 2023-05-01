@@ -176,6 +176,7 @@ class CBCollect(Source):
                      .format(listen_addr,
                              path.join(self._cbcollect_dir, 'stats_snapshot'),
                              log_path))
+        logging.debug('starting prometheus; full args: {}'.format(args))
         return util.start_process(args, log_path)
 
     def get_buckets(self):
