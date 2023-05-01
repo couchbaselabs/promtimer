@@ -22,6 +22,7 @@ import urllib.request
 import ssl
 import re
 import logging
+import copy
 
 HTTP = 'http'
 HTTPS = 'https'
@@ -146,3 +147,41 @@ def execute_request(url, path, method='GET', data=None,
                 raise
             time.sleep(0.5)
     return None
+
+
+_CommandOutputResults = {}
+
+
+def search_command_output(command, pattern, cache=True):
+    """
+    Searches the command output for the supplied pattern and returns the first
+    match from applying the pattern to the output line-by-line. Caching the
+    result if requested. Cached matches are deep-copied.
+    :param command: the command to run
+    :param pattern: the pattern to search for
+    :param cache: whether to cache the result of the search; defaults to True
+    :return: the result of applying the pattern to each of the lines of the
+             stdout obtained by running the command
+    """
+    if isinstance(pattern, str):
+        pattern = re.compile(pattern)
+    key = None
+    m = None
+    if cache:
+        key = (''.join(command), pattern)
+        if key in _CommandOutputResults:
+            m = _CommandOutputResults[key]
+            logging.debug('got cache hit for command {} and pattern {}; '
+                          'match: {}'
+                          .format(command, pattern, m))
+            return copy.deepcopy(m)
+    result = subprocess.run(command, capture_output=True, encoding='UTF-8')
+    for line in result.stdout.splitlines():
+        m = re.search(pattern, line)
+        if m:
+            break
+    if cache:
+        _CommandOutputResults[key] = copy.deepcopy(m)
+    logging.debug('ran command: {} and applied pattern {} with result: {}'
+                  .format(command, pattern, m))
+    return m

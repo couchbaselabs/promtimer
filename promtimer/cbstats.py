@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import copy
+
+import subprocess
 
 import logging
 import re
@@ -159,10 +162,16 @@ class CBCollect(Source):
         args = [Source.PROMETHEUS_BIN,
                 '--config.file', path.join(util.get_root_dir(), 'noscrape.yml'),
                 '--storage.tsdb.path', path.join(self._cbcollect_dir, 'stats_snapshot'),
-                '--storage.tsdb.no-lockfile',
                 '--storage.tsdb.retention.time', '10y',
                 '--query.lookback-delta', '600s',
                 '--web.listen-address', listen_addr]
+        no_lock_file_option = '--storage.tsdb.no-lockfile'
+        if util.search_command_output([Source.PROMETHEUS_BIN, '-h'], no_lock_file_option):
+            # Package manager installed Prometheus on Ubuntu 20+ is patched to not
+            # include the no-lockfile option and instead inverts the semantics with
+            # a use-lockfile option. So we omit it if not present in the help.
+            # See: https://github.com/couchbaselabs/promtimer/issues/42.
+            args.append(no_lock_file_option)
         logging.info('starting prometheus server on {} against {}; logging to {}'
                      .format(listen_addr,
                              path.join(self._cbcollect_dir, 'stats_snapshot'),
