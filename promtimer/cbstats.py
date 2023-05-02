@@ -502,7 +502,10 @@ class ServerNode(Source):
             for node in node_services['nodesExt']:
                 host = node.get('hostname')
                 if host is None:
-                    host = '127.0.0.1'
+                    # There will be no hostname present if the target node in the cluster
+                    # is configured on loopback (i.e. 127.0.0.1). So, in this case use
+                    # the hostname that we used to access the server in the first place.
+                    host = url.hostname
                 services = node['services']
                 port = services['mgmtSSL'] if secure else services['mgmt']
                 source = ServerNode(host, port, user, password, util.is_https(url.scheme))
@@ -527,7 +530,8 @@ class ServerNode(Source):
                         break
                 real_host = this_node.get('hostname')
                 if not real_host:
-                    real_host = '127.0.0.1'
+                    # See comment in get_stats_sources
+                    real_host = url.hostname
                 services = this_node['services']
                 real_port = services['mgmtSSL'] if secure else services['mgmt']
                 short_name = f'{real_host}:{real_port}'
