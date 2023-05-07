@@ -154,16 +154,29 @@ def prepare_grafana(grafana_port,
     make_dashboards_yaml()
     make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh)
 
+
 def start_grafana(grafana_home_path, grafana_port):
+    """
+    Starts grafana-server wthe the specified home path listening to the specfied
+    port.
+
+    :param grafana_home_path: the Grafana home path to use
+    :param grafana_port: the port to listen to
+    :return: a Process instance wrapping the underlying process handle
+    """
+    name = 'grafana-server'
     args = [GRAFANA_BIN,
             '--homepath', grafana_home_path,
             '--config','custom.ini']
     log_path = path.join(PROMTIMER_DIR, 'logs/grafana.log')
-    logging.info('starting grafana server (on localhost:{}; logging to {})'
-                 .format(grafana_port, log_path))
+    logging.info('starting {} on localhost:{}; logging to {}'
+                 .format(name, grafana_port, log_path))
     # Don't specify a log file as it is done within the custom.ini file
     # otherwise the output is duplicated.
-    return util.start_process(args, None, PROMTIMER_DIR)
+    result = util.Process.start(name, args, None, PROMTIMER_DIR)
+    result.set_log_filename(log_path)
+    return result
+
 
 def maybe_open_browser(grafana_http_port, dont_open_browser):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
@@ -327,11 +340,21 @@ def main():
     processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     time.sleep(0.1)
-    result = util.poll_processes(processes, 1)
-    if result is None:
+    process = util.Process.poll_processes(processes, 1)
+    if process is None:
         maybe_open_browser(grafana_port, args.dont_open_browser)
         annotations.get_and_create_annotations(grafana_port, stats_sources, not args.cluster)
-        util.poll_processes(processes)
+        process = util.Process.poll_processes(processes)
+
+    logging.info('process {} exited with status {}'.format(process.name(), process.poll()))
+    log_filename = process.log_filename()
+    if log_filename:
+        line_count = 3
+        lines = util.read_last_n_lines(log_filename, line_count)
+        logging.info('last {} lines of {}'.format(line_count, log_filename))
+        for line in lines:
+            logging.info(line.strip())
+
 
 if __name__ == '__main__':
     main()

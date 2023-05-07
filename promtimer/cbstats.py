@@ -172,12 +172,13 @@ class CBCollect(Source):
             # a use-lockfile option. So we omit it if not present in the help.
             # See: https://github.com/couchbaselabs/promtimer/issues/42.
             args.append(no_lock_file_option)
-        logging.info('starting prometheus server on {} against {}; logging to {}'
-                     .format(listen_addr,
+        name = 'prometheus on {}'.format(listen_addr)
+        logging.info('starting {} against {}; logging to {}'
+                     .format(name,
                              path.join(self._cbcollect_dir, 'stats_snapshot'),
                              log_path))
-        logging.debug('starting prometheus; full args: {}'.format(args))
-        return util.start_process(args, log_path)
+        logging.debug('starting {}; full args: {}'.format(name, args))
+        return util.Process.start(name, args, log_path)
 
     def get_buckets(self):
         """

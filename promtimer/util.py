@@ -17,7 +17,7 @@
 import subprocess
 import atexit
 import time
-from os import path
+import os
 import urllib.request
 import ssl
 import re
@@ -26,11 +26,12 @@ import copy
 
 HTTP = 'http'
 HTTPS = 'https'
-ROOT_DIR = path.join(path.dirname(__file__), '..')
+ROOT_DIR = os.path.join(os.path.dirname(__file__), '..')
 
 
 def get_root_dir():
     return ROOT_DIR
+
 
 def index(alist, predicate):
     for i, element in enumerate(alist):
@@ -38,13 +39,27 @@ def index(alist, predicate):
             return i
     return -1
 
+
 def kill_node(process):
+    """
+    Kills the supplied process
+    :param process: the process to kill
+    """
     try:
         process.kill()
     except OSError:
         pass
 
+
 def start_process(args, log_filename, cwd=None):
+    """
+    Starts a process using args logging both stdout and stderr to a file by the name
+    of log file_name, which is opened in append mode.
+    :param args: the process arguments
+    :param log_filename: the name of the log file to append to
+    :param cwd: the current working directory
+    :return: the process handle
+    """
     if log_filename is not None:
         log_file = open(log_filename, 'a')
     else:
@@ -57,15 +72,93 @@ def start_process(args, log_filename, cwd=None):
     atexit.register(lambda: kill_node(process))
     return process
 
-def poll_processes(processes, count=-1):
-    check = 0
-    while count < 0 or check < count:
-        for p in processes:
-            result = p.poll()
-            if result is not None:
-                return result
-        time.sleep(0.1)
-        check += 1
+
+class Process:
+    """
+    Class that captures the process handle, name and log filename
+    of an executing process. The name of the process has no
+    significance beyond distinguishing it from other Process
+    instances.
+    """
+
+    def __init__(self, process, name='', log_filename=None):
+        self._process = process
+        self._name = name
+        self._log_filename = log_filename
+
+    def name(self):
+        """
+        :return: the name of this Process
+        """
+        return self._name
+
+    def process(self):
+        """
+        :return: the process handle
+        """
+        return self._process
+
+    def log_filename(self):
+        """
+        :return: the name of the file to which this process logs; None if this process
+                 logs to dev null
+        """
+        return self._log_filename
+
+    def set_log_filename(self, log_filename):
+        """
+        Sets the name of the log file that the underlying process writes to.
+
+        :param log_filename: the name of the log file
+        """
+        self._log_filename = log_filename
+
+    def poll(self):
+        """
+        :return: the result of polling the underlying process handle
+        """
+        return self._process.poll()
+
+    @staticmethod
+    def start(name, args, log_filename, cwd=None):
+        """
+        Starts a process using util.start_process and returns an instance of
+        util.Process.
+
+        :param name: the name associated with the process handle
+        :param args: the arguments with which to start the process
+        :param log_filename: the file to log to or None if the process should log to
+                             dev null
+        :param cwd: the current working directory or None if default
+        :return: a new instance of util.Process that wraps the process handle
+        """
+        process = start_process(args, log_filename, cwd)
+        return Process(process, name, log_filename)
+
+    @staticmethod
+    def poll_processes(processes, count=-1):
+        """
+        Periodically polls each of the supplied processes and exits when one of the
+        polls returns a non-zero value or when the requested number of poll attempts
+        is reached.
+
+        The process that gave a non-zero poll value is returned - or None if no process
+        returned a non-zero poll.
+
+        :param processes:  the processes to poll
+        :param count: the number of times to poll; if less than zero, polling continues
+                      indefinitely
+        :return: the process for which poll returned non-zero or None if the number of
+                 requested polls is reached
+        """
+        check = 0
+        while count < 0 or check < count:
+            for p in processes:
+                result = p.poll()
+                if result is not None:
+                    return p
+            time.sleep(0.1)
+            check += 1
 
 
 def get_scheme(url):
@@ -185,3 +278,28 @@ def search_command_output(command, pattern, cache=True):
     logging.debug('ran command: {} and applied pattern {} with result: {}'
                   .format(command, pattern, m))
     return m
+
+
+def read_last_n_lines(filename, line_count=1):
+    """
+    :param filename: the name of the file to open and read
+    :param line_count: the number of trailing lines to read
+    :return: an array of the last line_count lines in file
+    """
+    if line_count < 1:
+        line_count = 1
+    count = 0
+    with open(filename, 'rb') as f:
+        try:
+            # don't count newline at eof
+            f.seek(-2, os.SEEK_END)
+            while True:
+                b = f.read(1)
+                if b == b'\n':
+                    count += 1
+                    if count >= line_count:
+                        break
+                f.seek(-2, os.SEEK_CUR)
+        except OSError:
+            f.seek(0)
+        return f.read().decode('UTF-8').splitlines()
