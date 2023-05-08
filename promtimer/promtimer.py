@@ -340,20 +340,26 @@ def main():
     processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
     time.sleep(0.1)
-    process = util.Process.poll_processes(processes, 1)
-    if process is None:
-        maybe_open_browser(grafana_port, args.dont_open_browser)
-        annotations.get_and_create_annotations(grafana_port, stats_sources, not args.cluster)
-        process = util.Process.poll_processes(processes)
+    try:
+        process = util.Process.poll_processes(processes, 1)
+        if process is None:
+            maybe_open_browser(grafana_port, args.dont_open_browser)
+            annotations.get_and_create_annotations(grafana_port, stats_sources,
+                                                   not args.cluster)
+            process = util.Process.poll_processes(processes)
 
-    logging.info('process {} exited with status {}'.format(process.name(), process.poll()))
-    log_filename = process.log_filename()
-    if log_filename:
-        line_count = 3
-        lines = util.read_last_n_lines(log_filename, line_count)
-        logging.info('last {} lines of {}'.format(line_count, log_filename))
-        for line in lines:
-            logging.info(line.strip())
+        logging.info('process {} exited with status {}'.format(process.name(),
+                                                               process.poll()))
+        log_filename = process.log_filename()
+        if log_filename:
+            line_count = 3
+            lines = util.read_last_n_lines(log_filename, line_count)
+            logging.info('last {} lines of {}'.format(line_count, log_filename))
+            for line in lines:
+                logging.info(line.strip())
+    except KeyboardInterrupt:
+        # do nothing and let the program quietly expire
+        pass
 
 
 if __name__ == '__main__':
