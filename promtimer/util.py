@@ -238,7 +238,7 @@ def execute_request(url, path, method='GET', data=None,
             retries -= 1
             if retries < 0:
                 raise
-            time.sleep(0.5)
+            time.sleep(0.1)
     return None
 
 
