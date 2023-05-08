@@ -153,7 +153,7 @@ def parse_events(events):
             elif tags:
                 tags = [tags]
         if event_type is None or tags is None:
-            logging.debug('{} event type not accepted, skipping'.format(event_type))
+            logging.debug('Skipping event: {}'.format(event['text']))
             continue
         elif event_type in EVENTS_START:
             ongoing_events[EVENTS_START[event_type]] = event
