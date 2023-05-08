@@ -269,14 +269,14 @@ def main():
     stream_handler = logging.StreamHandler(sys.stdout)
     level = logging.DEBUG if args.verbose else logging.INFO
     stream_handler.setLevel(level)
+    stream_handler.setFormatter(logging.Formatter('%(message)s'))
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(message)s',
+                        format='%(asctime)s:%(levelname)s: %(message)s',
+                        datefmt='%Y-%m-%dT%H:%M:%S%z',
                         handlers=[
                             logging.FileHandler(path.join(PROMTIMER_LOGS_DIR,
-                                'promtimer.log')),
-                            stream_handler
-                            ]
-                        )
+                                                          'promtimer.log')),
+                            stream_handler])
     if args.cluster and not args.user:
         logging.error('User must be specified when running Promtimer directly '
                       'against a Couchbase Server cluster')
