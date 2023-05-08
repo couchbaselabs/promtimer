@@ -178,6 +178,19 @@ def start_grafana(grafana_home_path, grafana_port):
     return result
 
 
+def connect_to_grafana(grafana_port):
+    """
+    Connects to the Grafana REST API
+    :param grafana_port: the port on which grafana-server is listening
+    :return: the REST API response
+    """
+    url = 'http://localhost:{}'.format(grafana_port)
+    resp = util.execute_request(url, 'api/datasources', retries=3)
+    logging.debug('connected to grafana at {}; response status: {}'.format(
+                  grafana_port, resp.status))
+    return resp
+
+
 def maybe_open_browser(grafana_http_port, dont_open_browser):
     url = 'http://localhost:{}/dashboards'.format(grafana_http_port)
     # Helpful for those who accidently close the browser
@@ -192,6 +205,7 @@ def maybe_open_browser(grafana_http_port, dont_open_browser):
             pass
     else:
         logging.info('not opening browser; navigate to {}'.format(url))
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -339,8 +353,8 @@ def main():
                                                          PROMTIMER_LOGS_DIR)
     processes.append(start_grafana(args.grafana_home_path, grafana_port))
 
-    time.sleep(0.1)
     try:
+        connect_to_grafana(grafana_port)
         process = util.Process.poll_processes(processes, 1)
         if process is None:
             maybe_open_browser(grafana_port, args.dont_open_browser)
