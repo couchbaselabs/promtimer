@@ -222,7 +222,8 @@ def execute_request(url, path, method='GET', data=None,
     if not path.startswith('/'):
         path = '/' + path
     url = '{}{}'.format(url, path)
-    while retries >= 0:
+    attempts = 0
+    while True:
         try:
             if headers is None:
                 headers = {}
@@ -234,9 +235,11 @@ def execute_request(url, path, method='GET', data=None,
             return response
         except urllib.request.URLError as ue:
             logging.debug('Attempting connection to {}, '
-                          'retrying... {} retries left'.format(url, retries))
-            retries -= 1
+                          'retrying... {} retries left'.format(url, retries - attempts))
+            attempts += 1
             if retries < 0:
+                logging.warn('Failed to connect to {} after {} '
+                             'attempts: {}'.format(url, attempts, ue))
                 raise
             time.sleep(0.1)
     return None

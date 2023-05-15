@@ -185,7 +185,7 @@ def connect_to_grafana(grafana_port):
     :return: the REST API response
     """
     url = 'http://localhost:{}'.format(grafana_port)
-    resp = util.execute_request(url, 'api/datasources', retries=3)
+    resp = util.execute_request(url, 'api/datasources', retries=50)
     logging.debug('connected to grafana at {}; response status: {}'.format(
                   grafana_port, resp.status))
     return resp
