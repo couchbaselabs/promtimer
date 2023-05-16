@@ -18,11 +18,10 @@ import os
 import json
 import logging
 import datetime
-import urllib.request
+import re
 
 # local imports
 import util
-import re
 
 FILENAME = 'events.log'
 HEADERS = {
@@ -91,6 +90,7 @@ EVENT_TAGS = {
 }
 ANNOTATIONS_API_PATH = 'api/annotations'
 
+
 def get_existing_annotations(host_url):
     response = util.execute_request(host_url, ANNOTATIONS_API_PATH, retries=5)
     payload = response.read()
@@ -104,6 +104,7 @@ def get_existing_annotations(host_url):
         logging.error('Unable to connect to Grafana, skipping annotation adding')
     return None
 
+
 def post_annotation(top_level_url, data):
     payload = json.dumps(data).encode('utf-8')
     response = util.execute_request(top_level_url,
@@ -113,11 +114,13 @@ def post_annotation(top_level_url, data):
                                     headers=HEADERS)
     return response
 
+
 def parse_event_date(date_repr):
     if type(date_repr) == int:
         return datetime.datetime.fromtimestamp(date_repr / 1000)
     # event log dates are in the following form: 2021-05-08T05:43:57.894-07:00
     return datetime.datetime.strptime(date_repr, '%Y-%m-%dT%H:%M:%S.%f%z')
+
 
 def create_annotation(timestamp, text, end_timestamp=None, extra_text=None, tags=None):
     if extra_text:
@@ -130,12 +133,14 @@ def create_annotation(timestamp, text, end_timestamp=None, extra_text=None, tags
         result['timeEnd'] = end_timestamp
     return result
 
+
 def concat(*args):
     result = ''
     for arg in args:
         if arg:
             result = '{}\n{}'.format(result, arg)
     return result
+
 
 def parse_events(events):
     result = []
@@ -191,6 +196,7 @@ def parse_events(events):
                       'Adding start time...'.format(event['event_type']))
     return result
 
+
 def post_events(top_level_url, events):
     for event in events:
         post = post_annotation(top_level_url, event)
@@ -198,69 +204,73 @@ def post_events(top_level_url, events):
                                                  event['time'],
                                                  event['text'],
                                                  event['tags']))
+
+
 def events_log_reader(filename):
     with open(filename, 'r') as file:
         for line in file:
             event = json.loads(line)
             yield event
 
+
 USER_LOGS_REGEX_MAP = {
-    'Starting rebalance.*KeepNodes(.*)EjectNodes': {
+    r'Starting rebalance.*KeepNodes(.*)EjectNodes': {
         'type': 'rebalance_start',
         'extra_text': 'Starting rebalance\nKeep nodes: {0}',
         'tags': ['topology']
     },
-    'Rebalance completed successfully': {
+    r'Rebalance completed successfully': {
         'type': 'rebalance_finish',
         'extra_text': '\nCompleted successfully',
         'tags': ['info', 'topology']
     },
-    'Rebalance stopped by user': {
+    r'Rebalance stopped by user': {
         'type': 'rebalance_finish',
         'extra_text': '\nStopped by user',
         'tags': ['topology']
     },
-    'Rebalance exited with reason (.*)\n': {
+    r'Rebalance exited with reason (.*)\n': {
         'type': 'rebalance_finish',
         'extra_text': '\nRebalance exited with reason:\n{0}',
         'tags': ['topology']
     },
-    'Starting failover of nodes (.*). Operation Id': {
+    r'Starting failover of nodes (.*). Operation Id': {
         'type': 'failover_start',
         'extra_text': '\nStarted failing over:\n{0}',
         'tags': ['warning', 'topology']
     },
-    'Failover completed successfully': {
+    r'Failover completed successfully': {
         'type': 'failover_finish',
         'extra_text': '\nFailover completed successfully\n',
         'tags': ['warning', 'topology']
     },
-    'Starting graceful failover of nodes (.*). Operation Id': {
+    r'Starting graceful failover of nodes (.*). Operation Id': {
         'type': 'graceful_failover_start',
         'extra_text': '\nStarted gracefully failing over:\n{0}',
         'tags': ['info', 'topology']
     },
-    'Graceful failover completed successfully': {
+    r'Graceful failover completed successfully': {
         'type': 'graceful_failover_finish',
         'extra_text': '\nGraceful failover completed successfully',
         'tags': ['info', 'topology']
     },
-    'Created bucket \"(\S+)\" of type: (\S+)': {
+    r'Created bucket \"(\S+)\" of type: (\S+)': {
         'type': 'bucket_created',
         'extra_text': '\nname: {0}, type:{1}',
         'tags': ['info', 'buckets']
     },
-    'Deleted bucket \"(\S+)\"': {
+    r'Deleted bucket \"(\S+)\"': {
         'type': 'bucket_deleted',
         'extra_text': '\nname: {0}',
         'tags': ['info', 'buckets']
     }
 }
 
+
 def decorate_user_logs(event_logs):
     re_map = {}
     for pattern, tag in USER_LOGS_REGEX_MAP.items():
-        re_map[re.compile(pattern, re.M|re.S)] = tag
+        re_map[re.compile(pattern, re.M | re.S)] = tag
     for event in event_logs:
         event['timestamp'] = event['tstamp']
         text = event['text']
@@ -278,6 +288,7 @@ def decorate_user_logs(event_logs):
                 break
         yield event
 
+
 def filter_existing(existing, proposed_new):
     result = []
     existing_map = {}
@@ -288,6 +299,7 @@ def filter_existing(existing, proposed_new):
         if not exists or exists['text'] != annotation['text']:
             result.append(annotation)
     return result
+
 
 def create_annotations(grafana_port, events):
     top_level_url = 'http://localhost:{}'.format(grafana_port)
@@ -301,6 +313,7 @@ def create_annotations(grafana_port, events):
         logging.info('Annotations added: {}'.format(len(parsed)))
     else:
         logging.info('No annotations to add')
+
 
 def get_and_create_annotations(grafana_port, stats_sources, consult_events_log):
     events = []
