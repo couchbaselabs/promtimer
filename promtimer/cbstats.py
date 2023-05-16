@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import copy
-
-import subprocess
 
 import logging
 import re
@@ -34,6 +31,7 @@ import util
 COUCHBASE_LOG = 'couchbase.log'
 DIAG_LOG = 'diag.log'
 STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
+
 
 class Source:
     """
@@ -121,7 +119,6 @@ class Source:
         """
         return None
 
-
     @staticmethod
     def maybe_start_stats_servers(stats_sources, log_dir):
         nodes = []
@@ -137,12 +134,12 @@ class CBCollect(Source):
     Represents a source of stats data that is a Prometheus instance running against
     the stats snapshot in a cbcollect.
     """
-    def __init__(self, cbcollect_dir, short_name, prometheus_port, zipfile=None):
+    def __init__(self, cbcollect_dir, short_name, prometheus_port, zip_file=None):
         super(CBCollect, self).__init__(prometheus_port)
         self._short_name = short_name
         self._cbcollect_dir = cbcollect_dir
         self._config = None
-        self._zipfile = zipfile
+        self._zipfile = zip_file
 
     def short_name(self):
         return self._short_name
@@ -197,6 +194,7 @@ class CBCollect(Source):
         """
         return get_prometheus_times(self._cbcollect_dir)
 
+    @staticmethod
     def make_snapshot_dir_path(candidate_cbcollect_dir):
         """
         Returns a path representing the 'stats_snapshot' directory in
@@ -208,9 +206,9 @@ class CBCollect(Source):
 
     def get_my_user_log(self):
         if self._zipfile:
-            with zipfile.ZipFile(self._zipfile) as zip:
+            with zipfile.ZipFile(self._zipfile) as z:
                 filename = path.join(self._cbcollect_dir, DIAG_LOG)
-                with zip.open(filename, 'r') as filestream:
+                with z.open(filename, 'r') as filestream:
                     filereader = io.TextIOWrapper(filestream, 'UTF-8')
                     return parse_user_log(filereader)
         else:
@@ -256,7 +254,6 @@ class CBCollect(Source):
         for cbcollect_dir in cbcollect_dirs:
             result.append((cbcollect_dir, dirs.get(cbcollect_dir)))
         return result
-
 
     @staticmethod
     def is_stats_snapshot_file(filename):
@@ -331,7 +328,7 @@ class CBCollect(Source):
         :rtype: list of names of data sources; if cbcollect_dirs contains no duplicates the
                 returned list is guaranteed to also contain no duplicates
         """
-        regex = re.compile('cbcollect_info_ns_(\d+)\@(.*)_(\d+)-(\d+)')
+        regex = re.compile(r'cbcollect_info_ns_(\d+)@(.*)_(\d+)-(\d+)')
         formats = ['{1}', 'ns_{0}@{1}', '{1}-{2}-{3}', 'ns_{0}-{1}-{2}-{3}']
         for fmt in formats:
             result = CBCollect.try_get_data_source_names(cbcollect_dirs, regex, fmt)
@@ -351,7 +348,7 @@ class CBCollect(Source):
             else:
                 logging.error('error: no "collectinfo*.zip" files or "cbcollect_info*" '
                               'directories or "{}" directory found'.format(
-                    STATS_SNAPSHOT_DIR_NAME))
+                               STATS_SNAPSHOT_DIR_NAME))
                 return result
         data_source_names = CBCollect.get_data_source_names([c[0] for c in cbcollects])
         for idx in range(len(cbcollects)):
@@ -575,15 +572,16 @@ def parse_couchbase_ns_config(cbcollect_dir):
                 if not in_buckets and line == ' {buckets,':
                     in_buckets = True
                 elif in_buckets:
-                    if re.match('^ \{.*,$', line):
+                    if re.match(r'^ {.*,$', line):
                         break
                     else:
-                        m = re.match('^    [ \[]\{\"(.*)\",$', line)
+                        m = re.match(r'^    [ \[]{\"(.*)\",$', line)
                         if m:
                             bucket = m.groups()[0]
                             logging.debug('found bucket:{}'.format(bucket))
                             buckets.append(bucket)
     return {'buckets': sorted(buckets)}
+
 
 def parse_couchbase_chronicle_older_version(cbcollect_dir):
     logging.debug('parsing couchbase.log (Chronicle config)')
@@ -618,10 +616,11 @@ def parse_couchbase_chronicle_older_version(cbcollect_dir):
 
     buckets = []
     if bucket_list != '':
-        for b in bucket_list.replace(' ','').replace('"','').split(','):
+        for b in bucket_list.replace(' ', '').replace('"', '').split(','):
             buckets.append(b)
 
     return {'buckets': sorted(buckets)}
+
 
 def parse_couchbase_chronicle(cbcollect_dir):
     logging.debug('parsing couchbase.log (Chronicle config)')
@@ -641,7 +640,7 @@ def parse_couchbase_chronicle(cbcollect_dir):
                     #      {bucket_names,{["bucket-1"],{<<"...,
                     #      {bucket_names,{["bucket-1",
                     #                      "bucket-2"],{<<"...,
-                    m = re.match('(^\s*.{bucket_names,{\[)([^\]]*)(\])?', line)
+                    m = re.match(r'(^\s*.{bucket_names,{\[)([^]]*)(])?', line)
                     if m:
                         parsing_bucket_names = True
                         bucket_list = m.group(2)
@@ -649,7 +648,7 @@ def parse_couchbase_chronicle(cbcollect_dir):
                             # have all the buckets, no need to continue parsing
                             break
                 else:
-                    m = re.match('^([^\]]*)\].*', line)
+                    m = re.match(r'^([^]]*)].*', line)
                     if m:
                         bucket_list += m.group(1)
                         break
@@ -659,6 +658,7 @@ def parse_couchbase_chronicle(cbcollect_dir):
     logging.debug('found buckets:{}'.format(buckets))
     return {'buckets': sorted(buckets)}
 
+
 def parse_couchbase_log(cbcollect_dir):
     config = parse_couchbase_chronicle(cbcollect_dir)
     if config['buckets'] == []:
@@ -666,6 +666,7 @@ def parse_couchbase_log(cbcollect_dir):
         if config['buckets'] == []:
             config = parse_couchbase_ns_config(cbcollect_dir)
     return config
+
 
 def get_prometheus_times(cbcollect_dir):
     min_times = []
@@ -678,10 +679,11 @@ def get_prometheus_times(cbcollect_dir):
             max_times.append(meta['maxTime'] / 1000.0)
     return min(min_times), max(max_times)
 
+
 def parse_user_log(stream):
     result = []
     in_flight = {}
-    log_re = re.compile('^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\d\S+), (.*)')
+    log_re = re.compile(r'^(\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\d\S+), (.*)')
     found_logs = False
     while True:
         line = stream.readline()
@@ -706,4 +708,3 @@ def parse_user_log(stream):
     if in_flight:
         result.append(in_flight)
     return result
-
