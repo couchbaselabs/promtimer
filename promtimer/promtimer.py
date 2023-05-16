@@ -19,7 +19,6 @@ import argparse
 import glob
 import os
 from os import path
-import time
 import json
 import datetime
 import webbrowser
@@ -40,32 +39,41 @@ PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
 
+
 def is_executable_file(candidate_file):
     return os.path.isfile(candidate_file) and os.access(candidate_file, os.X_OK)
+
 
 def get_data_source_template():
     with open(path.join(util.get_root_dir(), 'data-source.yaml'), 'r') as file:
         return file.read()
 
+
 def get_provisioning_dir():
     return path.join(PROMTIMER_DIR, 'provisioning')
+
 
 def get_dashboards_dir():
     return path.join(get_provisioning_dir(), 'dashboards')
 
+
 def get_plugins_dir():
     return path.join(get_provisioning_dir(), 'plugins')
 
+
 def get_notifiers_dir():
     return path.join(get_provisioning_dir(), 'notifiers')
+
 
 def get_custom_ini_template():
     with open(path.join(util.get_root_dir(), 'custom.ini'), 'r') as file:
         return file.read()
 
+
 def get_home_dashboard():
     with open(path.join(util.get_root_dir(), 'home.json'), 'r') as file:
         return file.read()
+
 
 def make_custom_ini(grafana_http_port):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
@@ -76,10 +84,12 @@ def make_custom_ini(grafana_http_port):
     with open(path.join(PROMTIMER_DIR, 'custom.ini'), 'w') as file:
         file.write(contents)
 
+
 def make_home_dashboard():
     dash = get_home_dashboard()
     with open(path.join(PROMTIMER_DIR, 'home.json'), 'w') as file:
         file.write(dash)
+
 
 def make_dashboards_yaml():
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -88,6 +98,7 @@ def make_dashboards_yaml():
         contents = templating.replace(file.read(), replacements)
         with open(path.join(get_dashboards_dir(), 'dashboards.yaml'), 'w') as file_to_write:
             file_to_write.write(contents)
+
 
 def make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh_string):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -108,6 +119,7 @@ def make_dashboards(stats_sources, buckets, min_time_string, max_time_string, re
             dash['uid'] = base_file_name[:-len('.json')]
             with open(path.join(get_dashboards_dir(), base_file_name), 'w') as file:
                 file.write(json.dumps(dash, indent=2))
+
 
 def make_data_sources(stats_sources):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
@@ -136,6 +148,7 @@ def make_data_sources(stats_sources):
         fullname = path.join(datasources_dir, filename)
         with open(fullname, 'w') as file:
             file.write(templating.replace(template, replacement_map))
+
 
 def prepare_grafana(grafana_port,
                     stats_sources,
@@ -167,7 +180,7 @@ def start_grafana(grafana_home_path, grafana_port):
     name = 'grafana-server'
     args = [GRAFANA_BIN,
             '--homepath', grafana_home_path,
-            '--config','custom.ini']
+            '--config', 'custom.ini']
     log_path = path.join(PROMTIMER_DIR, 'logs/grafana.log')
     logging.info('starting {} on localhost:{}; logging to {}'
                  .format(name, grafana_port, log_path))
