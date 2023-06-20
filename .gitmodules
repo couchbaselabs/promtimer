@@ -1,3 +1,0 @@
-[submodule "backup"]
-	path = backup
-	url = git@github.com:couchbase/backup.git
