@@ -82,10 +82,11 @@ have them.
 
 ### cbbackupmgr stats files
 For visualisation of cbbackupmgr stats files, you'll also need access to the private
-`backup` repository. You'll need to install it as a submodule by running:
+`backup` repository. You'll need to add the cbmstatparser binary to your path:
 ```bash
-git submodule init
-git submodule update
+cd ~/backup
+go install ./cmd/cbmstatparser
+export PATH=$PATH:/backup/build/bin/cbmstatparser
 ```
 
 ## How to Use Promtimer for Offline Analysis
