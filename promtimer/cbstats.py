@@ -27,6 +27,7 @@ from os import path
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
 import dateutil.parser
+from abc import ABC, abstractmethod
 
 import util
 
@@ -35,13 +36,14 @@ DIAG_LOG = 'diag.log'
 STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
 
 
-class Source:
+class Source(ABC):
     """
     Represents a source of Couchbase stats data.
     """
     def __init__(self, port):
         self._port = port
 
+    @abstractmethod
     def short_name(self):
         """
         :return: a convenient short name for this source
@@ -56,6 +58,7 @@ class Source:
         """
         return self._port
 
+    @abstractmethod
     def scheme(self):
         """
         :return: the scheme (i.e. HTTP or HTTPS) that should be used to access this
@@ -63,6 +66,7 @@ class Source:
         """
         return None
 
+    @abstractmethod
     def host(self):
         """
         Returns the host on which this Prometheus-like instance that serves the stats
@@ -569,6 +573,9 @@ class BackupStatsFiles(Source):
 
     def host(self):
         return '127.0.0.1'
+
+    def scheme(self):
+        return util.HTTP
 
     def maybe_start(self, log_dir):
         """
