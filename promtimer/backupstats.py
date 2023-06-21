@@ -21,11 +21,12 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+import logging
 
 # local imports
 import cbstats
 
-def handle_backup_archive_mode(backup_archive_path: str, prometheus_base_port: int) -> tuple[int, list[cbstats.BackupStatsFiles], str, str, str]:
+def handle_backup_archive_mode(backup_archive_path: str, prometheus_base_port: int) -> tuple[list[cbstats.BackupStatsFiles], str, str, str]:
     archive_path = backup_archive_path
     if zipfile.is_zipfile(backup_archive_path):
         archive_path_tmpdir = tempfile.TemporaryDirectory()
@@ -48,7 +49,7 @@ def handle_backup_archive_mode(backup_archive_path: str, prometheus_base_port: i
     atexit.register(stats_tsdb_path_tmpdir.cleanup)
     stats_tsdb_path = stats_tsdb_path_tmpdir.name
 
-    result = subprocess.run(
+    subprocess.run(
         ["cbmstatparser", "parse", "-a", archive_path, "-t", stats_tsdb_path],
         check=True, # Raises exception if exit code is not 0
     )
@@ -64,4 +65,4 @@ def handle_backup_archive_mode(backup_archive_path: str, prometheus_base_port: i
     min_time, max_time = cbstats.BackupStatsFiles.compute_min_and_max_times(archive_path)
     min_time, max_time = min_time.isoformat(), max_time.isoformat()
 
-    return result, stats_sources, min_time, max_time, ''
+    return stats_sources, min_time, max_time, ''
