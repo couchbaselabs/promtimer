@@ -38,6 +38,7 @@ import templating
 import dashboard
 import annotations
 import cbstats
+import backupstats
 
 PROMETHEUS_BIN = os.environ.get('PROM_BIN', 'prometheus')
 PROMTIMER_DIR = '.promtimer'
@@ -348,50 +349,10 @@ def main():
 
     if args.backup_archive_path:
         backup_archive_mode = True
-
-        archive_path = args.backup_archive_path
-        if zipfile.is_zipfile(args.backup_archive_path):
-            archive_path_tmpdir = tempfile.TemporaryDirectory()
-            atexit.register(archive_path_tmpdir.cleanup)
-            archive_path = archive_path_tmpdir.name
-
-            with zipfile.ZipFile(args.backup_archive_path, 'r') as zipped_archive:
-                zipped_archive.extractall(archive_path)
-
-            archive_path = os.path.join(archive_path, os.path.splitext(os.path.basename(args.backup_archive_path))[0])
-        # Check that backup_archive_path exists and is not an empty dir
-        elif not os.path.isdir(args.backup_archive_path) or \
-            len(os.listdir(args.backup_archive_path)) == 0:
-            logging.error(
-                'directory supplied as backup_archive_path either does not exist or is empty'
-            )
-            sys.exit(1)
-
-        stats_tsdb_path_tmpdir = tempfile.TemporaryDirectory()
-        atexit.register(stats_tsdb_path_tmpdir.cleanup)
-        stats_tsdb_path = stats_tsdb_path_tmpdir.name
-
-        cbmstatparser_dir = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            '..', 'backup', 'build', 'bin'
+        result, stats_sources, min_time, max_time, refresh = backupstats.handle_backup_archive_mode(
+            args.backup_archive_path,
+            prometheus_base_port
         )
-        result = subprocess.run(
-            ["./cbmstatparser", "parse", "-a", archive_path, "-t", stats_tsdb_path],
-            cwd=cbmstatparser_dir,
-            check=True, # Raises exception if exit code is not 0
-        )
-
-        stats_sources = [
-            cbstats.BackupStatsFiles(
-                stats_tsdb_path,
-                'cbmstatparser-prometheus-tsdb',
-                prometheus_base_port
-            )
-        ]
-
-        min_time, max_time = cbstats.BackupStatsFiles.compute_min_and_max_times(archive_path)
-        min_time, max_time = min_time.isoformat(), max_time.isoformat()
-        refresh = ''
 
     if not live_cluster and not cbbackupmgr_stats_mode:
         stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
