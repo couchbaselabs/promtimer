@@ -16,7 +16,6 @@
 #
 
 import argparse
-import atexit
 import glob
 import os
 from os import path
@@ -27,13 +26,6 @@ import sys
 import getpass
 import logging
 import hashlib
-import shutil
-import subprocess
-import tempfile
-import zipfile
-
-# local imports
-import util
 import templating
 import dashboard
 import annotations
