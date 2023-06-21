@@ -620,7 +620,7 @@ class BackupStatsFiles(Source):
 
         last_stat_file = os.path.join(
             cpu_stats_dir,
-            'repo-backup-' + str(int(time.mktime(timestamps[-1].timetuple())))
+            stat_files[-1].split('-')[0] + '-backup-' + str(int(time.mktime(timestamps[-1].timetuple())))
         )
 
         return add_padding_to_timestamps(timestamps[0], dateutil.parser.parse(read_last_line(last_stat_file)))
