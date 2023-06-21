@@ -608,22 +608,21 @@ class BackupStatsFiles(Source):
             if path.isfile(path.join(cpu_stats_dir, file)) and file[0] != '.':
                 stat_files.append(file)
 
-        timestamps = []
-        for file in stat_files:
-            # The timestamp in the filename indicates when the backup started
-            timestamps.append(datetime.datetime.fromtimestamp(int(file.split('-')[2])))
+        stat_files.sort(key=lambda x: datetime.datetime.fromtimestamp(int(x[x.rfind('-')+1:-1])))
 
-        if len(timestamps) == 0:
+        if len(stat_files) == 0:
             raise FileNotFoundError('No cpu stat files present in ' + cpu_stats_dir)
 
-        timestamps.sort()
+        first_stat_file_name = stat_files[0]
+        stat_file_timestamp_index = first_stat_file_name.rfind('-') + 1
+        first_stat_file_timestamp = datetime.datetime.fromtimestamp(int(first_stat_file_name[stat_file_timestamp_index:]))
 
         last_stat_file = os.path.join(
             cpu_stats_dir,
-            stat_files[-1].split('-')[0] + '-backup-' + str(int(time.mktime(timestamps[-1].timetuple())))
+            stat_files[-1]
         )
 
-        return add_padding_to_timestamps(timestamps[0], dateutil.parser.parse(read_last_line(last_stat_file)))
+        return add_padding_to_timestamps(first_stat_file_timestamp, dateutil.parser.parse(read_last_line(last_stat_file)))
 
 def read_last_line(filepath):
     with open(filepath, 'rb') as f:
