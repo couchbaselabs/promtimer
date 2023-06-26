@@ -608,27 +608,25 @@ class BackupStatsFiles(Source):
             if path.isfile(path.join(cpu_stats_dir, file)) and file[0] != '.':
                 stat_files.append(file)
 
-        stat_files.sort(key=lambda x: datetime.datetime.fromtimestamp(int(x[x.rfind('-')+1:-1])))
-
         if len(stat_files) == 0:
             raise FileNotFoundError('No cpu stat files present in ' + cpu_stats_dir)
 
+        get_date_time = lambda x: datetime.datetime.fromtimestamp(int(x[x.rfind('-')+1:]))
+        stat_files.sort(key=get_date_time)
+
         first_stat_file_name = stat_files[0]
-        stat_file_timestamp_index = first_stat_file_name.rfind('-') + 1
-        first_stat_file_timestamp = datetime.datetime.fromtimestamp(int(first_stat_file_name[stat_file_timestamp_index:]))
+        first_stat_file_timestamp = get_date_time(first_stat_file_name)
 
-        last_stat_file = os.path.join(
-            cpu_stats_dir,
-            stat_files[-1]
-        )
+        last_stat_file = os.path.join(cpu_stats_dir, stat_files[-1])
+        last_stat_file_timestamp = dateutil.parser.parse(read_last_line(last_stat_file))
 
-        return add_padding_to_timestamps(first_stat_file_timestamp, dateutil.parser.parse(read_last_line(last_stat_file)))
+        return add_padding_to_timestamps(first_stat_file_timestamp, last_stat_file_timestamp)
 
 def read_last_line(filepath):
     with open(filepath, 'rb') as f:
         # Only read last line of file:
         try:
-            f.seek(-2, os.SEEK_END) # Skip EOF char at end of file
+            f.seek(-2, os.SEEK_END) # Skip last line as it is a newline char
             while f.read(1) != b'\n': # Read 1 byte
                 f.seek(-2, os.SEEK_CUR)
         except OSError:
