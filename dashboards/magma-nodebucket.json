@@ -347,7 +347,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_logical_data_size_bytes{bucket=\"$bucket\"}[20s])",
+          "expr": "kv_ep_magma_logical_data_size_bytes{bucket=\"$bucket\"}",
           "hide": false,
           "legendFormat": "data",
           "range": true,
@@ -355,7 +355,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_logical_disk_size_bytes{bucket=\"$bucket\"}[20s])",
+          "expr": "kv_ep_magma_logical_disk_size_bytes{bucket=\"$bucket\"}",
           "hide": false,
           "legendFormat": "disk",
           "range": true,
@@ -363,7 +363,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_history_logical_data_size{bucket=\"$bucket\"}[20s])",
+          "expr": "kv_ep_magma_history_logical_data_size{bucket=\"$bucket\"}",
           "hide": false,
           "legendFormat": "history data",
           "range": true,
@@ -371,7 +371,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_history_logical_disk_size{bucket=\"$bucket\"}[20s])",
+          "expr": "kv_ep_magma_history_logical_disk_size{bucket=\"$bucket\"}",
           "hide": false,
           "legendFormat": "history disk",
           "range": true,
