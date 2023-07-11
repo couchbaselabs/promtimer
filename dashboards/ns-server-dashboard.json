@@ -595,6 +595,240 @@
         }
       },
       "type": "timeseries"
+    },
+    {
+      "title": "cpu pressure - share of time stalled on cpu",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_pressure_share_time_stalled{resource=\"cpu\",level=\"host\"}",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "cpu pressure - total stall time (ms)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\"}/1000",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "rate of cpu pressure - total stall time (ms per s)",
+      "_base": "panel",
+      "_targets": [
+          {
+          "datasource": "{data-source-name}",
+          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\"}[1m])/1000",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "memory pressure - share of time stalled on memory",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_pressure_share_time_stalled{resource=\"memory\",level=\"host\"}",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "memory pressure - total stall time (ms)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\"}/1000",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "rate of memory pressure - total stall time (ms per s)",
+      "_base": "panel",
+      "_targets": [
+          {
+          "datasource": "{data-source-name}",
+          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\"}[1m])/1000",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "io pressure - share of time stalled on io",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_pressure_share_time_stalled{resource=\"io\",level=\"host\"}",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "io pressure - total stall time (ms)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\"}/1000",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "rate of io pressure - total stall time (ms per s)",
+      "_base": "panel",
+      "_targets": [
+          {
+          "datasource": "{data-source-name}",
+          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\"}[1m])/1000",
+          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
     }
   ]
 }
