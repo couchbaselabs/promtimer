@@ -41,7 +41,6 @@
         "label": "Node",
         "multi": false,
         "name": "node",
-        "options": [],
         "query": "prometheus",
         "refresh": 1,
         "regex": "",
@@ -88,6 +87,26 @@
         }
       ],
       "description": "Average chronicle fsync latency (i.e. total time waiting for fsyncs\ndivided by the number of fsyncs in the period. Computed as: `1000 * irate(cm_chronicle_disk_latency_seconds_sum{op=\"sync\"}[5m]) /\nignoring(name) irate(cm_chronicle_disk_latency_seconds_count{op=\"sync\"}[5m])`"
+    },
+    {
+      "title": "chronicle sync latency distribution over time",
+      "legend": {"show": true},
+        "options": {
+          "calculate": false,
+          "yAxis": {"unit": "s"}
+        },
+      "tooltip": {"show": false},
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by (le)(increase(cm_chronicle_disk_latency_seconds_bucket{op=\"sync\"}[5m]))",
+          "legendFormat": "{{le}}",
+          "format": "heatmap",
+          "_base": "target"
+        }
+      ],
+      "type": "heatmap"
     },
     {
       "title": "number of chronicle appends / s",
