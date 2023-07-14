@@ -35,6 +35,10 @@
   "_base": "dashboard",
   "_panels": [
     {
+      "title": "CPU",
+      "_base": "row"
+    },
+    {
       "title": "sys_cpu_utilization_rate",
       "_base": "panel",
       "_targets": [
@@ -93,142 +97,6 @@
       "type": "timeseries"
     },
     {
-      "title": "ns-server mem used",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source-name}",
-          "expr": "sysproc_mem_resident{proc=\"ns_server\"}",
-          "legendFormat": "{data-source-name}",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 1
-          },
-          "unit": "bytes"
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "type": "timeseries"
-    },
-    {
-      "title": "rate ns-server rest requests served",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source-name}",
-          "expr": "irate(cm_rest_request_leaves_total[1m])",
-          "legendFormat": "{data-source-name} sum(cm_rest_request_leaves_total[1m])",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 1
-          },
-          "unit": "short"
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "type": "timeseries"
-    },
-    {
-      "title": "ns-server streaming requests currently being served",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source-name}",
-          "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
-          "legendFormat": "{data-source-name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 1
-          },
-          "unit": "short"
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "type": "timeseries"
-    },
-    {
-      "title": "ns-server http request rate",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source-name}",
-          "expr": "sum(irate(cm_http_requests_total[5m]))",
-          "legendFormat": "{data-source-name} sum(irate(cm_http_requests_total[5m]))",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 1
-          },
-          "unit": "short"
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "type": "timeseries"
-    },
-    {
-      "title": "ns-server hibernated requests",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source-name}",
-          "expr": "irate(cm_request_hibernates_total[5m])",
-          "legendFormat": "{data-source-name} irate(cm_request_hibernates_total[5m])",
-          "_base": "target"
-        },
-        {
-          "datasource": "{data-source-name}",
-          "expr": "irate(cm_request_unhibernates_total[5m])",
-          "legendFormat": "{data-source-name} irate(cm_request_unhibernates_total[5m])",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 1
-          },
-          "unit": "short"
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "type": "timeseries"
-    },
-    {
       "title": "cpu stolen rate",
       "_base": "panel",
       "_targets": [
@@ -271,6 +139,62 @@
             "fillOpacity": 1
           },
           "unit": "percent"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "sys_cpu_cores_available",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sys_cpu_cores_available",
+          "legendFormat": "{data-source-name} {{name}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Memory",
+      "_base": "row"
+    },
+    {
+      "title": "ns-server mem used",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sysproc_mem_resident{proc=\"ns_server\"}",
+          "legendFormat": "{data-source-name}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
         }
       },
       "options": {
@@ -335,32 +259,6 @@
             "fillOpacity": 1
           },
           "unit": "bytes"
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "type": "timeseries"
-    },
-    {
-      "title": "sys_cpu_cores_available",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source-name}",
-          "expr": "sys_cpu_cores_available",
-          "legendFormat": "{data-source-name} {{name}}",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 1
-          },
-          "unit": "short"
         }
       },
       "options": {
@@ -533,6 +431,124 @@
       "type": "timeseries"
     },
     {
+      "title": "REST",
+      "_base": "row"
+    },
+    {
+      "title": "rate ns-server rest requests served",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(cm_rest_request_leaves_total[1m])",
+          "legendFormat": "{data-source-name} sum(cm_rest_request_leaves_total[1m])",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "ns-server streaming requests currently being served",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
+          "legendFormat": "{data-source-name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "ns-server http request rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum(irate(cm_http_requests_total[5m]))",
+          "legendFormat": "{data-source-name} sum(irate(cm_http_requests_total[5m]))",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "ns-server hibernated requests",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(cm_request_hibernates_total[5m])",
+          "legendFormat": "{data-source-name} irate(cm_request_hibernates_total[5m])",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(cm_request_unhibernates_total[5m])",
+          "legendFormat": "{data-source-name} irate(cm_request_unhibernates_total[5m])",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Scheduling",
+      "_base": "row"
+    },
+    {
       "title": "config merger max queue_len over 1m",
       "_base": "panel",
       "_targets": [
@@ -595,6 +611,10 @@
         }
       },
       "type": "timeseries"
+    },
+    {
+      "title": "Resource pressure",
+      "_base": "row"
     },
     {
       "title": "cpu pressure - share of time stalled on cpu",
