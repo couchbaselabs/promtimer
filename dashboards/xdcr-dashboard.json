@@ -1,0 +1,631 @@
+{
+  "title": "XDCR Dashboard",
+  "_base": "dashboard",
+  "_panels": [
+    {
+      "title": "Changes Left",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_changes_left_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_changes_left_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Pipeline Errors",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_pipeline_errors",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_pipeline_errors",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs Processed",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_processed_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_processed_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs Processed rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(xdcr_docs_processed_total[5m])",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_processed_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs received from DCP",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_received_from_dcp_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_received_from_dcp_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs received from DCP rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(xdcr_docs_received_from_dcp_total[5m])",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_received_from_dcp_rate",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Expiry received from DCP",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_expiry_received_from_dcp_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_received_from_dcp_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Deletion received from DCP",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_deletion_received_from_dcp_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_received_from_dcp_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Set received from DCP",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_set_received_from_dcp_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_received_from_dcp_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "DCP Data Channel length",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_dcp_datach_length_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_dcp_datach_length_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "DCP dispatch time seconds",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_dcp_dispatch_time_seconds",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_dcp_dispatch_time_seconds",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs filtered (all types)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_filtered_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_filtered_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Set filtered",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_set_filtered_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_filtered_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Expiry filtered",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_expiry_filtered_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_filtered_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Deletion filtered",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_deletion_filtered_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_filtered_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Expiry stripped",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_expiry_stripped_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_stripped_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Binary filtered",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_binary_filtered_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_binary_filtered_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Unable to be filtered",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_unable_to_filter_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_unable_to_filter_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Documents cloned",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_cloned_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_cloned_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Deletions cloned",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_deletion_cloned_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_cloned_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Replication Queue Size bytes",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_size_rep_queue_bytes",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_size_rep_queue_bytes",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Pipeline Status",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_pipeline_status",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_pipeline_status",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "GetMeta Latency",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_wtavg_meta_latency_seconds",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_wtavg_meta_latency_seconds",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Doc send latency",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_wtavg_docs_latency_seconds",
+          "description": "The rolling average amount of time it takes for the source cluster to receive the acknowledgement of a SET_WITH_META response after the Memcached request has been composed to be processed by the XDCR Target Nozzle",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_wtavg_docs_latency_seconds",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Response wait time",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_resp_wait_time_seconds",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_resp_wait_time_seconds",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs Written",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_written_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_written_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs Written rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(xdcr_docs_written_total[5m])",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_written_rate",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Data replicated (bytes)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_data_replicated_bytes",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_bytes",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Data replicated rate (bytes per second)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(xdcr_data_replicated_bytes[5m])",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_bytes_rate",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs optimistically replicated",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_opt_repd_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_opt_repd_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs optimistically replicated rate",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "irate(xdcr_docs_opt_repd_total[5m])",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_opt_repd_rate",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs failed source CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_failed_cr_source_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_failed_cr_source_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Expiry failed source CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_expiry_failed_cr_source_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_failed_cr_source_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Deletion failed source CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_deletion_failed_cr_source_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_failed_cr_source_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "SetMeta failed source CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_set_failed_cr_source_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_failed_cr_source_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs writes that Failed target CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_failed_cr_target_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_failed_cr_target_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Throttle latency",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_throttle_latency_seconds",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_throttle_latency_seconds",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Throughput Throttle latency",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_throughput_throttle_latency_seconds",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_throughput_throttle_latency_seconds",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs (expiry) Written",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_expiry_docs_written_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_docs_written_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs (expiry) Failed target CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_expiry_failed_cr_target_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_failed_cr_target_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs (deletion) Written",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_deletion_docs_written_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_docs_written_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs (deletion) Failed target CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_deletion_failed_cr_target_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_failed_cr_target_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs (SetWithMeta) Written",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_set_docs_written_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_docs_written_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Docs (SetWithMeta) Failed target CR",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_set_failed_cr_target_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_failed_cr_target_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of documents checkpointed",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_docs_checked_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_checked_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of checkpoints",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_num_checkpoints_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_num_checkpoints_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Time taken to create a checkpoint (seconds)",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_time_committing_seconds",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_time_committing_seconds",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Theoretical Uncompressed Data size replicated",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_data_replicated_uncompress_bytes",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_uncompress_bytes",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of EACCESS errors returned from target KV",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_target_eaccess_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_target_eaccess_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of TMPFAIL errors returned from target KV",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_target_tmpfail_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_target_tmpfail_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of failed checkpoint operations",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_num_failedckpts_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_num_failedckpts_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Number of failed datapool gets",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_datapool_failed_gets_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_datapool_failed_gets_total",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
