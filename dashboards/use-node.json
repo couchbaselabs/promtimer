@@ -1,0 +1,686 @@
+{
+  "_base": "dashboard",
+  "title": "USE Dashboard - Node",
+  "graphTooltip": 2,
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
+  },
+  "_panels": [
+    {
+      "_base": "text",
+      "gridPos": {
+        "w": 24,
+        "h": 2
+      },
+      "transparent": true,
+      "options": {
+        "mode": "markdown",
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "System-level [USE method](https://www.brendangregg.com/usemethod.html) dashboard, showing **U**tilization, **S**aturation & **E**rrors for each high-level resource.\nInspired by [this blog](https://www.circonus.com/2017/08/system-monitoring-with-the-use-dashboard/).\nTL;DR: Investigate *Errors* first - they should be zero in a healthy system, then look at *Utilisation* and *Saturation*."
+      }
+    },
+    {
+      "title": "CPU",
+      "_base": "row"
+    },
+    {
+      "title": "CPU Utilization",
+      "description": "What did CPU(s) spent their time doing. Blues represent time that the system is doing work, yellow represents time waiting.",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sys_cpu_user_rate",
+          "legendFormat": "User",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_cpu_sys_rate",
+          "legendFormat": "Sys",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_cpu_stolen_rate",
+          "legendFormat": "Stolen",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_cpu_irq_rate",
+          "legendFormat": "IRQ",
+          "_base": "target"
+        }
+
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "fillOpacity": 50,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMax": 100
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "User"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sys"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Stolen"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-yellow"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IRQ"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-yellow"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": "CPU Saturation",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "0",
+          "legendFormat": "[todo] loadavg, procs_runnable",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "User"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sys"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Stolen"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-yellow"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IRQ"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-yellow"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "_base": "text",
+      "title": "CPU Errors",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "options": {
+        "mode": "markdown",
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "Check `dmesg`."
+      }
+    },
+    {
+      "title": "Memory",
+      "_base": "row"
+    },
+    {
+      "title": "Memory Utilization",
+      "description": "What is system memory being used for. Blues represent memory explicitly used by applications, yellows represent memory used by OS / on applications' behalf.",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sys_mem_actual_used",
+          "legendFormat": "Used",
+          "_base": "target"
+        },
+        {
+          "expr": "sum without (name) (sys_mem_used_sys) - sum without (name) (sys_mem_actual_used)",
+          "legendFormat": "Buffers / Cached",
+          "_base": "target"
+        },
+        {
+          "expr": "0",
+          "legendFormat": "[todo] Free",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 50,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Used"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Buffers / Cached"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-yellow"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": "Memory Saturation",
+      "description": "Indicators that memory is saturated.  Swap Used: bytes of memory used by swap; generally this should be (close to) zero, increasing values can be a sign of problems.What is system memory being used for.\nAllocation Stalls: rate of Linux kernel allocation stalls, when a userspace thread is prevented from running due to memory allocation request which cannot be immediately satisfied due to low kernel memory. A non-zero value means userspace threads are being delayed due t memory pressure.",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sys_swap_used",
+          "legendFormat": "Swap Used",
+          "_base": "target"
+        },
+        {
+          "expr": "rate(sys_allocstall[$__rate_interval])",
+          "legendFormat": "Allocation Stalls",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 50
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Swap Used"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "semi-dark-purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Allocation Stalls"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "ops"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "super-light-purple"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "_base": "text",
+      "title": "Memory Errors",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "options": {
+        "mode": "markdown",
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "Check `dmesg`."
+      }
+    },
+    {
+      "title": "Network",
+      "_base": "row"
+    },
+    {
+      "title": "Network Utilization",
+      "description": "Data read from (ingress) and written to (egress) the network in bits/s. Y axis scale: log(10).",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_read_bytes[$__rate_interval])) * 8",
+          "legendFormat": "Data Service ingress",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(rate(kv_written_bytes[$__rate_interval])) * 8",
+          "legendFormat": "Data Service egress",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "custom": {
+            "fillOpacity": 50,
+            "scaleDistribution": {
+              "type": "log",
+              "log": 10
+            },
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Data Service ingress"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "semi-dark-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Data Service egress"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-blue"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": "Network Saturation",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "0",
+          "legendFormat": "[todo] retransmissions, dropped packets",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+        }
+      }
+    },
+    {
+      "title": "Network Errors",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "0",
+          "legendFormat": "[todo] interface errors",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+          }
+        }
+      }
+    },
+    {
+      "title": "Disk",
+      "_base": "row"
+    },
+    {
+      "title": "Disk Utilization",
+      "description": "Y axis scale: log(10).",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(rate(kv_ep_io_total_read_bytes_bytes[$__rate_interval]))",
+          "legendFormat": "Couchstore read",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(rate(kv_ep_io_total_write_bytes_bytes[$__rate_interval]))",
+          "legendFormat": "Couchstore write",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(rate(kv_ep_magma_bytes_incoming_bytes[$__rate_interval]))",
+          "legendFormat": "Magma read",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(rate(kv_ep_magma_bytes_outgoing_bytes[$__rate_interval]))",
+          "legendFormat": "Magma write",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "custom": {
+            "fillOpacity": 50,
+            "scaleDistribution": {
+              "type": "log",
+              "log": 10
+            },
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Couchstore read"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "semi-dark-green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Couchstore write"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Magma read"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "semi-dark-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Magma write"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-blue"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": "Disk Saturation",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "0",
+          "legendFormat": "[todo] avgqu-sz",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+        }
+      }
+    },
+    {
+      "_base": "text",
+      "title": "Disk Errors",
+      "datasource": "{data-source-name}",
+      "gridPos": {
+        "w": 8,
+        "h": 8
+      },
+      "options": {
+        "mode": "markdown",
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "Check `dmesg`."
+      }
+    }
+  ]
+}
