@@ -30,7 +30,7 @@ datasources:
     # <bool> allow users to edit datasources from the UI.
     editable: true
     jsonData:
-      timeInterval: 1s
+      timeInterval: 10s
       tlsSkipVerify: true
     # <string> json object of data that will be encrypted.
     secureJsonData:
