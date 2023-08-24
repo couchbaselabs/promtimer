@@ -26,11 +26,14 @@ import sys
 import getpass
 import logging
 import hashlib
-import templating
-import dashboard
+
+# Local imports
 import annotations
-import cbstats
 import backupstats
+import cbstats
+import dashboard
+import templating
+import util
 
 PROMETHEUS_BIN = os.environ.get('PROM_BIN', 'prometheus')
 PROMTIMER_DIR = '.promtimer'
@@ -135,7 +138,7 @@ def make_cbbackupmgr_dashboard(stats_sources, min_time_string, max_time_string, 
                         .replace("{dashboard-uid}", dashboard_uid)
                 )
 
-def make_data_sources(stats_sources):
+def make_data_sources(stats_sources, backup_archive_mode):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
     os.makedirs(datasources_dir, exist_ok=True)
     template = get_data_source_template()
@@ -157,7 +160,11 @@ def make_data_sources(stats_sources):
                            'data-source-path': stats_source.stats_url_path(),
                            'data-source-basic-auth': str(auth_required),
                            'data-source-basic-auth-user': user,
-                           'data-source-basic-auth-password': password}
+                           'data-source-basic-auth-password': password,
+                           'data-source-time-interval': '10s'}
+        if backup_archive_mode:
+            replacement_map['data-source-time-interval'] = '1s'
+
         filename = 'ds-{}.yaml'.format(data_source_name).replace(':', '_')
         fullname = path.join(datasources_dir, filename)
         with open(fullname, 'w') as file:
@@ -170,7 +177,7 @@ def prepare_grafana(grafana_port,
                     min_time_string,
                     max_time_string,
                     refresh,
-                    backup_archive_mode=False):
+                    backup_archive_mode):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -178,7 +185,7 @@ def prepare_grafana(grafana_port,
     os.makedirs(get_notifiers_dir(), exist_ok=True)
     make_custom_ini(grafana_port)
     make_home_dashboard()
-    make_data_sources(stats_sources)
+    make_data_sources(stats_sources, backup_archive_mode)
     make_dashboards_yaml()
     if backup_archive_mode:
         make_cbbackupmgr_dashboard(
@@ -343,22 +350,6 @@ def main():
     backup_archive_mode = False
     buckets = None
 
-    if args.backup_archive_path:
-        backup_archive_mode = True
-        result, stats_sources, min_time, max_time, refresh = backupstats.handle_backup_archive_mode(
-            args.backup_archive_path,
-            prometheus_base_port
-        )
-
-    if not live_cluster and not backup_archive_mode:
-        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
-        if not stats_sources:
-            sys.exit(1)
-        times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
-        min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
-        max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
-        refresh = ''
-
     if live_cluster:
         if args.nodes:
             secure = args.secure or any([util.has_secure_scheme(n) for n in args.nodes])
@@ -429,7 +420,7 @@ def main():
         connect_to_grafana(grafana_port)
         process = util.Process.poll_processes(processes, 1)
         if process is None:
-            maybe_open_browser(grafana_port, args.dont_open_browser)
+            maybe_open_browser(grafana_port, args.dont_open_browser, backup_archive_mode=backup_archive_mode)
             if not backup_archive_mode:
                 annotations.get_and_create_annotations(grafana_port, stats_sources,
                                                     not args.cluster)
