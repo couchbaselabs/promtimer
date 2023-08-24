@@ -336,6 +336,10 @@ def main():
     prometheus_base_port = grafana_port + 1
     live_cluster = args.cluster or args.nodes
 
+    if live_cluster and args.backup_archive_path:
+        print("--cluster and --nodes are mutually exclusive ...")
+        sys.exit(1)
+
     backup_archive_mode = False
     buckets = None
 
@@ -346,7 +350,7 @@ def main():
             prometheus_base_port
         )
 
-    if not live_cluster and not cbbackupmgr_stats_mode:
+    if not live_cluster and not backup_archive_mode:
         stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
         if not stats_sources:
             sys.exit(1)
@@ -354,7 +358,8 @@ def main():
         min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
         max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
         refresh = ''
-    else:
+
+    if live_cluster:
         if args.nodes:
             secure = args.secure or any([util.has_secure_scheme(n) for n in args.nodes])
             nodes = []
@@ -364,7 +369,7 @@ def main():
                                                                             args.user,
                                                                             args.password,
                                                                             secure)
-        if not cbbackupmgr_stats_mode:
+        if not backup_archive_mode:
             secure = args.secure or util.has_secure_scheme(args.cluster)
             stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
                                                                  args.user,
@@ -375,6 +380,21 @@ def main():
         min_time = 'now-30m'
         max_time = 'now'
         refresh = args.refresh or '5s'
+    elif args.backup_archive_path:
+        backup_archive_mode = True
+        stats_sources, min_time, max_time, refresh = backupstats.handle_backup_archive_mode(
+            args.backup_archive_path,
+            prometheus_base_port
+        )
+    else:
+        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
+        if not stats_sources:
+            sys.exit(1)
+        times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
+        min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
+        max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
+        refresh = ''
+
 
     if not args.buckets and not backup_archive_mode:
         buckets = stats_sources[0].get_buckets()
@@ -410,7 +430,7 @@ def main():
         process = util.Process.poll_processes(processes, 1)
         if process is None:
             maybe_open_browser(grafana_port, args.dont_open_browser)
-            if not cbbackupmgr_stats_mode:
+            if not backup_archive_mode:
                 annotations.get_and_create_annotations(grafana_port, stats_sources,
                                                     not args.cluster)
             process = util.Process.poll_processes(processes)
