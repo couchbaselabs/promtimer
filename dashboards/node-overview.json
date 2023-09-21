@@ -69,12 +69,29 @@
       }
     },
     {
-      "title": "sysproc_cpu_utilization",
+      "title": "sysproc_cpu_utilization (Pre-Trinity)",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
           "expr": "sysproc_cpu_utilization",
+          "legendFormat": "{{proc}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "title": "sysproc cpu utilization (Trinity+)",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "(rate(sysproc_cpu_user[1m]) + ignoring(name) rate(sysproc_cpu_sys[1m])) / ignoring(category, name, proc) group_left sys_cpu_cores_available * 100",
           "legendFormat": "{{proc}}",
           "_base": "target"
         }
