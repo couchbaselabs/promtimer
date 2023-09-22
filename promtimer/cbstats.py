@@ -125,6 +125,13 @@ class Source(ABC):
         """
         return None
 
+    def time_interval(self):
+        """
+        :return: the time interval that's recommended for use with this stats source;
+                 defaults to 10s.
+        """
+        return '10s'
+
     @staticmethod
     def maybe_start_stats_servers(stats_sources, log_dir):
         nodes = []

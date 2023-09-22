@@ -39,8 +39,6 @@ PROMETHEUS_BIN = os.environ.get('PROM_BIN', 'prometheus')
 PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
-# The UID of a dashboard is required in order to build a URL pointing to it.
-CBBACKUPMGR_DASHBOARD_UID = 'trFCfNIVz'
 
 
 def is_executable_file(candidate_file):
@@ -103,17 +101,23 @@ def make_dashboards_yaml():
             file_to_write.write(contents)
 
 
-def make_dashboards(stats_sources, buckets, min_time_string, max_time_string, refresh_string):
+def make_dashboards(stats_sources,
+                    buckets,
+                    min_time_string, max_time_string,
+                    refresh_string,
+                    dashboard_name_predicate):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     data_sources = [s.short_name() for s in stats_sources]
     template_params = \
         [{'type': 'data-source-name', 'values': data_sources},
-         {'type': 'bucket', 'values': buckets}]
+         {'type': 'bucket', 'values': buckets if buckets else []}]
     meta_file_names = glob.glob(path.join(util.get_root_dir(), 'dashboards', '*.json'))
     for meta_file_name in meta_file_names:
         with open(meta_file_name, 'r') as meta_file:
             meta = json.loads(meta_file.read())
             base_file_name = path.basename(meta_file_name)
+            if dashboard_name_predicate and not dashboard_name_predicate(base_file_name):
+                continue
             dash = dashboard.make_dashboard(meta,
                                             template_params,
                                             min_time_string,
@@ -123,22 +127,8 @@ def make_dashboards(stats_sources, buckets, min_time_string, max_time_string, re
             with open(path.join(get_dashboards_dir(), base_file_name), 'w') as file:
                 file.write(json.dumps(dash, indent=2))
 
-def make_cbbackupmgr_dashboard(stats_sources, min_time_string, max_time_string, refresh_string, dashboard_uid):
-    os.makedirs(get_dashboards_dir(), exist_ok=True)
-    data_source = stats_sources[0].short_name()
-    meta_file_name = path.join(util.get_root_dir(), 'dashboards', 'cbbackupmgr-stats.json')
-    base_file_name = path.basename(meta_file_name)
-    with open(meta_file_name, 'r') as meta_file, \
-         open(path.join(get_dashboards_dir(), base_file_name), 'w') as dash_file:
-            for line in meta_file:
-                dash_file.write(
-                    line.replace("{data-source-name}", data_source)
-                        .replace("{min-time}", min_time_string)
-                        .replace("{max-time}", max_time_string)
-                        .replace("{dashboard-uid}", dashboard_uid)
-                )
 
-def make_data_sources(stats_sources, backup_archive_mode):
+def make_data_sources(stats_sources):
     datasources_dir = path.join(get_provisioning_dir(), 'datasources')
     os.makedirs(datasources_dir, exist_ok=True)
     template = get_data_source_template()
@@ -161,9 +151,7 @@ def make_data_sources(stats_sources, backup_archive_mode):
                            'data-source-basic-auth': str(auth_required),
                            'data-source-basic-auth-user': user,
                            'data-source-basic-auth-password': password,
-                           'data-source-time-interval': '10s'}
-        if backup_archive_mode:
-            replacement_map['data-source-time-interval'] = '1s'
+                           'data-source-time-interval': stats_source.time_interval()}
 
         filename = 'ds-{}.yaml'.format(data_source_name).replace(':', '_')
         fullname = path.join(datasources_dir, filename)
@@ -177,7 +165,7 @@ def prepare_grafana(grafana_port,
                     min_time_string,
                     max_time_string,
                     refresh,
-                    backup_archive_mode):
+                    dashboard_name_predicate):
     os.makedirs(PROMTIMER_DIR, exist_ok=True)
     os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
     os.makedirs(get_dashboards_dir(), exist_ok=True)
@@ -185,16 +173,13 @@ def prepare_grafana(grafana_port,
     os.makedirs(get_notifiers_dir(), exist_ok=True)
     make_custom_ini(grafana_port)
     make_home_dashboard()
-    make_data_sources(stats_sources, backup_archive_mode)
+    make_data_sources(stats_sources)
     make_dashboards_yaml()
-    if backup_archive_mode:
-        make_cbbackupmgr_dashboard(
-            stats_sources, min_time_string, max_time_string, refresh, CBBACKUPMGR_DASHBOARD_UID
-        )
-    else:
-        make_dashboards(
-            stats_sources, buckets, min_time_string, max_time_string, refresh
-        )
+    make_dashboards(
+        stats_sources, buckets,
+        min_time_string, max_time_string, refresh,
+        dashboard_name_predicate
+    )
 
 
 def start_grafana(grafana_home_path, grafana_port):
@@ -233,10 +218,8 @@ def connect_to_grafana(grafana_port):
     return resp
 
 
-def maybe_open_browser(grafana_http_port, dont_open_browser, backup_archive_mode=False):
-    url = f'http://localhost:{grafana_http_port}/dashboards'
-    if backup_archive_mode:
-        url = f'http://localhost:{grafana_http_port}/d/{CBBACKUPMGR_DASHBOARD_UID}/cbbackupmgr-stats-dashboard'
+def maybe_open_browser(grafana_http_port, dont_open_browser, url_path):
+    url = f'http://localhost:{grafana_http_port}/{url_path}'
 
     # Helpful for those who accidently close the browser
     if not dont_open_browser:
@@ -348,6 +331,7 @@ def main():
         sys.exit(1)
 
     backup_archive_mode = False
+    BACKUPMGR_STATS = 'cbbackupmgr-stats'
     buckets = None
 
     if live_cluster:
@@ -394,13 +378,17 @@ def main():
 
     logging.info('using grafana home path:{} '.format(args.grafana_home_path))
 
+    dashboard_name_predicate = lambda x: not x.startswith(BACKUPMGR_STATS)
+    if backup_archive_mode:
+        dashboard_name_predicate = lambda x: x.startswith(BACKUPMGR_STATS)
+
     prepare_grafana(grafana_port,
                     stats_sources,
                     buckets,
                     min_time,
                     max_time,
                     refresh,
-                    backup_archive_mode)
+                    dashboard_name_predicate)
 
     if args.prom_bin:
         global PROMETHEUS_BIN
@@ -420,10 +408,13 @@ def main():
         connect_to_grafana(grafana_port)
         process = util.Process.poll_processes(processes, 1)
         if process is None:
-            maybe_open_browser(grafana_port, args.dont_open_browser, backup_archive_mode=backup_archive_mode)
+            url_path = 'dashboards'
+            if backup_archive_mode:
+                url_path = f'd/{BACKUPMGR_STATS}/{BACKUPMGR_STATS}-dashboard'
+            maybe_open_browser(grafana_port, args.dont_open_browser, url_path)
             if not backup_archive_mode:
                 annotations.get_and_create_annotations(grafana_port, stats_sources,
-                                                    not args.cluster)
+                                                       not args.cluster)
             process = util.Process.poll_processes(processes)
 
         logging.info('process {} exited with status {}'.format(process.name(),
