@@ -302,7 +302,7 @@
       "description": "irate(kv_ep_io_compaction_write_bytes_bytes[5m]) and irate(kv_ep_io_compaction_read_bytes_bytes[5m])",
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "binBps"
         }
       },
       "options": {

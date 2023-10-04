@@ -46,6 +46,11 @@
       "dashes": false,
       "datasource": "${node}",
       "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -194,6 +199,11 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -588,6 +598,11 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1029,6 +1044,11 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {

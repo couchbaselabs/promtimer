@@ -454,7 +454,7 @@
           "custom": {
             "fillOpacity": 1
           },
-          "unit": "short"
+          "unit": "bytes"
         }
       },
       "options": {
@@ -481,7 +481,7 @@
           "custom": {
             "fillOpacity": 1
           },
-          "unit": "short"
+          "unit": "bytes"
         }
       },
       "options": {
@@ -508,7 +508,7 @@
           "custom": {
             "fillOpacity": 1
           },
-          "unit": "short"
+          "unit": "bytes"
         }
       },
       "options": {
@@ -535,7 +535,7 @@
           "custom": {
             "fillOpacity": 1
           },
-          "unit": "short"
+          "unit": "bytes"
         }
       },
       "options": {
@@ -620,7 +620,7 @@
           "custom": {
             "fillOpacity": 1
           },
-          "unit": "short"
+          "unit": "bytes"
         }
       },
       "options": {
@@ -647,7 +647,7 @@
           "custom": {
             "fillOpacity": 1
           },
-          "unit": "short"
+          "unit": "binBps"
         }
       },
       "options": {
