@@ -402,7 +402,7 @@
         },
         {
           "exemplar": true,
-          "expr": "rate(kv_curr_items_tot{bucket=\"$bucket\"}[20s])",
+          "expr": "deriv(kv_curr_items_tot{bucket=\"$bucket\"}[20s])",
           "hide": false,
           "interval": "",
           "legendFormat": "Items (active+replica)",
