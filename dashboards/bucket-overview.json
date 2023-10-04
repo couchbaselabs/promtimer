@@ -162,6 +162,11 @@
     {
       "title": "kv_memory",
       "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
       "_targets": [
         {
           "datasource": "{data-source-name}",
@@ -196,6 +201,11 @@
     {
       "title": "kv_ep_db_data_size_bytes",
       "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
       "_targets": [
         {
           "datasource": "{data-source-name}",

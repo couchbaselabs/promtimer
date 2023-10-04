@@ -88,7 +88,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "bytes"
         }
       },
       "gridPos": {
@@ -619,7 +620,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "bytes"
         }
       },
       "gridPos": {
@@ -712,7 +714,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
@@ -783,7 +786,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "bytes"
         }
       },
       "gridPos": {
@@ -854,7 +858,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
@@ -896,7 +901,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "bytes"
         }
       },
       "gridPos": {
@@ -938,7 +944,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
@@ -963,7 +970,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "bytes"
         }
       },
       "gridPos": {
@@ -1018,7 +1026,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "bytes"
         }
       },
       "gridPos": {
@@ -1069,7 +1078,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "bytes"
         }
       },
       "gridPos": {
@@ -1191,7 +1201,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
@@ -1309,7 +1320,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
@@ -1361,7 +1373,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
@@ -1413,7 +1426,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
@@ -1513,7 +1527,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "binBps"
         }
       },
       "gridPos": {
