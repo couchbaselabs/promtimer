@@ -52,12 +52,12 @@
   },
   "_panels": [
     {
-      "title": "sys_cpu_utilization_rate",
+      "title": "sys_cpu_host_utilization_rate",
       "datasource": "{data-source-name}",
       "_base": "panel",
       "_targets": [
         {
-          "expr": "sys_cpu_utilization_rate",
+          "expr": "sys_cpu_host_utilization_rate",
           "legendFormat": "",
           "_base": "target"
         }

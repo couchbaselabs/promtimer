@@ -67,13 +67,13 @@ Let's also give the panel a better title:
       "_base": "dashboard",
       "_panels": [
         {
-          "title": "sys_cpu_utilization_rate",
+          "title": "sys_cpu_host_utilization_rate",
           "_base": "panel",
           "_targets": [
             {
               "datasource": "{data-source-name}",
-              "expr": "sys_cpu_utilization_rate",
-              "legendFormat": "{data-source-name} sys_cpu_utilization_rate",
+              "expr": "sys_cpu_host_utilization_rate",
+              "legendFormat": "{data-source-name} sys_cpu_host_utilization_rate",
               "_base": "target"
             }
           ]
@@ -82,7 +82,7 @@ Let's also give the panel a better title:
     }
 
 You will notice that the panel now contains one or more time series traces, or targets. Each target
-is the `sys_cpu_utilization_rate` for one of the cbcollects against which Promtimer is run. This
+is the `sys_cpu_host_utilization_rate` for one of the cbcollects against which Promtimer is run. This
 happens because the target contains at least one instance of the Promtimer template parameter
 `{data-source-name}` which is automatically expanded by Promtimer to add one trace per data source,
 or cbcollect.
@@ -96,14 +96,14 @@ Add a data-source-name parameter to the panel, as follows:
       "_base": "dashboard",
       "_panels": [
         {
-          "title": "sys_cpu_utilization_rate",
+          "title": "sys_cpu_host_utilization_rate",
           "datasource": "{data-source-name}",
           "_base": "panel",
           "_targets": [
             {
               "datasource": "{data-source-name}",
-              "expr": "sys_cpu_utilization_rate",
-              "legendFormat": "{data-source-name} sys_cpu_utilization_rate",
+              "expr": "sys_cpu_host_utilization_rate",
+              "legendFormat": "{data-source-name} sys_cpu_host_utilization_rate",
               "_base": "target"
             }
           ]

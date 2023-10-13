@@ -39,12 +39,12 @@
       "_base": "row"
     },
     {
-      "title": "sys_cpu_utilization_rate",
+      "title": "sys_cpu_host_utilization_rate",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_cpu_utilization_rate",
+          "expr": "sys_cpu_host_utilization_rate",
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
@@ -70,8 +70,8 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_cpu_utilization_rate * ignoring(name)sys_cpu_cores_available",
-          "legendFormat": "{data-source-name} sys_cpu_utilization_rate (in cores)",
+          "expr": "sys_cpu_host_utilization_rate * ignoring(name)sys_cpu_cores_available",
+          "legendFormat": "{data-source-name} sys_cpu_host_utilization_rate (in cores)",
           "_base": "target"
         },
         {
