@@ -229,6 +229,28 @@
           "unit": "s"
         }
       }
+    },
+    {
+      "title": "sys_mem_cgroup (limit/used)",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sys_mem_cgroup_limit",
+          "legendFormat": "sys_mem_cgroup_limit",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_mem_cgroup_used",
+          "legendFormat": "sys_mem_cgroup_used",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
     }
   ]
 }
