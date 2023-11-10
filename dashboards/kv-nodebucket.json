@@ -895,6 +895,14 @@
           "interval": "",
           "legendFormat": "{{connection_type}} - Backoff",
           "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "rate(kv_dcp_paused_count{bucket=\"$bucket\"}[20s])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{connection_type}} - paused rate",
+          "refId": "D"
         }
       ],
       "thresholds": [],
