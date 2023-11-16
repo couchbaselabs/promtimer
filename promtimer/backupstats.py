@@ -26,9 +26,20 @@ import logging
 import cbstats
 
 
-def handle_backup_archive_mode(
-    backup_archive_path: str, cbmstatparser_bin: str, prometheus_base_port: int
-) -> tuple[list[cbstats.BackupStatsFiles], str, str, str]:
+def handle_backup_archive_mode(backup_archive_path: str,
+                               cbmstatparser_bin: str,
+                               prometheus_base_port: int) \
+        -> tuple[list[cbstats.BackupStatsFiles], str, str, str]:
+    """
+    Handle setting up the backup archive so we're ready to run a Prometheus
+    instance against it.
+    :param backup_archive_path: path to the backup archive
+    :param cbmstatparser_bin: path to the cbmstatparser binary
+    :param prometheus_base_port: base prometheus port to use
+    :return: the list of stats sources, min and max timestamps associated
+             with the Prometheus metrics and whether any dashboard built
+             off this stats source should be refreshed
+    """
     archive_path = backup_archive_path
     if zipfile.is_zipfile(backup_archive_path):
         archive_path_tmpdir = tempfile.TemporaryDirectory()
@@ -42,10 +53,8 @@ def handle_backup_archive_mode(
             archive_path, os.path.splitext(os.path.basename(backup_archive_path))[0]
         )
     # Check that backup_archive_path exists and is not an empty dir
-    elif (
-        not os.path.isdir(backup_archive_path)
-        or len(os.listdir(backup_archive_path)) == 0
-    ):
+    elif (not os.path.isdir(backup_archive_path) or
+          len(os.listdir(backup_archive_path)) == 0):
         logging.error(
             "directory supplied as backup_archive_path either does not exist or is empty"
         )
