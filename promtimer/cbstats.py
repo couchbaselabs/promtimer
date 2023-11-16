@@ -631,7 +631,12 @@ class BackupStatsFiles(Source):
         first_stat_file_timestamp = get_date_time(first_stat_file_name)
 
         last_stat_file = os.path.join(cpu_stats_dir, stat_files[-1])
-        last_stat_file_timestamp = dateutil.parser.parse(util.read_last_line(last_stat_file).split(';')[0])
+
+        last_line = util.read_last_line(last_stat_file)
+        if not last_line:
+            raise ValueError(f'CPU stats file at \'{last_stat_file}\' is empty!')
+
+        last_stat_file_timestamp = dateutil.parser.parse(last_line.split(';')[0])
 
         return add_padding_to_timestamps(first_stat_file_timestamp, last_stat_file_timestamp)
 

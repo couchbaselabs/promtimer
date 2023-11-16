@@ -309,17 +309,11 @@ def read_last_n_lines(filename, line_count=1):
 
 
 def read_last_line(filepath):
-    with open(filepath, 'rb') as f:
-        # Only read last line of file:
-        try:
-            f.seek(-2, os.SEEK_END)  # Skip last byte in case it is a newline char
-            while f.read(1) != b'\n':  # Read 1 byte
-                f.seek(-2, os.SEEK_CUR)
-        except OSError:
-            f.seek(0)
-
-        last_line = f.readline().decode()
-        if not last_line:
-            raise ValueError(f'CPU stats file at \'{filepath}\' is empty!')
-
-        return last_line
+    """
+    :param filepath: the name of the file to open and read
+    :return: the last line of the file or empty string if the file is empty
+    """
+    last_lines = read_last_n_lines(filepath)
+    if not last_lines or len(last_lines) < 1:
+        return ''
+    return last_lines[0]
