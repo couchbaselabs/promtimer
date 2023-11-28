@@ -24,7 +24,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && \
-    apt-get install adduser libfontconfig1 python3 wget -y && \
+    apt-get install adduser libfontconfig1 python3 python3-pip wget -y && \
     apt-get clean
 
 ARG GRAFANA_VERSION=8.5.22
@@ -48,6 +48,8 @@ RUN mkdir -p /promtimer/data
 COPY . /promtimer
 
 ENV PROM_BIN=/usr/bin/prometheus
+
+RUN python3 -m pip install -r /promtimer/requirements.txt
 
 WORKDIR /promtimer/data
 EXPOSE 13300/tcp
