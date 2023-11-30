@@ -27,7 +27,6 @@ import os
 from os import path
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
-import dateutil.parser
 from abc import ABC, abstractmethod
 
 # Local Imports
@@ -636,9 +635,32 @@ class BackupStatsFiles(Source):
         if not last_line:
             raise ValueError(f'CPU stats file at \'{last_stat_file}\' is empty!')
 
-        last_stat_file_timestamp = dateutil.parser.parse(last_line.split(';')[0])
+        return add_padding_to_timestamps(
+            first_stat_file_timestamp,
+            parse_stat_file_timestamp(last_line.split(';')[0])
+        )
 
-        return add_padding_to_timestamps(first_stat_file_timestamp, last_stat_file_timestamp)
+
+def parse_stat_file_timestamp(raw_timestamp: str) -> datetime.datetime:
+    """
+    Returns a datetime object that represents the timestamp string found in
+    cbbackupmgr stats files. These timestamps are of the following format:
+    '2022-10-27T09:01:06.030538334+01:00'.
+
+    :param raw_timestamp: A timestamp string from a cbbackupmgr stats file
+    :return: A datetime object representation of the timestamp string
+    """
+    # Convert the timezone offset into a strptime friendly format
+    timezone_offset = raw_timestamp[-6:].replace(":", "")
+
+    # Replace the timezone with the preprocessed version
+    stat_file_timestamp = raw_timestamp[:-9] + timezone_offset
+
+    # Parse the timestamp str into a datetime object and return it
+    return datetime.datetime.strptime(
+        stat_file_timestamp,
+        "%Y-%m-%dT%H:%M:%S.%f%z"
+    )
 
 
 def add_padding_to_timestamps(first_timestamp, last_timestamp):
