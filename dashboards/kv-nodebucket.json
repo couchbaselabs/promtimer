@@ -278,6 +278,14 @@
         },
         {
           "exemplar": true,
+          "expr": "kv_ep_checkpoint_memory_bytes{bucket=\"$bucket\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "checkpoint_total",
+          "refId": "I"
+        },
+        {
+          "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_queue_bytes{bucket=\"$bucket\"}",
           "hide": false,
           "interval": "",
