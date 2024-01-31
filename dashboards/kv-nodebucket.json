@@ -141,7 +141,7 @@
         },
         {
           "exemplar": true,
-          "expr": "kv_memory_used_bytes{bucket=\"$bucket\"}",
+          "expr": "kv_memory_used_bytes{bucket=\"$bucket\", for=~\"blobs|storedvalues\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "Mem used - {{for}}",
