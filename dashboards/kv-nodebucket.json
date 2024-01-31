@@ -176,7 +176,7 @@
           "expr": "kv_dcp_ready_queue_size_bytes{bucket=\"$bucket\"}",
           "hide": false,
           "interval": "",
-          "legendFormat": "DCP readyQ",
+          "legendFormat": "DCP readyQ ({{connection_type}})",
           "refId": "L"
         }
       ],
