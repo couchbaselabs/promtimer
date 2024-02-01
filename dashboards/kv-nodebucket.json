@@ -243,13 +243,6 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "kv_ep_max_size{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "Bucket Quota",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_quota_bytes{bucket=\"$bucket\"}",
           "hide": false,
           "interval": "",
