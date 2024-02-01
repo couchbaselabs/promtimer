@@ -39,6 +39,10 @@
   },
   "_panels": [
     {
+      "title": "General",
+      "_base": "row"
+    },
+    {
       "_base": "panel",
       "aliasColors": {},
       "bars": false,
@@ -1229,6 +1233,103 @@
       ],
       "title": "Ops",
       "type": "timeseries"
+    },
+    {
+      "title": "Ephemeral",
+      "_base": "row"
+    },
+    {
+      "title": "Ephemeral Sequence List",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "${node}",
+          "expr": "kv_vb_seqlist_count",
+          "legendFormat": "total {{state}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "${node}",
+          "expr": "kv_vb_seqlist_deleted_count",
+          "legendFormat": "deleted {{state}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "${node}",
+          "expr": "kv_vb_seqlist_read_range_count",
+          "legendFormat": "range read {{state}}",
+          "_base": "target"
+        },
+        {
+          "datasource": "${node}",
+          "expr": "kv_vb_seqlist_stale_count",
+          "legendFormat": "stale {{state}}",
+          "_base": "target"
+        }
+      ],
+      "unit": "short",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8
+      },
+      "description": "Current counts of various items in the seqlist.",
+      "overrides": [
+        {
+          "__systemRef": "hideSeriesFrom",
+          "matcher": {
+            "id": "byNames",
+            "options": {
+              "mode": "exclude",
+              "names": [
+                "total active",
+                "deleted active",
+                "range read active",
+                "stale active"
+              ],
+              "prefix": "All except:",
+              "readOnly": true
+            }
+          },
+          "properties": [
+            {
+              "id": "custom.hideFrom",
+              "value": {
+                "viz": true,
+                "legend": false,
+                "tooltip": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Ephemeral Automatic Deletion",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "${node}",
+          "expr": "kv_vb_auto_delete_count",
+          "legendFormat": "auto_delete {{state}}",
+          "_base": "target"
+        }
+      ],
+      "unit": "short",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8
+      },
+      "description": "Total count of items deleted by the ItemPager due to memory usage being too high. These items might be kept in memory in the sequence list due to a range read (DCP)."
     }
   ]
 }
