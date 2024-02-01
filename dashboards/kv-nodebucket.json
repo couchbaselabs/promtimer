@@ -59,7 +59,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 10,
-        "w": 9
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 2,
@@ -212,7 +212,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 10,
-        "w": 9
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 18,
@@ -360,7 +360,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 10,
-        "w": 6
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 12,
@@ -453,8 +453,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 6
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 6,
@@ -553,8 +553,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 4
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 8,
@@ -618,10 +618,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 4,
-        "x": 10,
-        "y": 10
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 24,
@@ -739,10 +737,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 5,
-        "x": 14,
-        "y": 10
+        "h": 10,
+        "w": 8
       },
       "id": 26,
       "options": {
@@ -777,10 +773,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 5,
-        "x": 19,
-        "y": 10
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 10,
@@ -855,8 +849,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 4
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 16,
@@ -939,8 +933,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 4
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 20,
@@ -999,8 +993,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 4
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 22,
@@ -1072,8 +1066,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 4
+        "h": 10,
+        "w": 8
       },
       "hiddenSeries": false,
       "id": 4,
@@ -1176,7 +1170,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 8
       },
       "id": 28,
@@ -1274,7 +1268,7 @@
         }
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 8
       },
       "description": "Current counts of various items in the seqlist.",
@@ -1326,7 +1320,7 @@
         }
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 8
       },
       "description": "Total count of items deleted by the ItemPager due to memory usage being too high. These items might be kept in memory in the sequence list due to a range read (DCP)."
