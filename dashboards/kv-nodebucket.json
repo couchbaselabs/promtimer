@@ -1110,6 +1110,10 @@
       "type": "graph"
     },
     {
+      "title": "Operations",
+      "_base": "row"
+    },
+    {
       "_base": "panel",
       "datasource": "${node}",
       "fieldConfig": {
@@ -1218,8 +1222,56 @@
           "refId": "E"
         }
       ],
-      "title": "Ops",
+      "title": "Total operations by vBucket state",
       "type": "timeseries"
+    },
+    {
+      "title": "Rate of MCBP operations",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "${node}",
+          "expr": "rate(kv_cmd_duration_seconds_count{bucket=\"$bucket\", opcode!~\"DCP_.*\"}[5m]) > 0",
+          "legendFormat": "{{opcode}}",
+          "_base": "target"
+        }
+      ],
+      "unit": "short",
+      "noValue": "0",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "description": "Number of MCBP commands executed per second, averaged over 5 minutes."
+    },
+    {
+      "title": "Rate of DCP operations",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "${node}",
+          "expr": "rate(kv_cmd_duration_seconds_count{bucket=\"$bucket\", opcode=~\"DCP_.*\"}[5m]) > 0",
+          "legendFormat": "{{opcode}}",
+          "_base": "target"
+        }
+      ],
+      "unit": "short",
+      "noValue": "0",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "description": "Number of DCP commands executed per second, averaged over 5 minutes."
     },
     {
       "title": "Ephemeral",
