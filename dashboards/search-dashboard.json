@@ -34,7 +34,7 @@
     ]
   },
   "_panels": [
-        {
+          {
             "title": "fts_num_bytes_used_ram",
             "_base": "panel",
             "_targets": [
@@ -42,6 +42,18 @@
                 "datasource": "{data-source-name}",
                 "expr": "fts_num_bytes_used_ram",
                 "legendFormat": "{data-source-name} fts_num_bytes_used_ram",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_bytes_used_ram_c",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_bytes_used_ram_c",
+                "legendFormat": "{data-source-name} fts_num_bytes_used_ram_c",
                 "_base": "target"
               }
             ]
@@ -131,6 +143,18 @@
             ]
           },
           {
+            "title": "fts_num_files_on_disk",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_files_on_disk",
+                "legendFormat": "{data-source-name} fts_num_files_on_disk",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_pct_cpu_gc",
             "_base": "panel",
             "_targets": [
@@ -150,6 +174,150 @@
                 "datasource": "{data-source-name}",
                 "expr": "fts_total_gc",
                 "legendFormat": "{data-source-name} fts_total_gc",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_doc_count",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_doc_count",
+                "legendFormat": "{data-source-name} fts_doc_count",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_queries",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_queries",
+                "legendFormat": "{data-source-name} fts_total_queries",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_queries_error",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_queries_error",
+                "legendFormat": "{data-source-name} fts_total_queries_error",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_queries_timeout",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_queries_timeout",
+                "legendFormat": "{data-source-name} fts_total_queries_timeout",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_queries_slow",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_queries_slow",
+                "legendFormat": "{data-source-name} fts_total_queries_slow",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_bytes_used_disk",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_bytes_used_disk",
+                "legendFormat": "{data-source-name} fts_num_bytes_used_disk",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_knn_search_requests",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_knn_search_requests",
+                "legendFormat": "{data-source-name} fts_num_knn_search_requests",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_knn_searches",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_knn_searches",
+                "legendFormat": "{data-source-name} fts_total_knn_searches",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_mutations_to_index",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_mutations_to_index",
+                "legendFormat": "{data-source-name} fts_num_mutations_to_index",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_recs_to_persist",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_recs_to_persist",
+                "legendFormat": "{data-source-name} fts_num_recs_to_persist",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_file_merge_ops",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_file_merge_ops",
+                "legendFormat": "{data-source-name} fts_num_file_merge_ops",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_mem_merge_ops",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_mem_merge_ops",
+                "legendFormat": "{data-source-name} fts_num_mem_merge_ops",
                 "_base": "target"
               }
             ]
