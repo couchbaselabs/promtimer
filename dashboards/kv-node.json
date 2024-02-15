@@ -182,6 +182,51 @@
       "description": "For each node computed as:\n`topk(5, sum by (opcode) (kv_cmd_duration_seconds_count))`"
     },
     {
+      "title": "Percentile Metrics Scrape Latencies",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "exposer_request_latencies{quantile=\"0.990000\"}",
+          "legendFormat": "99th {{job}}",
+          "_base": "target"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "value": 1000000,
+                "color": "#EAB839"
+              },
+              {
+                "color": "dark-red",
+                "value": 5000000
+              }
+            ]
+          },
+          "unit": "µs"
+        }
+      }
+    },
+    {
       "title": "Data",
       "_base": "row"
     },
