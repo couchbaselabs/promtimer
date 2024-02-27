@@ -677,7 +677,8 @@ def parse_couchbase_ns_config(cbcollect_dir):
     in_buckets = False
     buckets = []
     section_divider_count = 0
-    with open(path.join(cbcollect_dir, 'couchbase.log'), "r") as file:
+    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r',
+              errors='replace') as file:
         for full_line in file:
             line = full_line.rstrip()
             config_line = 'Couchbase config'
@@ -707,7 +708,8 @@ def parse_couchbase_chronicle_older_version(cbcollect_dir):
     in_config = False
     in_buckets = False
     bucket_list = ''
-    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r') as file:
+    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r',
+              errors='replace') as file:
         for full_line in file:
             line = full_line.rstrip()
             if not in_config and line == 'Chronicle config':
@@ -744,7 +746,8 @@ def parse_couchbase_chronicle_older_version(cbcollect_dir):
 def parse_couchbase_chronicle(cbcollect_dir):
     logging.debug('parsing couchbase.log (Chronicle config)')
     bucket_list = ''
-    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r') as file:
+    with open(path.join(cbcollect_dir, 'couchbase.log'), 'r',
+              errors='replace') as file:
         parsing_config = False
         parsing_bucket_names = False
         for full_line in file:
