@@ -252,82 +252,52 @@
         {
           "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_recovery_upper_mark_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Checkpoint Upper",
-          "refId": "I"
+          "legendFormat": "Checkpoint Upper"
         },
         {
           "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_recovery_lower_mark_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Checkpoint Lower",
-          "refId": "J"
+          "legendFormat": "Checkpoint Lower"
         },
         {
           "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "checkpoint_total_{{state}}",
-          "refId": "B"
+          "legendFormat": "checkpoint_total_{{state}}"
         },
         {
           "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "checkpoint_total",
-          "refId": "I"
+          "legendFormat": "checkpoint_total"
         },
         {
           "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_queue_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "queue_{{state}}",
-          "refId": "E"
+          "legendFormat": "queue_{{state}}"
         },
         {
           "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_overhead_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "overhead_{{state}}",
-          "refId": "C"
+          "legendFormat": "overhead_{{state}}"
         },
         {
           "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_overhead_queue_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "overhead_queue_{{state}}",
-          "refId": "F"
+          "legendFormat": "overhead_queue_{{state}}"
         },
         {
           "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_overhead_index_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "overhead_index_{{state}}",
-          "refId": "G"
+          "legendFormat": "overhead_index_{{state}}"
         },
         {
           "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_unreferenced_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "unreferenced_{{state}}",
-          "refId": "D"
+          "legendFormat": "unreferenced_{{state}}"
         },
         {
           "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_pending_destruction_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Pending dealloc",
-          "refId": "I"
+          "legendFormat": "Pending dealloc"
         }
       ],
       "thresholds": [],
