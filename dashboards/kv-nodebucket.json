@@ -203,86 +203,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${node}",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes"
-        }
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 10,
-        "w": 8
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "(kv_ep_mem_low_wat{bucket=\"$bucket\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"}) * on(bucket) (kv_num_vbuckets{state=\"active\",bucket=\"$bucket\"} + on(bucket) kv_num_vbuckets{state=\"pending\", bucket=\"$bucket\"})",
-          "interval": "",
-          "legendFormat": "Pageable LWM",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "(kv_ep_mem_high_wat{bucket=\"$bucket\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"}) * on(bucket) (kv_num_vbuckets{state=\"active\",bucket=\"$bucket\"} + on(bucket) kv_num_vbuckets{state=\"pending\",bucket=\"$bucket\"})",
-          "interval": "",
-          "legendFormat": "Pageable HWM",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"} - on(bucket) (kv_memory_used_bytes{bucket=\"$bucket\", for=\"hashtable\"} * on(bucket) (kv_num_vbuckets{bucket=\"$bucket\", state=\"replica\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"})) - on(bucket) (kv_vb_checkpoint_memory_overhead_bytes{state=\"replica\", bucket=\"$bucket\"})" ,
-          "interval": "",
-          "legendFormat": "Pageable Mem Used",
-          "refId": "C"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Ephemeral Adjusted Memory counters",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
-    },
-    {
-      "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${node}",
       "fieldConfig": {
         "defaults": {
           "unit": "bytes"
@@ -1356,6 +1276,38 @@
     {
       "title": "Ephemeral",
       "_base": "row"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "description": "Adjusted watermarks used for Ephmemeral buckets. The \"Pageable Mem Used\" is an estimate of the real value.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "options": {
+        "alertThreshold": true
+      },
+      "targets": [
+        {
+          "expr": "(kv_ep_mem_low_wat{bucket=\"$bucket\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"}) * on(bucket) (kv_num_vbuckets{state=\"active\",bucket=\"$bucket\"} + on(bucket) kv_num_vbuckets{state=\"pending\", bucket=\"$bucket\"})",
+          "legendFormat": "Pageable LWM"
+        },
+        {
+          "expr": "(kv_ep_mem_high_wat{bucket=\"$bucket\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"}) * on(bucket) (kv_num_vbuckets{state=\"active\",bucket=\"$bucket\"} + on(bucket) kv_num_vbuckets{state=\"pending\",bucket=\"$bucket\"})",
+          "legendFormat": "Pageable HWM"
+        },
+        {
+          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"} - on(bucket) (kv_ep_ht_item_memory_bytes{bucket=\"$bucket\"} * on(bucket) (kv_num_vbuckets{bucket=\"$bucket\", state=\"replica\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"})) - on(bucket) (kv_vb_checkpoint_memory_overhead_bytes{state=\"replica\", bucket=\"$bucket\"})" ,
+          "legendFormat": "Pageable Mem Used"
+        }
+      ],
+      "title": "Ephemeral Adjusted Memory counters"
     },
     {
       "title": "Ephemeral Sequence List",
