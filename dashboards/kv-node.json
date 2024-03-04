@@ -516,6 +516,28 @@
       "description": "KV service CPU Utilization of all cores summed up, in percent\n\nsysproc_cpu_utilization{proc=\"memcached\"}"
     },
     {
+      "title": "KV CPU Utilization By Thread",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum by (thread_group) (label_replace(irate(kv_thread_cpu_usage_seconds[3m]), \"thread_group\", \"$1\", \"thread_name\", \"([^\\\\d]+[^\\\\d:_])[\\\\d:_]*\"))",
+          "legendFormat": "{{thread_group}}",
+          "_base": "target"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        }
+      }
+    },
+    {
       "title": "Failed KV Operations",
       "datasource": "{data-source-name}",
       "_base": "panel",
