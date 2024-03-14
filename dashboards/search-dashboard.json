@@ -203,6 +203,18 @@
             ]
           },
           {
+            "title": "fts_total_grpc_internal_queries",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_grpc_internal_queries",
+                "legendFormat": "{data-source-name} fts_total_grpc_internal_queries",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_total_queries_error",
             "_base": "panel",
             "_targets": [
@@ -275,6 +287,18 @@
             ]
           },
           {
+            "title": "fts_total_bytes_indexed",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_bytes_indexed",
+                "legendFormat": "{data-source-name} fts_total_bytes_indexed",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_num_mutations_to_index",
             "_base": "panel",
             "_targets": [
@@ -318,6 +342,30 @@
                 "datasource": "{data-source-name}",
                 "expr": "fts_num_mem_merge_ops",
                 "legendFormat": "{data-source-name} fts_num_mem_merge_ops",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_term_searchers",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_term_searchers",
+                "legendFormat": "{data-source-name} fts_total_term_searchers",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_term_searchers_finished",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_term_searchers_finished",
+                "legendFormat": "{data-source-name} fts_total_term_searchers_finished",
                 "_base": "target"
               }
             ]
