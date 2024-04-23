@@ -293,7 +293,7 @@
       "type": "timeseries"
     },
     {
-      "title": "index scans / second",
+      "title": "index rows scanned / second",
       "_base": "panel",
       "_targets": [
         {
