@@ -24,6 +24,7 @@ import io
 import time
 import datetime
 import os
+import zoneinfo
 from os import path
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
@@ -207,6 +208,26 @@ class CBCollect(Source):
         :return: 2-tuple (min time, max time)
         """
         return get_prometheus_times(self._cbcollect_dir)
+
+    def get_timezone(self):
+        """
+        Returns a timezone identifier specifying the timezone of the cluster.
+        """
+        try:
+            return parse_couchbase_timezone(self._cbcollect_dir)
+        except Exception as e:
+            logging.warn(
+                'failed to determine timezone from couchbase.log: {}'.format(
+                    e))
+
+        try:
+            return parse_cbcollect_info_timezone(self._cbcollect_dir)
+        except Exception as e:
+            logging.warn(
+                'failed to determine timezone from cbcollect_info.log: {}'
+                .format(e))
+
+        return None
 
     @staticmethod
     def make_snapshot_dir_path(candidate_cbcollect_dir):
@@ -800,6 +821,57 @@ def get_prometheus_times(cbcollect_dir):
             min_times.append(meta['minTime'] / 1000.0)
             max_times.append(meta['maxTime'] / 1000.0)
     return min(min_times), max(max_times)
+
+
+def parse_couchbase_timezone(cbcollect_dir):
+    """
+    Parses the timezone output from cat /etc/timezone from couchbase.log
+    """
+    log_file = path.join(cbcollect_dir, 'couchbase.log')
+    with open(log_file, 'r', errors='replace') as file:
+        it = iter(file)
+        while (line := next(it, None)) is not None:
+            if line == 'cat /etc/timezone\n':
+                separator = next(it, None)
+                assert separator.startswith(
+                    '=' * 70), 'Expected separator, not {}'.format(separator)
+                timezone = next(it, None)
+                if timezone is None or ' ' in timezone:
+                    raise ValueError('Missing /etc/timezone output')
+
+                timezone = timezone.strip()
+                # Observed just /UTC in some environments
+                if timezone.startswith('/'):
+                    return 'Etc' + timezone
+                return timezone
+
+
+def parse_cbcollect_info_timezone(cbcollect_dir):
+    """
+    Parses the UTC offset from timestamps in cbcollect_info.log and returns a
+    timezone identifier from the Etcetera group designating that offset.
+    """
+    log_file = path.join(cbcollect_dir, 'cbcollect_info.log')
+    with open(log_file, 'r', errors='replace') as file:
+        line = next(iter(file), '')
+    if not line.startswith('['):
+        return None
+
+    timestamp = line[1:line.index(']')]
+    dt = datetime.datetime.fromisoformat(timestamp)
+    offset = dt.strftime('%z')
+    logging.info('cbcollect_info.log contains offsets of {}'.format(offset))
+
+    sign, hhmm = offset[0], offset[1:]
+    hh, mm = hhmm[:-2], hhmm[-2:]
+    if mm != '00':
+        raise ValueError(
+            'Cannot determine the timezone to use for {}'.format(offset))
+    if hh == '00':
+        return 'Etc/UTC'
+    key_sign = {'-': '+', '+': '-'}[sign]
+
+    return 'Etc/GMT{}{}'.format(key_sign, hh.lstrip('0'))
 
 
 def parse_user_log(stream):
