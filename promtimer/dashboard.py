@@ -181,10 +181,12 @@ def make_dashboard(dashboard_meta,
                    template_params,
                    min_time_string,
                    max_time_string,
-                   refresh):
+                   refresh,
+                   timezone):
     replacements = {'dashboard-from-time': min_time_string,
                     'dashboard-to-time': max_time_string,
-                    'dashboard-refresh': refresh}
+                    'dashboard-refresh': refresh,
+                    'dashboard-timezone': timezone}
     template_string = get_template(dashboard_meta['_base'])
     template_string = metaify_template_string(template_string, dashboard_meta)
     dashboard_string = templating.replace(template_string, replacements)

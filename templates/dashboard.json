@@ -49,7 +49,7 @@
       "1d"
     ]
   },
-  "timezone": "",
+  "timezone": "{dashboard-timezone}",
   "title": "Dashboard",
   "version": 0
 }
