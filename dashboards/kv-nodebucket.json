@@ -52,7 +52,31 @@
           "custom": {
             "fillOpacity": 10
           }
-        }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/(Bucket Quota|LWM|HWM|Mutation threshold)/"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "fill": 1,
       "gridPos": {
@@ -125,7 +149,31 @@
           "custom": {
             "fillOpacity": 10
           }
-        }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/Checkpoint (Quota|Upper|Lower)/"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "fill": 1,
       "gridPos": {
@@ -621,7 +669,31 @@
           "custom": {
             "fillOpacity": 10
           }
-        }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/Pageable (LWM|HWM)/"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 10,
