@@ -45,7 +45,7 @@
     {
       "_base": "panel",
       "datasource": "${node}",
-      "description": "",
+      "description": "* Bucket Quota - configured quota\n* Mutation threshold - non-configurable threshold above which mutations fail (TmpOOM)\n* HWM - high watermark at which eviction (ItemPager) is triggered\n* LWM - low watermark at which eviction should stop\n* Total mem used - total memory usage of the bucket (triggers eviction when above HWM)",
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
@@ -78,7 +78,7 @@
         },
         {
           "expr": "kv_mem_used_bytes{bucket=\"$bucket\"}",
-          "legendFormat": "Total mem"
+          "legendFormat": "Total mem used"
         },
         {
           "expr": "kv_ep_checkpoint_memory_bytes{bucket=\"$bucket\"}",
@@ -139,11 +139,11 @@
         },
         {
           "expr": "kv_ep_checkpoint_memory_recovery_upper_mark_bytes{bucket=\"$bucket\"}",
-          "legendFormat": "Checkpoint Upper"
+          "legendFormat": "Checkpoint Upper Mark"
         },
         {
           "expr": "kv_ep_checkpoint_memory_recovery_lower_mark_bytes{bucket=\"$bucket\"}",
-          "legendFormat": "Checkpoint Lower"
+          "legendFormat": "Checkpoint Lower Mark"
         },
         {
           "expr": "kv_vb_checkpoint_memory_bytes{bucket=\"$bucket\"}",
@@ -179,6 +179,7 @@
         }
       ],
       "title": "Checkpoint mem details",
+      "description": "* Checkpoint Quota - memory limit for checkpoints (fixed percentage of quota) above which mutations fail (TmpOOM)\n* Checkpoint Upper Mark - threshold at which we trigger checkpoint memory recovery\n* Checkpoint Lower Mark - threshold at which we stop checkpoint memory recovery\n* checkpoint_total - total memory used by checkpoints (triggers checkpoint memory recovery)",
       "type": "timeseries"
     },
     {
