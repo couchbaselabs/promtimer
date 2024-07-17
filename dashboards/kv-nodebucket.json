@@ -44,367 +44,180 @@
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_ep_max_size{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "Bucket Quota",
-          "refId": "A"
+          "legendFormat": "Bucket Quota"
         },
         {
-          "exemplar": true,
-          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "LWM",
-          "refId": "H"
-        },
-        {
-          "exemplar": true,
           "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "HWM",
-          "refId": "G"
+          "legendFormat": "HWM"
         },
         {
-          "exemplar": true,
+          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"}",
+          "legendFormat": "LWM"
+        },
+        {
           "expr": "kv_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Total mem",
-          "refId": "B"
+          "legendFormat": "Total mem"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Checkpoint mem",
-          "refId": "C"
+          "legendFormat": "Checkpoint mem"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_overhead_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Checkpoint mem overhead",
-          "refId": "D"
+          "legendFormat": "Checkpoint mem overhead"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_unreferenced_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Checkpoint mem unref",
-          "refId": "E"
+          "legendFormat": "Checkpoint mem unref"
         },
         {
-          "exemplar": true,
           "expr": "kv_memory_used_bytes{bucket=\"$bucket\", for=~\"blobs|storedvalues\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Mem used - {{for}}",
-          "refId": "F"
+          "legendFormat": "Mem used - {{for}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_ht_item_memory_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Mem used - Hashtable",
-          "refId": "K"
+          "legendFormat": "Mem used - Hashtable"
         },
         {
-          "exemplar": true,
           "expr": "kv_memory_overhead_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Mem overhead - {{for}}",
-          "refId": "I"
+          "legendFormat": "Mem overhead - {{for}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_magma_total_mem_used_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Magma total mem used",
-          "refId": "J"
+          "legendFormat": "Magma total mem used"
         },
         {
-          "exemplar": true,
           "expr": "kv_dcp_ready_queue_size_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "DCP readyQ ({{connection_type}})",
-          "refId": "L"
+          "legendFormat": "DCP readyQ ({{connection_type}})"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "mem",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "title": "Memory usage",
+      "type": "timeseries"
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 18,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_quota_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Checkpoint Quota",
-          "refId": "H"
+          "legendFormat": "Checkpoint Quota"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_recovery_upper_mark_bytes{bucket=\"$bucket\"}",
           "legendFormat": "Checkpoint Upper"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_recovery_lower_mark_bytes{bucket=\"$bucket\"}",
           "legendFormat": "Checkpoint Lower"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_bytes{bucket=\"$bucket\"}",
           "legendFormat": "checkpoint_total_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_bytes{bucket=\"$bucket\"}",
           "legendFormat": "checkpoint_total"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_queue_bytes{bucket=\"$bucket\"}",
           "legendFormat": "queue_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_overhead_bytes{bucket=\"$bucket\"}",
           "legendFormat": "overhead_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_overhead_queue_bytes{bucket=\"$bucket\"}",
           "legendFormat": "overhead_queue_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_overhead_index_bytes{bucket=\"$bucket\"}",
           "legendFormat": "overhead_index_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_checkpoint_memory_unreferenced_bytes{bucket=\"$bucket\"}",
           "legendFormat": "unreferenced_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_checkpoint_memory_pending_destruction_bytes{bucket=\"$bucket\"}",
           "legendFormat": "Pending dealloc"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "Checkpoint mem details",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 12,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
       },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "rate(kv_cmd_mutation{bucket=\"$bucket\"}[20s])",
           "format": "time_series",
           "instant": false,
-          "interval": "",
-          "legendFormat": "Write (frontend)",
-          "refId": "A"
+          "legendFormat": "Write (frontend)"
         },
         {
-          "exemplar": true,
           "expr": "rate(kv_cmd_lookup{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Read (frontend)",
-          "refId": "E"
+          "legendFormat": "Read (frontend)"
         },
         {
-          "exemplar": true,
           "expr": "rate(kv_ep_tmp_oom_errors{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "TempOOM",
-          "refId": "B"
+          "legendFormat": "TempOOM"
         },
         {
-          "exemplar": true,
           "expr": "rate(kv_ep_oom_errors{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "OOM",
-          "refId": "C"
+          "legendFormat": "OOM"
         },
         {
-          "exemplar": true,
           "expr": "deriv(kv_curr_items_tot{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Items (active+replica)",
-          "refId": "D"
+          "legendFormat": "Items (active+replica)"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "OPS rate",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
@@ -412,6 +225,13 @@
       "gridPos": {
         "h": 10,
         "w": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
       },
       "targets": [
         {
@@ -452,7 +272,7 @@
       "tooltip": {
         "value_type": "individual"
       },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
@@ -470,7 +290,10 @@
       "title": "RR",
       "fieldConfig": {
         "defaults": {
-          "unit": "percentunit"
+          "unit": "percentunit",
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "yaxes": [
@@ -480,163 +303,55 @@
         },
         {}
       ],
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 24,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_ep_mem_freed_by_checkpoint_removal_bytes{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "Released by CheckpointRemoval",
-          "refId": "A"
+          "legendFormat": "Released by CheckpointRemoval"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_mem_freed_by_checkpoint_item_expel_bytes{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Released by ItemExpel",
-          "refId": "B"
+          "legendFormat": "Released by ItemExpel"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "Memory Released from Checkpoints",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      }
+      "type": "timeseries"
     },
     {
       "_base": "panel",
       "datasource": "${node}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "id": 26,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_ep_num_checkpoints{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "Num Checkpoints",
-          "refId": "A"
+          "legendFormat": "Num Checkpoints"
         }
       ],
       "title": "Num Checkpoints",
@@ -644,356 +359,148 @@
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 10,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
       },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_vb_eject{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "Num ejected - {{state}}",
-          "refId": "A"
+          "legendFormat": "Num ejected - {{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_items_expelled_from_checkpoints{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Removed from checkpoints - Expel",
-          "refId": "B"
+          "legendFormat": "Removed from checkpoints - Expel"
         },
         {
-          "exemplar": true,
           "expr": "kv_ep_items_rm_from_checkpoints{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "Removed from checkpoints - Ckpt Rem",
-          "refId": "C"
+          "legendFormat": "Removed from checkpoints - Ckpt Rem"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "HT Eject - CM Expel/Rem",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 16,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
       },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "rate(kv_dcp_items_sent{bucket=\"$bucket\"}[20s])",
-          "interval": "",
-          "legendFormat": "{{connection_type}} - items sent rate",
-          "refId": "A"
+          "legendFormat": "{{connection_type}} - items sent rate"
         },
         {
-          "exemplar": true,
           "expr": "kv_dcp_items_remaining{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{connection_type}} - queue size",
-          "refId": "B"
+          "legendFormat": "{{connection_type}} - queue size"
         },
         {
-          "exemplar": true,
           "expr": "rate(kv_dcp_backoff{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{connection_type}} - Backoff",
-          "refId": "C"
+          "legendFormat": "{{connection_type}} - Backoff"
         },
         {
-          "exemplar": true,
           "expr": "rate(kv_dcp_paused_count{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{connection_type}} - paused rate",
-          "refId": "D"
+          "legendFormat": "{{connection_type}} - paused rate"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "DCP",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 20,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
       },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_ep_cursors_dropped{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "Num dropped",
-          "refId": "A"
+          "legendFormat": "Num dropped"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "DCP Cursors",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 22,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
       },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "rate(kv_ep_diskqueue_fill{bucket=\"$bucket\"}[20s])",
-          "interval": "",
-          "legendFormat": "disk-queue fill rate",
-          "refId": "A"
+          "legendFormat": "disk-queue fill rate"
         },
         {
-          "exemplar": true,
           "expr": "rate(kv_ep_diskqueue_drain{bucket=\"$bucket\"}[20s])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "disk-queue drain rate",
-          "refId": "B"
+          "legendFormat": "disk-queue drain rate"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "Disk queue rates (items/s)",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "_base": "panel",
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "${node}",
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "hiddenSeries": false,
-      "id": 4,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.1.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_ep_db_data_size_bytes{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "Data Bytes",
-          "refId": "A"
+          "legendFormat": "Data Bytes"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "Disk",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph"
+      "type": "timeseries"
     },
     {
       "title": "Operations",
@@ -1002,110 +509,37 @@
     {
       "_base": "panel",
       "datasource": "${node}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 10,
         "w": 8
       },
-      "id": 28,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "targets": [
         {
-          "exemplar": true,
           "expr": "kv_vb_ops_create{bucket=\"$bucket\"}",
-          "interval": "",
-          "legendFormat": "create_{{state}}",
-          "refId": "A"
+          "legendFormat": "create_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_ops_update{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "update_{{state}}",
-          "refId": "B"
+          "legendFormat": "update_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_ops_delete{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "delete_{{state}}",
-          "refId": "C"
+          "legendFormat": "delete_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_ops_get{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "get_{{state}}",
-          "refId": "D"
+          "legendFormat": "get_{{state}}"
         },
         {
-          "exemplar": true,
           "expr": "kv_vb_ops_reject{bucket=\"$bucket\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "reject_{{state}}",
-          "refId": "E"
+          "legendFormat": "reject_{{state}}"
         }
       ],
       "title": "Total operations by vBucket state",
@@ -1114,6 +548,13 @@
     {
       "title": "Rate of MCBP operations",
       "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
       "_targets": [
         {
           "datasource": "${node}",
@@ -1124,11 +565,6 @@
       ],
       "unit": "short",
       "noValue": "0",
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
       "gridPos": {
         "h": 10,
         "w": 8
@@ -1138,6 +574,13 @@
     {
       "title": "Rate of DCP operations",
       "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
       "_targets": [
         {
           "datasource": "${node}",
@@ -1169,7 +612,10 @@
       "description": "Adjusted watermarks used for Ephmemeral buckets. The \"Pageable Mem Used\" is an estimate of the real value.",
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 10
+          }
         }
       },
       "gridPos": {
@@ -1189,7 +635,7 @@
           "legendFormat": "Pageable HWM"
         },
         {
-          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"} - on(bucket) (kv_ep_ht_item_memory_bytes{bucket=\"$bucket\"} * on(bucket) (kv_num_vbuckets{bucket=\"$bucket\", state=\"replica\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"})) - on(bucket) (kv_vb_checkpoint_memory_overhead_bytes{state=\"replica\", bucket=\"$bucket\"})" ,
+          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"} - on(bucket) (kv_ep_ht_item_memory_bytes{bucket=\"$bucket\"} * on(bucket) (kv_num_vbuckets{bucket=\"$bucket\", state=\"replica\"} / on(bucket) kv_ep_vb_total{bucket=\"$bucket\"})) - on(bucket) (kv_vb_checkpoint_memory_overhead_bytes{state=\"replica\", bucket=\"$bucket\"})",
           "legendFormat": "Pageable Mem Used"
         }
       ],
@@ -1198,6 +644,13 @@
     {
       "title": "Ephemeral Sequence List",
       "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
       "_targets": [
         {
           "datasource": "${node}",
@@ -1268,6 +721,13 @@
     {
       "title": "Ephemeral Automatic Deletion",
       "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
       "_targets": [
         {
           "datasource": "${node}",
