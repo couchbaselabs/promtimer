@@ -65,6 +65,10 @@
           "legendFormat": "Bucket Quota"
         },
         {
+          "expr": "kv_ep_max_size{bucket=\"$bucket\"} * ignoring(name) (kv_ep_mutation_mem_ratio{bucket=\"$bucket\"} or (kv_ep_mutation_mem_threshold{bucket=\"$bucket\"} / 100))",
+          "legendFormat": "Mutation threshold"
+        },
+        {
           "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"}",
           "legendFormat": "HWM"
         },
