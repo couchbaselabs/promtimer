@@ -107,6 +107,7 @@ def make_dashboards(stats_sources,
                     min_time_string,
                     max_time_string,
                     refresh_string,
+                    timezone_string,
                     dashboard_name_predicate):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     data_sources = [s.short_name() for s in stats_sources]
@@ -124,7 +125,8 @@ def make_dashboards(stats_sources,
                                             template_params,
                                             min_time_string,
                                             max_time_string,
-                                            refresh_string)
+                                            refresh_string,
+                                            timezone_string)
             dash['uid'] = base_file_name[:-len('.json')]
             with open(path.join(get_dashboards_dir(), base_file_name), 'w') as file:
                 file.write(json.dumps(dash, indent=2))
@@ -162,6 +164,7 @@ def make_data_sources(stats_sources):
 
 
 def prepare_grafana(grafana_port,
+                    grafana_timezone,
                     stats_sources,
                     buckets,
                     min_time_string,
@@ -180,7 +183,7 @@ def prepare_grafana(grafana_port,
     make_dashboards(
         stats_sources, buckets,
         min_time_string, max_time_string, refresh,
-        dashboard_name_predicate
+        grafana_timezone, dashboard_name_predicate
     )
 
 
@@ -329,6 +332,7 @@ def main():
     grafana_port = args.grafana_port
     prometheus_base_port = grafana_port + 1
     live_cluster = args.cluster or args.nodes
+    default_timezone = 'browser'
 
     if live_cluster and args.backup_archive_path:
         print("--cluster and --backup-archive-path are mutually exclusive options")
@@ -375,6 +379,22 @@ def main():
         times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
         min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
         max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
+
+        timezone_override = os.environ.get('GRAFANA_TZ', '')
+        if timezone_override != '':
+            default_timezone = timezone_override
+        else:
+            try:
+                default_timezone = next(
+                    map(lambda s: s.get_timezone(), stats_sources), None)
+                if default_timezone is None:
+                    default_timezone = 'Etc/UTC'
+            except Exception as e:
+                logging.error(
+                    'failed to determine the cluster timezone: {}'.format(e))
+        logging.info('setting default timezone to {}'.format(
+            default_timezone))
+
         refresh = ''
 
     if not args.buckets and not args.backup_archive_path:
@@ -389,6 +409,7 @@ def main():
         dashboard_name_predicate = lambda x: x.startswith(BACKUPMGR_STATS)
 
     prepare_grafana(grafana_port,
+                    default_timezone,
                     stats_sources,
                     buckets,
                     min_time,
