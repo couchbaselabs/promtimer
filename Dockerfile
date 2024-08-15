@@ -24,17 +24,17 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && \
-    apt-get install adduser libfontconfig1 python3 wget -y && \
+    apt-get install adduser libfontconfig1 python3 wget musl -y && \
     apt-get clean
 
-ARG GRAFANA_VERSION=8.5.22
+ARG GRAFANA_VERSION=11.1.4
 
 RUN ARCH=$(dpkg --print-architecture) && \
     wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_$ARCH.deb && \
     dpkg -i grafana_${GRAFANA_VERSION}_$ARCH.deb && \
     rm grafana_${GRAFANA_VERSION}_$ARCH.deb
 
-ARG PROMETHEUS_VERSION=2.37.6
+ARG PROMETHEUS_VERSION=2.53.2
 
 RUN ARCH=$(dpkg --print-architecture) && \
     wget -O- https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-$ARCH.tar.gz | \
