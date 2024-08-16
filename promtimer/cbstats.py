@@ -217,7 +217,7 @@ class CBCollect(Source):
             return self.operate_on_log_file('couchbase.log',
                                             parse_couchbase_log_timezone)
         except Exception as e:
-            logging.warn(
+            logging.warning(
                 'failed to determine timezone from couchbase.log: {}'.format(
                     e))
 
@@ -225,7 +225,7 @@ class CBCollect(Source):
             return self.operate_on_log_file('cbcollect_info.log',
                                             parse_cbcollect_info_timezone)
         except Exception as e:
-            logging.warn(
+            logging.warning(
                 'failed to determine timezone from cbcollect_info.log: {}'
                 .format(e))
 

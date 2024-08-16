@@ -238,8 +238,8 @@ def execute_request(url, path, method='GET', data=None,
                           'retrying... {} retries left'.format(url, retries - attempts))
             attempts += 1
             if retries < 0:
-                logging.warn('Failed to connect to {} after {} '
-                             'attempts: {}'.format(url, attempts, ue))
+                logging.warning('Failed to connect to {} after {} '
+                                'attempts: {}'.format(url, attempts, ue))
                 raise
             time.sleep(0.1)
     return None
