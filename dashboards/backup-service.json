@@ -1,0 +1,173 @@
+{
+  "_base": "dashboard",
+  "title": "Backup Service",
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#ffffff",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Topology",
+        "showIn": 0,
+        "tags": [
+          "topology"
+        ],
+        "type": "tags"
+      },
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#115fd4",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Buckets",
+        "showIn": 0,
+        "tags": [
+          "buckets"
+        ],
+        "type": "tags"
+      }
+    ]
+  },
+  "editable": true,
+  "_panels": [
+    {
+      "title": "Tasks run",
+      "type": "timeseries",
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by(repository, task_type) (backup_task_run)",
+          "legendFormat": "{data-source-name} {{repository}} {{task_type}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Tasks run and failed",
+      "type": "timeseries",
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by(repository, task_type) (backup_task_run{result=\"failure\"})",
+          "legendFormat": "{data-source-name} {{repository}} {{task_type}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Tasks dispatched",
+      "type": "timeseries",
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by(repository) (backup_dispatched)",
+          "legendFormat": "{data-source-name} {{repository}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Task dispatch failed",
+      "_base": "panel",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by(repository) (backup_dispatched{result=\"failure\"})",
+          "legendFormat": "{data-source-name} {{repository}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Time spent doing tasks",
+      "_base": "panel",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by(repository, task_type) (backup_task_duration_seconds_sum)",
+          "legendFormat": "{data-source-name} {{repository}} {{task_type}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Data size",
+      "_base": "panel",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by(repository) (backup_data_size)",
+          "legendFormat": "{data-source-name} {{repository}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "Location checks",
+      "type": "timeseries",
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "sum by(repository) (backup_location_check)",
+          "legendFormat": "{data-source-name} {{repository}}",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
