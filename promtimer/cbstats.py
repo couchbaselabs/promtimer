@@ -260,7 +260,7 @@ class CBCollect(Source):
                     filereader = io.TextIOWrapper(filestream, 'UTF-8')
                     return fun(filereader)
         else:
-            filename = path.join(self._cbcollect_dir, DIAG_LOG)
+            filename = path.join(self._cbcollect_dir, log_file)
             with open(filename, 'r') as filestream:
                 return fun(filestream)
 
