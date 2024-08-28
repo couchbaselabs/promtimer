@@ -611,7 +611,7 @@
       "_targets": [
         {
           "datasource": "${node}",
-          "expr": "rate(kv_cmd_duration_seconds_count{bucket=\"$bucket\", opcode!~\"DCP_.*\"}[5m]) > 0",
+          "expr": "rate(kv_cmd_duration_seconds_count{bucket=\"$bucket\", opcode!~\"DCP_.*\"}[10m]) > 0",
           "legendFormat": "{{opcode}}",
           "_base": "target"
         }
@@ -637,7 +637,7 @@
       "_targets": [
         {
           "datasource": "${node}",
-          "expr": "rate(kv_cmd_duration_seconds_count{bucket=\"$bucket\", opcode=~\"DCP_.*\"}[5m]) > 0",
+          "expr": "rate(kv_cmd_duration_seconds_count{bucket=\"$bucket\", opcode=~\"DCP_.*\"}[10m]) > 0",
           "legendFormat": "{{opcode}}",
           "_base": "target"
         }
