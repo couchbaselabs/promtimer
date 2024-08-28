@@ -86,6 +86,18 @@
       }
     },
     {
+      "title": "sys_cpu_host_seconds_total",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "irate(sys_cpu_host_seconds_total[1m])",
+          "legendFormat": "{{mode}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "sysproc_mem_resident",
       "datasource": "{data-source-name}",
       "_base": "panel",
