@@ -1,0 +1,150 @@
+{
+  "_base": "dashboard",
+  "title": "Continuous Backup - Node & Bucket",
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "bucket",
+        "options": [
+          {
+            "selected": false,
+            "text": "{bucket}",
+            "value": "{bucket}"
+          }
+        ],
+        "query": "",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "_panels": [
+    {
+      "title": "$bucket: vBuckets watched",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "contbk_vbuckets_watched{bucket=\"$bucket\"}",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "$bucket: Backup throughput",
+      "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "binBps"
+        }
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "avg(rate(contbk_backed_up_bytes{bucket=\"$bucket\"}[1m]))",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "$bucket: Total bytes backed up",
+      "_base": "panel",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "contbk_backed_up_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "$bucket: Total parts backed up",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "contbk_backed_up_parts{bucket=\"$bucket\"}",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "$bucket: Worker queue length",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "contbk_worker_queue_length{bucket=\"$bucket\"}",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "$bucket: Part size over time",
+      "_base": "panel",
+      "type": "heatmap",
+      "options": {
+        "yAxis": {
+          "unit": "bytes"
+        }
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "format": "heatmap",
+          "expr": "contbk_backed_up_part_size_bucket{bucket=\"$bucket\"}",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "$bucket: Time taken to backup part over time",
+      "_base": "panel",
+      "type": "heatmap",
+      "options": {
+        "yAxis": {
+          "unit": "s"
+        }
+      },
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "format": "heatmap",
+          "expr": "contbk_backed_up_part_time_bucket{bucket=\"$bucket\"}",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    }
+  ]
+}
