@@ -66,7 +66,8 @@
         "defaults": {
           "unit": "percent"
         }
-      }
+      },
+      "description": "Container-level cpu utilization if running in a container. Otherwise same as host cpu utilization."
     },
     {
       "title": "sysproc_cpu_utilization",
@@ -84,6 +85,19 @@
           "unit": "percent"
         }
       }
+    },
+    {
+      "title": "sys_cpu_host_seconds_total",
+      "datasource": "{data-source-name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "irate(sys_cpu_host_seconds_total[1m])",
+          "legendFormat": "{{mode}}",
+          "_base": "target"
+        }
+      ],
+      "description": "Host cpu utilization (idle, sys, user, etc.)"
     },
     {
       "title": "sysproc_mem_resident",
