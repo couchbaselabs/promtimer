@@ -1067,7 +1067,15 @@
           "legendFormat": "active",
           "range": true,
           "refId": "D"
-        }
+        },
+	{
+	  "editorMode": "code",
+          "expr": "couch_docs_actual_disk_size{bucket=\"$bucket\"}",
+          "hide": false,
+          "legendFormat": "couch_docs_actual",
+          "range": true,
+          "refId": "E"
+	}
       ],
       "title": "Disk usage"
     },
