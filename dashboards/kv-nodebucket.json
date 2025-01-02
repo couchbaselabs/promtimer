@@ -731,25 +731,25 @@
       "_targets": [
         {
           "datasource": "${node}",
-          "expr": "kv_vb_seqlist_count",
+          "expr": "kv_vb_seqlist_count{bucket=\"$bucket\"}",
           "legendFormat": "total {{state}}",
           "_base": "target"
         },
         {
           "datasource": "${node}",
-          "expr": "kv_vb_seqlist_deleted_count",
+          "expr": "kv_vb_seqlist_deleted_count{bucket=\"$bucket\"}",
           "legendFormat": "deleted {{state}}",
           "_base": "target"
         },
         {
           "datasource": "${node}",
-          "expr": "kv_vb_seqlist_read_range_count",
+          "expr": "kv_vb_seqlist_read_range_count{bucket=\"$bucket\"}",
           "legendFormat": "range read {{state}}",
           "_base": "target"
         },
         {
           "datasource": "${node}",
-          "expr": "kv_vb_seqlist_stale_count",
+          "expr": "kv_vb_seqlist_stale_count{bucket=\"$bucket\"}",
           "legendFormat": "stale {{state}}",
           "_base": "target"
         }
@@ -808,7 +808,7 @@
       "_targets": [
         {
           "datasource": "${node}",
-          "expr": "kv_vb_auto_delete_count",
+          "expr": "kv_vb_auto_delete_count{bucket=\"$bucket\"}",
           "legendFormat": "auto_delete {{state}}",
           "_base": "target"
         }
