@@ -546,6 +546,60 @@
       "type": "timeseries"
     },
     {
+      "title": "Disk Fragmentation Size",
+      "description": "",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "((kv_ep_db_file_size_bytes - on (bucket) (kv_ep_db_history_file_size_bytes or on (bucket) kv_ep_db_file_size_bytes * 0)) - on (bucket) kv_ep_db_data_size_bytes)",
+          "legendFormat": "{data-source-name}:{{bucket}}:fragmentation",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Disk Fragmentation Percent",
+      "description": "",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "((kv_ep_db_file_size_bytes - on (bucket) (kv_ep_db_history_file_size_bytes or on (bucket) kv_ep_db_file_size_bytes * 0)) - on (bucket) kv_ep_db_data_size_bytes) / on (bucket) (kv_ep_db_file_size_bytes - on (bucket) (kv_ep_db_history_file_size_bytes or on (bucket) kv_ep_db_file_size_bytes * 0))",
+          "legendFormat": "{data-source-name}:{{bucket}}:fragmentation",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "percentunit"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
       "title": "DCP",
       "_base": "row"
     },
