@@ -303,18 +303,18 @@
     },
     {
       "title": "Percentile Sync Write latencies",
-      "description": "For each node computed as:`histogram_quantile(0.99|0.50, irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m]))`",
+      "description": "For each node computed as:`histogram_quantile(0.99|0.50, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m])))`",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "histogram_quantile(0.99,irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m]))",
+          "expr": "histogram_quantile(0.99, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m])))",
           "legendFormat": "99th {data-source-name} Sync SET",
           "_base": "target"
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "histogram_quantile(0.50,irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m]))",
+          "expr": "histogram_quantile(0.50, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m])))",
           "legendFormat": "50th {data-source-name} Sync SET",
           "_base": "target"
         }
@@ -378,7 +378,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(kv_ep_total_enqueued[5m])",
+          "expr": "sum(irate(kv_ep_total_enqueued[5m]))",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
@@ -405,13 +405,13 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(kv_ep_total_deduplicated[5m])",
+          "expr": "sum(irate(kv_ep_total_deduplicated[5m]))",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(kv_ep_total_deduplicated_flusher[5m])",
+          "expr": "sum(irate(kv_ep_total_deduplicated_flusher[5m]))",
           "legendFormat": "{data-source-name}:flusher",
           "_base": "target"
         }
@@ -438,13 +438,13 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "kv_ep_db_data_size_bytes",
+          "expr": "sum(kv_ep_db_data_size_bytes)",
           "legendFormat": "{data-source-name}:db_data_size",
           "_base": "target"
         },
         {
           "datasource": "{data-source-name}",
-          "expr": "kv_ep_magma_logical_data_size_bytes",
+          "expr": "sum(kv_ep_magma_logical_data_size_bytes)",
           "legendFormat": "{data-source-name}:magma_logical_data_size",
           "_base": "target"
         }
@@ -525,7 +525,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "kv_ep_db_history_file_size_bytes",
+          "expr": "sum(kv_ep_db_history_file_size_bytes)",
           "legendFormat": "{data-source-name}:history_size",
           "_base": "target"
         }
@@ -610,7 +610,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "kv_dcp_items_sent",
+          "expr": "sum(kv_dcp_items_sent)",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
@@ -637,7 +637,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(kv_dcp_items_sent[5m])",
+          "expr": "sum(irate(kv_dcp_items_sent[5m]))",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
@@ -664,7 +664,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "kv_dcp_total_data_size_bytes",
+          "expr": "sum(kv_dcp_total_data_size_bytes)",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
@@ -691,7 +691,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "irate(kv_dcp_total_data_size_bytes[5m])",
+          "expr": "sum(irate(kv_dcp_total_data_size_bytes[5m]))",
           "legendFormat": "{data-source-name}",
           "_base": "target"
         }
