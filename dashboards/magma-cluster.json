@@ -1,0 +1,211 @@
+{
+    "_base": "dashboard",
+    "title": "Magma - Cluster",
+    "_panels": [
+        {
+            "_base": "panel",
+            "title": "Gets rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(rate(kv_ep_magma_gets[1m]))",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Sets rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(rate(kv_ep_magma_sets[1m]))",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Inserts rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(rate(kv_ep_magma_inserts[1m]))",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Memory",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(kv_ep_magma_total_mem_used_bytes)",
+                   "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Disk IO",
+            "type": "row"
+          },
+          {
+            "_base": "panel",
+            "title": "Write bytes rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(rate(kv_ep_magma_write_bytes_bytes[1m]))",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Write bytes",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(kv_ep_magma_write_bytes_bytes)",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes incoming rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(rate(kv_ep_magma_bytes_incoming_bytes[1m]))",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes incoming",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(kv_ep_magma_bytes_incoming_bytes)",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Read bytes rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(rate(kv_ep_magma_read_bytes_bytes[1m]))",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Read bytes",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(kv_ep_magma_read_bytes_bytes)",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes outgoing rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(rate(kv_ep_magma_bytes_outgoing_bytes[1m]))",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes outgoing",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(kv_ep_magma_bytes_outgoing_bytes)",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Size",
+            "type": "row"
+          },
+        {
+            "_base": "panel",
+            "title": "Total disk usage",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum(kv_ep_magma_total_disk_usage_bytes)",
+                    "legendFormat": "{data-source-name}",
+                    "_base": "target"
+                }
+            ]
+        }
+    ]
+}
