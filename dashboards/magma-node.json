@@ -1,0 +1,323 @@
+{
+    "_base": "dashboard",
+    "title": "Magma - Node",
+    "templating": {
+        "list": [
+            {
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "node",
+                "options": [],
+                "query": "prometheus",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "type": "datasource"
+            }
+        ]
+    },
+    "_panels": [
+        {
+            "_base": "panel",
+            "title": "Gets rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (rate(kv_ep_magma_gets[1m]))",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Sets rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (rate(kv_ep_magma_sets[1m]))",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Inserts rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (rate(kv_ep_magma_inserts[1m]))",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Memory",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "kv_ep_magma_total_mem_used_bytes",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Thread pool CPU",
+            "gridPos": {
+              "h": 9
+            },
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "sum by (thread_pool) (rate(kv_thread_cpu_usage_seconds[6m]))",
+                "legendFormat": "{{label_name}}",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "_base": "panel",
+            "title": "Disk IO",
+            "type": "row"
+          },
+          {
+            "_base": "panel",
+            "title": "Write bytes rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (rate(kv_ep_magma_write_bytes_bytes[1m]))",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Write bytes",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_write_bytes_bytes)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes incoming rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (rate(kv_ep_magma_bytes_incoming_bytes[1m]))",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes incoming",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_bytes_incoming_bytes)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Read bytes rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (rate(kv_ep_magma_read_bytes_bytes[1m]))",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Read bytes",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_read_bytes_bytes)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes outgoing rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (rate(kv_ep_magma_bytes_outgoing_bytes[1m]))",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Bytes outgoing",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_bytes_outgoing_bytes)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Size",
+            "type": "row"
+          },
+        {
+            "_base": "panel",
+            "title": "Total disk usage",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_total_disk_usage_bytes)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Data block size uncompressed",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_data_blocks_uncompressed_size)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Data block size compressed",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_data_blocks_compressed_size)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Fragmentation%",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_fragmentation_ratio*100)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "History",
+            "type": "row"
+          },
+          {
+            "_base": "panel",
+            "title": "History bytes evicted due to size",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_history_size_evicted_bytes)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "History bytes evicted due to time",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source-name}",
+                    "expr": "sum by (bucket) (kv_ep_magma_history_time_evicted_bytes)",
+                    "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                }
+            ]
+        }
+    ]
+}
