@@ -55,7 +55,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_gets{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_gets{bucket=\"$bucket\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -64,7 +64,7 @@
         },
         {
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_sets{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_sets{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "sets",
@@ -72,7 +72,7 @@
         },
         {
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_inserts{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_inserts{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "inserts",
@@ -265,7 +265,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "compactions",
           "range": true,
@@ -273,7 +273,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_compactions{for=\"keyindex\",bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_magma_compactions{for=\"keyindex\",bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "key",
           "range": true,
@@ -281,7 +281,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_compactions{for=\"seqindex\",bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_magma_compactions{for=\"seqindex\",bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "seq",
           "range": true,
@@ -289,7 +289,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_ttl_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_ttl_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "ttl",
           "range": true,
@@ -297,7 +297,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_filecount_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_filecount_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "filecount",
           "range": true,
@@ -305,7 +305,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_keyindex_filecount_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_keyindex_filecount_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "key filecount",
           "range": true,
@@ -313,7 +313,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_filecount_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_seqindex_filecount_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "seq filecount",
           "range": true,
@@ -321,7 +321,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_writer_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_writer_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "writer",
           "range": true,
@@ -329,7 +329,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_keyindex_writer_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_keyindex_writer_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "key writer",
           "range": true,
@@ -337,7 +337,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_writer_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_seqindex_writer_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "seq writer",
           "range": true,
@@ -345,7 +345,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_data_compactions{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_seqindex_data_compactions{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "seq data level",
           "range": true,
@@ -370,7 +370,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_flushes{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_flushes{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "flushes",
           "range": true,
@@ -402,7 +402,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_tables_created{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_tables_created{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "creation rate",
           "range": true,
@@ -410,7 +410,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_tables_deleted{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_tables_deleted{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "deletion rate",
           "range": true,
@@ -436,7 +436,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_block_cache_hits{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_block_cache_hits{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "hit rate",
@@ -446,7 +446,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_block_cache_misses{bucket=\"$bucket\"}[20s])",
+          "expr": "rate(kv_ep_magma_block_cache_misses{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "miss rate",
@@ -537,7 +537,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_write_bytes_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_write_bytes_bytes{bucket=\"$bucket\"}[1m])",
           "interval": "",
           "legendFormat": "total",
           "range": true,
@@ -545,7 +545,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_write_bytes_compact_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_write_bytes_compact_bytes{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "compactions",
           "range": true,
@@ -554,7 +554,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_magma_write_bytes_{for=\"keyindex\", bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_magma_write_bytes_{for=\"keyindex\", bucket=\"$bucket\"}[1m])",
           "interval": "",
           "legendFormat": "keyindex",
           "range": true,
@@ -562,7 +562,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_write_bytes_bytes{for=\"seqindex\", bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_magma_write_bytes_bytes{for=\"seqindex\", bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "seqindex",
           "range": true,
@@ -570,7 +570,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "seqindex delta levels",
           "range": true,
@@ -578,7 +578,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_write_bytes_filecount_compact_bytes{for=\"keyindex\",bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_magma_write_bytes_filecount_compact_bytes{for=\"keyindex\",bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "keyindex filecount",
           "range": true,
@@ -586,7 +586,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_write_bytes_filecount_compact_bytes{for=\"seqindex\",bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_magma_write_bytes_filecount_compact_bytes{for=\"seqindex\",bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "seqindex filecount",
           "range": true,
@@ -725,7 +725,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[1m])",
           "interval": "",
           "legendFormat": "total",
           "range": true,
@@ -734,7 +734,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"keyindex\",bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"keyindex\",bucket=\"$bucket\"}[1m])",
           "interval": "",
           "legendFormat": "keyindex",
           "range": true,
@@ -743,7 +743,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"seqindex\",bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"seqindex\",bucket=\"$bucket\"}[1m])",
           "interval": "",
           "legendFormat": "seqindex",
           "range": true,
@@ -752,7 +752,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_ep_magma_seqindex_delta_bytes_incoming_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_seqindex_delta_bytes_incoming_bytes{bucket=\"$bucket\"}[1m])",
           "interval": "",
           "legendFormat": "seqindex delta levels",
           "range": true,
@@ -868,7 +868,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_read_bytes_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_read_bytes_bytes{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "total",
           "range": true,
@@ -876,7 +876,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_read_bytes_compact_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_read_bytes_compact_bytes{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "compactions",
           "range": true,
@@ -884,7 +884,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_read_bytes_get_bytes{bucket=\"$bucket\"}[2m])",
+          "expr": "rate(kv_ep_magma_read_bytes_get_bytes{bucket=\"$bucket\"}[1m])",
           "hide": false,
           "legendFormat": "gets",
           "range": true,
