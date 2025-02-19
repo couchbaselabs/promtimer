@@ -1,0 +1,751 @@
+{
+  "_base": "dashboard",
+  "title": "Fusion - Node & Bucket",
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "bucket",
+        "options": [
+          {
+            "selected": false,
+            "text": "{bucket}",
+            "value": "{bucket}"
+          }
+        ],
+        "query": "",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "_panels": [
+    {
+        "_base": "panel",
+        "title": "Sync",
+        "type": "row"
+      },
+    {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Sync bytes rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_bytes_synced_bytes{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "bytes synced",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Sync bytes",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_bytes_synced_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "bytes synced",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Sync session progress",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_sync_session_total_bytes_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "total bytes",
+            "refId": "A"
+          },
+          {
+            "expr": "kv_ep_fusion_sync_session_completed_bytes_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "completed bytes",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Num syncs rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_syncs{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "success",
+            "refId": "A"
+          },
+          {
+              "expr": "rate(kv_ep_fusion_sync_failures{bucket=\"$bucket\"}[1m])",
+              "legendFormat": "failure",
+              "refId": "B"
+            }
+        ]
+      },
+      {
+        "_base": "panel",
+        "title": "Migration",
+        "type": "row"
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Migration bytes rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_bytes_migrated_bytes{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "bytes migrated",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Migration bytes",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_bytes_migrated_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "bytes migrated",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Num logs mounted/migrated",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+            {
+            "expr": "kv_ep_fusion_num_logs_mounted{bucket=\"$bucket\"}",
+            "legendFormat": "mounted",
+            "refId": "A"
+            },
+          {
+            "expr": "kv_ep_fusion_logs_migrated{bucket=\"$bucket\"}",
+            "legendFormat": "migrated",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Migration failures",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+            {
+            "expr": "kv_ep_fusion_migration_failures{bucket=\"$bucket\"}",
+            "legendFormat": "failures",
+            "refId": "A"
+            }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Ongoing migration progress",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_migration_total_bytes_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "total bytes",
+            "refId": "A"
+          },
+          {
+            "expr": "kv_ep_fusion_migration_completed_bytes_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "completed bytes",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Guest volume readIO rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_log_store_reads{bucket=\"$bucket\"}[1m]) - on(bucket) rate(kv_ep_fusion_log_store_remote_gets{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "reads",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "title": "LogCleaner",
+        "type": "row"
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogCleaner read bytes rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_log_clean_bytes_read_bytes{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "bytes read",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogCleaner read bytes",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_log_clean_bytes_read_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "bytes read",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogCleaner num logs cleaned rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_logs_cleaned{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "logs cleaned",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogCleaner readIO rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_log_clean_reads{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "reads",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "title": "ExtentMerger",
+        "type": "row"
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "ExtentMerger read bytes rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_extent_merger_bytes_read_bytes{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "bytes read",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "ExtentMerger read bytes",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_extent_merger_bytes_read_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "bytes read",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "ExtentMerger readIO rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "rate(kv_ep_fusion_extent_merger_reads{bucket=\"$bucket\"}[1m])",
+            "legendFormat": "reads",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "title": "LogStore",
+        "type": "row"
+      },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "title": "LogStore ops rate",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "expr": "rate(kv_ep_fusion_log_store_remote_puts{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "remote puts",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(kv_ep_fusion_log_store_reads{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "total gets",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(kv_ep_fusion_log_store_remote_gets{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "remote gets",
+          "refId": "C"
+        },
+        {
+          "expr": "rate(kv_ep_fusion_log_store_remote_lists{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "remote lists",
+          "refId": "D"
+        },
+        {
+          "expr": "rate(kv_ep_fusion_log_store_remote_deletes{bucket=\"$bucket\"}[1m])",
+          "legendFormat": "remote deletes",
+          "refId": "E"
+        }
+      ]
+    },
+    {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogStore ops",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_log_store_remote_puts{bucket=\"$bucket\"}",
+            "legendFormat": "remote puts",
+            "refId": "A"
+          },
+          {
+            "expr": "kv_ep_fusion_log_store_reads{bucket=\"$bucket\"}",
+            "legendFormat": "total gets",
+            "refId": "B"
+          },
+          {
+            "expr": "kv_ep_fusion_log_store_remote_gets{bucket=\"$bucket\"}",
+            "legendFormat": "remote gets",
+            "refId": "C"
+          },
+          {
+            "expr": "kv_ep_fusion_log_store_remote_lists{bucket=\"$bucket\"}",
+            "legendFormat": "remote lists",
+            "refId": "D"
+          },
+          {
+            "expr": "kv_ep_fusion_log_store_remote_deletes{bucket=\"$bucket\"}",
+            "legendFormat": "remote deletes",
+            "refId": "E"
+          }
+        ]
+      },
+
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "title": "LogStore size",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "expr": "kv_ep_fusion_log_store_size_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "total log size",
+          "refId": "A"
+        },
+        {
+          "expr": "kv_ep_fusion_log_store_garbage_size_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "garbage log size",
+          "refId": "B"
+        },
+        {
+            "expr": "kv_ep_fusion_total_file_size_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "total file size",
+            "refId": "C"
+          },
+          {
+            "expr": "kv_ep_fusion_log_store_pending_delete_size_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "pending delete size",
+            "refId": "D"
+          }
+      ]
+    },
+    {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogStore fragmentation %",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_log_store_size_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "total",
+            "refId": "A"
+          },
+          {
+            "expr": "kv_ep_fusion_log_store_garbage_size_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "garbage",
+            "refId": "B"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "calculateField",
+            "options": {
+              "alias": "ratio",
+              "binary": {
+                "left": "garbage",
+                "operator": "/",
+                "reducer": "sum",
+                "right": "total"
+              },
+              "mode": "binary",
+              "reduce": {
+                "reducer": "sum"
+              }
+            }
+          },
+          {
+            "id": "calculateField",
+            "options": {
+              "replaceFields": true,
+              "alias": "%",
+              "binary": {
+                "left": "ratio",
+                "operator": "*",
+                "reducer": "sum",
+                "right": "100"
+              },
+              "mode": "binary",
+              "reduce": {
+                "reducer": "sum"
+              }
+            }
+          }
+        ]
+      },
+    {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogStore num logs",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_num_log_segments{bucket=\"$bucket\"}",
+            "legendFormat": "total",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogStore num extents",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_num_file_extents{bucket=\"$bucket\"}",
+            "legendFormat": "total",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "LogStore num files",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_num_files{bucket=\"$bucket\"}",
+            "legendFormat": "total",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "title": "Memory",
+        "type": "row"
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Memory usage",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "expr": "kv_ep_fusion_file_map_mem_used_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "file map",
+            "refId": "A"
+          }
+        ]
+      }
+  ]
+}
