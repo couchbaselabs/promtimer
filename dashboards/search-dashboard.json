@@ -287,6 +287,18 @@
             ]
           },
           {
+            "title": "fts_total_synonym_searches",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_synonym_searches",
+                "legendFormat": "{data-source-name} fts_total_synonym_searches",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_total_bytes_indexed",
             "_base": "panel",
             "_targets": [
