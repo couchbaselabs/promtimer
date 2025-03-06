@@ -71,6 +71,42 @@
             ]
           },
           {
+            "title": "fts_avg_queries_latency",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_avg_queries_latency",
+                "legendFormat": "{data-source-name} fts_avg_queries_latency",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_root_filesegments",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_root_filesegments",
+                "legendFormat": "{data-source-name} fts_num_root_filesegments",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_root_memorysegments",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_root_memorysegments",
+                "legendFormat": "{data-source-name} fts_num_root_memorysegments",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_tot_queryreject_on_memquota",
             "_base": "panel",
             "_targets": [
@@ -138,6 +174,30 @@
                 "datasource": "{data-source-name}",
                 "expr": "fts_num_batches_introduced",
                 "legendFormat": "{data-source-name} fts_num_batches_introduced",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_create_index_request",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_create_index_request",
+                "legendFormat": "{data-source-name} fts_total_create_index_request",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_delete_index_request",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_delete_index_request",
+                "legendFormat": "{data-source-name} fts_total_delete_index_request",
                 "_base": "target"
               }
             ]
@@ -287,6 +347,18 @@
             ]
           },
           {
+            "title": "fts_total_vectors",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_vectors",
+                "legendFormat": "{data-source-name} fts_total_vectors",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_total_synonym_searches",
             "_base": "panel",
             "_targets": [
@@ -318,6 +390,18 @@
                 "datasource": "{data-source-name}",
                 "expr": "fts_num_mutations_to_index",
                 "legendFormat": "{data-source-name} fts_num_mutations_to_index",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_mutations_filtered",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_mutations_filtered",
+                "legendFormat": "{data-source-name} fts_total_mutations_filtered",
                 "_base": "target"
               }
             ]
