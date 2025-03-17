@@ -83,18 +83,6 @@
             ]
           },
           {
-            "title": "fts_num_root_filesegments",
-            "_base": "panel",
-            "_targets": [
-              {
-                "datasource": "{data-source-name}",
-                "expr": "fts_num_root_filesegments",
-                "legendFormat": "{data-source-name} fts_num_root_filesegments",
-                "_base": "target"
-              }
-            ]
-          },
-          {
             "title": "fts_num_root_memorysegments",
             "_base": "panel",
             "_targets": [
@@ -102,6 +90,18 @@
                 "datasource": "{data-source-name}",
                 "expr": "fts_num_root_memorysegments",
                 "legendFormat": "{data-source-name} fts_num_root_memorysegments",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_root_filesegments",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_num_root_filesegments",
+                "legendFormat": "{data-source-name} fts_num_root_filesegments",
                 "_base": "target"
               }
             ]
