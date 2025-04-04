@@ -666,6 +666,18 @@
       ]
     },
     {
+      "title": "XDCR Number of total replications",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "xdcr_number_of_replications_total",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}} number of total replications per remote cluster}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "goxdcr resident mem size per running replication",
       "_base": "panel",
       "_targets": [
