@@ -263,6 +263,18 @@
             ]
           },
           {
+            "title": "fts_total_grpc_internal_queries",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source-name}",
+                "expr": "fts_total_grpc_internal_queries",
+                "legendFormat": "{data-source-name} fts_total_grpc_internal_queries",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_total_queries_to_actives",
             "_base": "panel",
             "_targets": [
@@ -282,18 +294,6 @@
                 "datasource": "{data-source-name}",
                 "expr": "fts_total_queries_to_replicas",
                 "legendFormat": "{data-source-name} fts_total_queries_to_replicas",
-                "_base": "target"
-              }
-            ]
-          },
-          {
-            "title": "fts_total_grpc_internal_queries",
-            "_base": "panel",
-            "_targets": [
-              {
-                "datasource": "{data-source-name}",
-                "expr": "fts_total_grpc_internal_queries",
-                "legendFormat": "{data-source-name} fts_total_grpc_internal_queries",
                 "_base": "target"
               }
             ]
