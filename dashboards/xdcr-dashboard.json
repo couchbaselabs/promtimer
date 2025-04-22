@@ -660,7 +660,7 @@
         {
           "datasource": "{data-source-name}",
           "expr": "sum by (status) (xdcr_pipeline_status{status=\"Running\"})",
-          "legendFormat": "{data-source-name} number of running replications}",
+          "legendFormat": "{data-source-name} {{targetClusterUUID}} number of running replications}",
           "_base": "target"
         }
       ]
@@ -673,6 +673,19 @@
           "datasource": "{data-source-name}",
           "expr": "xdcr_number_of_replications_total",
           "legendFormat": "{data-source-name} {{targetClusterUUID}} number of total replications per remote cluster}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "XDCR Number of total replications decrease alert",
+      "description": "Shows a non-0 value if a replication count for a specific remote cluster decreased",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source-name}",
+          "expr": "count(xdcr_number_of_replications_total < xdcr_number_of_replications_total offset 1m)",
+          "legendFormat": "{data-source-name} Replication count decreased in the past minute",
           "_base": "target"
         }
       ]
