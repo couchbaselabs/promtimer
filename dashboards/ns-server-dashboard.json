@@ -102,7 +102,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_cpu_stolen_rate",
+          "expr": "irate(sys_cpu_host_seconds_total{mode=`stolen`}[1m]) / ignoring(name,mode) sys_cpu_host_cores_available * 100",
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
@@ -128,7 +128,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_cpu_irq_rate",
+          "expr": "irate(sys_cpu_host_seconds_total{mode=`irq`}[1m]) / ignoring(name,mode) sys_cpu_host_cores_available * 100",
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
@@ -205,13 +205,13 @@
       "type": "timeseries"
     },
     {
-      "title": "sys_mem_limit and used",
+      "title": "sys_mem_total and used",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_mem_limit",
-          "legendFormat": "{data-source-name} sys_mem_limit",
+          "expr": "sys_mem_total",
+          "legendFormat": "{data-source-name} sys_mem_total",
           "_base": "target"
         },
         {

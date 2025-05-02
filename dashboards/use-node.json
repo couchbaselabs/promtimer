@@ -52,22 +52,22 @@
       "_base": "panel",
       "_targets": [
         {
-          "expr": "sys_cpu_user_rate",
+          "expr": "max((irate(sys_cpu_host_seconds_total{mode=`user`}[1m]) / ignoring(name,mode) sys_cpu_host_cores_available * 100) or (irate(sys_cpu_cgroup_seconds_total{mode=`user`}[1m]) / ignoring(name,mode) sys_cpu_cores_available * 100)) without(mode, name)",
           "legendFormat": "User",
           "_base": "target"
         },
         {
-          "expr": "sys_cpu_sys_rate",
+          "expr": "max((irate(sys_cpu_host_seconds_total{mode=`sys`}[1m]) / ignoring(name,mode) sys_cpu_host_cores_available * 100) or (irate(sys_cpu_cgroup_seconds_total{mode=`sys`}[1m]) / ignoring(name,mode) sys_cpu_cores_available * 100)) without(mode, name)",
           "legendFormat": "Sys",
           "_base": "target"
         },
         {
-          "expr": "sys_cpu_stolen_rate",
+          "expr": "irate(sys_cpu_host_seconds_total{mode=`stolen`}[1m]) / ignoring(name,mode) sys_cpu_host_cores_available * 100",
           "legendFormat": "Stolen",
           "_base": "target"
         },
         {
-          "expr": "sys_cpu_irq_rate",
+          "expr": "irate(sys_cpu_host_seconds_total{mode=`irq`}[1m]) / ignoring(name,mode) sys_cpu_host_cores_available * 100",
           "legendFormat": "IRQ",
           "_base": "target"
         }
@@ -328,7 +328,7 @@
     },
     {
       "title": "Memory Saturation",
-      "description": "Indicators that memory is saturated.  Swap Used: bytes of memory used by swap; generally this should be (close to) zero, increasing values can be a sign of problems.What is system memory being used for.\nAllocation Stalls: rate of Linux kernel allocation stalls, when a userspace thread is prevented from running due to memory allocation request which cannot be immediately satisfied due to low kernel memory. A non-zero value means userspace threads are being delayed due t memory pressure.",
+      "description": "Indicators that memory is saturated.  Swap Used: bytes of memory used by swap; generally this should be (close to) zero, increasing values can be a sign of problems.What is system memory being used for.\nAllocation Stalls: rate of Linux kernel allocation stalls, when a userspace thread is prevented from running due to memory allocation request which cannot be immediately satisfied due to low kernel memory. A non-zero value means userspace threads are being delayed due to memory pressure.",
       "datasource": "{data-source-name}",
       "gridPos": {
         "w": 8,

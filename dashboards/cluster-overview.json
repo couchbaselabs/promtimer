@@ -66,7 +66,7 @@
       "_targets": [
         {
           "datasource": "{data-source-name}",
-          "expr": "sys_mem_limit",
+          "expr": "sys_mem_total",
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         },
