@@ -61,7 +61,7 @@
       "type": "timeseries"
     },
     {
-      "title": "sys_mem_limit and used",
+      "title": "sys_mem_limit, used, and free",
       "_base": "panel",
       "_targets": [
         {
@@ -75,31 +75,11 @@
           "expr": "sys_mem_actual_used",
           "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 1
-          },
-          "unit": "bytes"
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "type": "timeseries"
-    },
-    {
-      "title": "sys_mem_free",
-      "_base": "panel",
-      "_targets": [
+        },
         {
           "datasource": "{data-source-name}",
           "expr": "sys_mem_free",
-          "legendFormat": "{data-source-name} sys_mem_free",
+          "legendFormat": "{data-source-name} {{name}}",
           "_base": "target"
         }
       ],
