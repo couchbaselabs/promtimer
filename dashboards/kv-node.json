@@ -467,7 +467,7 @@
       "description": "kv_ep_total_new_items, kv_ep_total_persisted"
     },
     {
-      "title": "Written Bytes",
+      "title": "Written Bytes over All Network Interfaces (including Loopback)",
       "datasource": "{data-source-name}",
       "gridPos": {
         "w": 6
@@ -483,7 +483,7 @@
       "description": "kv_written_bytes"
     },
     {
-      "title": "Read Bytes",
+      "title": "Read Bytes over All Network Interfaces (including Loopback)",
       "datasource": "{data-source-name}",
       "gridPos": {
         "w": 6
