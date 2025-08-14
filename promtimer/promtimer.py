@@ -110,9 +110,11 @@ def make_dashboards(stats_sources,
                     timezone_string,
                     dashboard_name_predicate):
     os.makedirs(get_dashboards_dir(), exist_ok=True)
-    data_sources = [s.short_name() for s in stats_sources]
+    data_source_names = [s.short_name() for s in stats_sources]
+    data_source_uids = [s.uid() for s in stats_sources]
     template_params = \
-        [{'type': 'data-source-name', 'values': data_sources},
+        [{'type': 'data-source-name', 'values': data_source_names},
+         {'type': 'data-source-uid', 'values': data_source_uids},
          {'type': 'bucket', 'values': buckets if buckets else []}]
     meta_file_names = glob.glob(path.join(util.get_root_dir(), 'dashboards', '*.json'))
     for meta_file_name in meta_file_names:
@@ -145,9 +147,8 @@ def make_data_sources(stats_sources):
             # https://github.com/grafana/grafana/issues/17986
             password = stats_source.basic_auth_password().replace("$", "$$")
         data_source_name = stats_source.short_name()
-        uid = hashlib.sha1(data_source_name.encode("UTF-8")).hexdigest()
         replacement_map = {'data-source-name': data_source_name,
-                           'data-source-uid': uid,
+                           'data-source-uid': stats_source.uid(),
                            'data-source-scheme': stats_source.scheme(),
                            'data-source-host': stats_source.host(),
                            'data-source-port': str(stats_source.port()),
