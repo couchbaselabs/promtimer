@@ -145,6 +145,9 @@ def maybe_substitute_templating_variables(dashboard, template_params):
                 if template_param['type'] == 'data-source-name' and \
                                 templating['type'] == 'datasource':
                     template_param['values'] = ['$' + variable]
+                if template_param['type'] == 'data-source-uid' and \
+                                templating['type'] == 'datasource':
+                    template_param['values'] = ['$' + variable]
                 if template_param['type'] == 'bucket' and \
                                 templating['type'] == 'custom':
                     template_param['values'] = ['$' + variable]

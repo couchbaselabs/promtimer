@@ -25,6 +25,7 @@ import time
 import datetime
 import os
 import zoneinfo
+import hashlib
 from os import path
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
@@ -42,15 +43,22 @@ class Source(ABC):
     """
     Represents a source of Couchbase stats data.
     """
-    def __init__(self, port):
+    def __init__(self, port, short_name):
         self._port = port
+        self._short_name = short_name
+        self._uid = hashlib.sha1(short_name.encode('UTF-8')).hexdigest()
 
-    @abstractmethod
     def short_name(self):
         """
         :return: a convenient short name for this source
         """
-        return None
+        return self._short_name
+
+    def uid(self):
+        """
+        :return: the uid for this source
+        """
+        return self._uid
 
     def port(self):
         """
@@ -150,8 +158,7 @@ class CBCollect(Source):
     the stats snapshot in a cbcollect.
     """
     def __init__(self, cbcollect_dir, short_name, prometheus_port, zip_file=None):
-        super(CBCollect, self).__init__(prometheus_port)
-        self._short_name = short_name
+        super(CBCollect, self).__init__(prometheus_port, short_name)
         self._cbcollect_dir = cbcollect_dir
         self._config = None
         self._zipfile = zip_file
@@ -439,17 +446,12 @@ class ServerNode(Source):
     Represents a source of stats data that is a running Couchbase Server node.
     """
     def __init__(self, cluster_host, cluster_port, user, password, secure=False, short_name=None):
-        super(ServerNode, self).__init__(cluster_port)
+        actual_short_name = short_name or '{}:{}'.format(cluster_host, cluster_port)
+        super(ServerNode, self).__init__(cluster_port, actual_short_name)
         self._cluster_host = cluster_host
         self._user = user
         self._password = password
         self._secure = secure
-        self._short_name = short_name
-
-    def short_name(self):
-        if self._short_name:
-            return self._short_name
-        return '{}:{}'.format(self._cluster_host, self.port())
 
     def host(self):
         return self._cluster_host
@@ -621,13 +623,9 @@ class BackupStatsFiles(Source):
     against the stats data from cbbackupmgr runs.
     """
     def __init__(self, prometheus_tsdb_path, short_name, prometheus_port):
-        super().__init__(prometheus_port)
-        self._short_name = short_name
+        super().__init__(prometheus_port, short_name)
         self._prometheus_tsdb_path = prometheus_tsdb_path
         self._config = None
-
-    def short_name(self):
-        return self._short_name
 
     def host(self):
         return '127.0.0.1'
