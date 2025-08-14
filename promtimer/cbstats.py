@@ -257,11 +257,11 @@ class CBCollect(Source):
             with zipfile.ZipFile(self._zipfile) as z:
                 filename = path.join(self._cbcollect_dir, log_file)
                 with z.open(filename, 'r') as filestream:
-                    filereader = io.TextIOWrapper(filestream, 'UTF-8')
+                    filereader = io.TextIOWrapper(filestream, 'utf-8', errors='replace')
                     return fun(filereader)
         else:
             filename = path.join(self._cbcollect_dir, log_file)
-            with open(filename, 'r') as filestream:
+            with open(filename, 'r', encoding='utf-8', errors='replace') as filestream:
                 return fun(filestream)
 
     @staticmethod
