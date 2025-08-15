@@ -30,7 +30,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "expr": "global_usage{type=\"cpu\"}",
             "legendFormat": "__auto"
           }
@@ -45,7 +48,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "expr": "process_usage{type=\"cpu\"}",
             "legendFormat": "__auto",
             "refId": "A"
@@ -65,7 +71,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "expr": "io_time{type=\"disk\"}",
             "legendFormat": "__auto"
           }
@@ -80,7 +89,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "read_bytes",
             "legendFormat": "__auto"
@@ -96,7 +108,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "expr": "write_bytes{type=\"disk\"}",
             "legendFormat": "__auto"
           }
@@ -111,7 +126,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "read_count{type=\"disk\"}",
             "legendFormat": "__auto"
@@ -127,7 +145,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "expr": "write_count{type=\"disk\"}",
             "legendFormat": "__auto"
           }
@@ -142,7 +163,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "read_time{type=\"disk\"}",
             "legendFormat": "__auto"
@@ -158,7 +182,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "write_time{type=\"disk\"}",
             "legendFormat": "__auto"
@@ -174,7 +201,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "read_time{type=\"disk\"}",
             "legendFormat": "__auto"
@@ -194,7 +224,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "total{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -210,7 +243,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "available{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -226,7 +262,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "active{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -242,7 +281,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "inactive{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -258,7 +300,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "free{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -274,7 +319,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "used{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -290,7 +338,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "used_percent{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -306,7 +357,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "wired{type=\"memory\", stat=\"vm\"}",
             "legendFormat": "__auto"
@@ -322,7 +376,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "rss{type=\"memory\", stat=\"process\"}",
             "legendFormat": "__auto"
@@ -338,7 +395,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "vms{type=\"memory\", stat=\"process\"}",
             "legendFormat": "__auto"
@@ -358,7 +418,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "packets_sent{type=\"net\", stat=\"global_net_stats\"}",
             "legendFormat": "__auto"
@@ -374,7 +437,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "packets_received{type=\"net\", stat=\"global_net_stats\"}",
             "legendFormat": "__auto"
@@ -390,7 +456,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "bytes_sent{type=\"net\", stat=\"global_net_stats\"}",
             "legendFormat": "__auto"
@@ -406,7 +475,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "bytes_received{type=\"net\", stat=\"global_net_stats\"}",
             "legendFormat": "__auto"
@@ -422,7 +494,10 @@
         "_targets": [
           {
             "_base": "target",
-            "datasource": "{data-source-name}",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "{data-source-uid}"
+            },
             "editorMode": "builder",
             "expr": "dropout{type=\"net\", stat=\"global_net_stats\"}",
             "legendFormat": "__auto"
