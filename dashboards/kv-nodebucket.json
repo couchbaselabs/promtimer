@@ -656,6 +656,131 @@
       "description": "Number of DCP commands executed per second, averaged over 5 minutes."
     },
     {
+      "title": "Item Sizes",
+      "_base": "row"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (bucket) (kv_collection_mem_used_bytes{bucket=\"$bucket\"}) / sum by (bucket) (kv_collection_item_count{bucket=\"$bucket\"})",
+          "legendFormat": "Average item size (in memory)"
+        },
+        {
+          "expr": "sum by (bucket) (kv_collection_data_size_bytes{bucket=\"$bucket\"}) / sum by (bucket) (kv_collection_item_count{bucket=\"$bucket\"})",
+          "legendFormat": "Average item size (on disk)"
+        },
+        {
+          "expr": "sum(kv_item_alloc_sizes_bytes_sum{bucket=\"$bucket\"}) / sum(kv_item_alloc_sizes_bytes_count{bucket=\"$bucket\"})",
+          "legendFormat": "Average write size"
+        },
+        {
+          "expr": "sum_over_time(kv_item_alloc_sizes_bytes_sum{bucket=\"$bucket\"}[10m]) / ignoring(name) sum_over_time(kv_item_alloc_sizes_bytes_count{bucket=\"$bucket\"}[10m])",
+          "legendFormat": "Average write size over 10 minutes"
+        },
+        {
+          "expr": "histogram_quantile(0.5, sum(kv_item_alloc_sizes_bytes_bucket{bucket=\"$bucket\"}) by (le))",
+          "legendFormat": "Median write size"
+        },
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(kv_item_alloc_sizes_bytes_bucket{bucket=\"$bucket\"}[10m])) by (le))",
+          "legendFormat": "Median write size over 10 minutes"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(kv_item_alloc_sizes_bytes_bucket{bucket=\"$bucket\"}) by (le))",
+          "legendFormat": "99%ile write size"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(kv_item_alloc_sizes_bytes_bucket{bucket=\"$bucket\"}[10m])) by (le))",
+          "legendFormat": "99%ile write size over 10 minutes"
+        }
+      ],
+      "title": "Item sizes",
+      "description": " - Average item size is the average size of items including metadata\n - Average write size is the average size of items as received from clients\n - Percentile write size is the percentile size of items as received from clients\n",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (collection) (kv_collection_mem_used_bytes{bucket=\"$bucket\"}) / sum by (collection) (kv_collection_item_count{bucket=\"$bucket\"})",
+          "legendFormat": "{{collection}}"
+        }
+      ],
+      "title": "Item size by collection (in memory)",
+      "description": " - Average item size is the average size of items including metadata",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (collection) (kv_collection_data_size_bytes{bucket=\"$bucket\"}) / sum by (collection) (kv_collection_item_count{bucket=\"$bucket\"})",
+          "legendFormat": "{{collection}}"
+        }
+      ],
+      "title": "Item size by collection (on disk)",
+      "description": " - Average item size is the average size of items including metadata",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
       "title": "Ephemeral",
       "_base": "row"
     },
