@@ -17,10 +17,12 @@
 from os import path
 import json
 import logging
+from typing import Any
 
 # Local Imports
 import util
 import templating
+from templating import Parameter
 
 
 def get_template(name):
@@ -48,33 +50,30 @@ def metaify_template_string(template_string, meta):
     return json.dumps(template)
 
 
-def make_dashboard_part(part_meta, template_params, sub_part_function=None):
+def make_dashboard_part(
+        part_meta: dict[str, Any],
+        template_params: list[Parameter.ValueList],
+        sub_part_function=None):
     base_part = part_meta['_base']
     part_template = get_template(base_part)
     part_template = metaify_template_string(part_template, part_meta)
-
-    template_params_to_expand = [
-        p for p in template_params if
-        templating.find_parameter(part_template, p['type']) >= 0]
-
-    combinations = get_all_param_value_combinations(template_params_to_expand)
+    template_params_to_expand = Parameter.find_params_in_string(part_template,
+                                                                template_params)
+    logging.debug('template_params_to_expand:{}'.format(template_params_to_expand))
+    combinations: list[list[Parameter.Value]] = \
+        templating.make_cartesian_product(template_params_to_expand)
     result = []
     logging.debug('part_template:{}'.format(part_template))
     logging.debug('template_params:{}'.format(template_params))
     logging.debug('combinations:{}'.format(combinations))
     if combinations:
         for combination in combinations:
-            replacements = {}
             sub_template_params = template_params[:]
             for param in combination:
-                param_type = param['type']
-                param_value = param['value']
-                replacements[param_type] = param_value
-                idx = util.index(sub_template_params, lambda x: x['type'] == param_type)
-                sub_template_params[idx] = {'type': param_type, 'values': [param_value]}
-            logging.debug('replacements:{}'.format(replacements))
+                idx = util.index(sub_template_params, lambda p: p[0] == param[0])
+                sub_template_params[idx] = (param[0], [param[1]])
             logging.debug('sub_template_params:{}'.format(sub_template_params))
-            part_string = templating.replace(part_template, replacements)
+            part_string = Parameter.replace_all(combination, part_template)
             part = json.loads(part_string)
             if sub_part_function:
                 sub_part_function(part, part_meta, sub_template_params)
@@ -103,85 +102,88 @@ def add_targets_to_panel(panel, targets):
         panel['targets'].append(target)
 
 
-def get_all_param_value_combinations(template_params):
-    if not template_params:
-        return []
-    head = template_params[0]
-    rest = template_params[1:]
-    rest_permutations = get_all_param_value_combinations(rest)
-    result = []
-    for value in head['values']:
-        head_value = ({'type': head['type'], 'value': value},)
-        if not rest_permutations:
-            result.append(head_value)
-        else:
-            for rest_permutation in rest_permutations:
-                result.append(head_value + rest_permutation)
-    return result
-
-
 def make_and_add_targets(panel, panel_meta, template_params):
     if '_targets' in panel_meta:
         targets = make_targets(panel_meta['_targets'], template_params)
         add_targets_to_panel(panel, targets)
 
 
-def make_panels(panel_metas, template_params):
+def make_panels(panel_metas: list[dict[str, Any]],
+                template_params: list[Parameter.ValueList]):
     result = []
     for panel_meta in panel_metas:
-        result += make_dashboard_part(panel_meta, template_params,
+        result += make_dashboard_part(panel_meta,
+                                      template_params,
                                       make_and_add_targets)
     return result
 
 
-def maybe_substitute_templating_variables(dashboard, template_params):
-    template_params = [p.copy() for p in template_params]
+def maybe_substitute_templating_variables(
+        dashboard,
+        template_params: list[Parameter.ValueList]):
+    """
+    Returns a new list of template parameters, substituting the templating variable
+    name for the parameter value for datasource parameters, if the dashboard uses
+    datasource templating.
+    :param dashboard: the dashboard to check
+    :param template_params: the set of template parameters to use
+    :return: a list of template parameters, with substitutions made if needed
+    """
+    template_params = template_params[:]
     dashboard_template = dashboard.get('templating')
     if dashboard_template:
         templating_list = dashboard_template.get('list')
-        for templating in templating_list:
-            variable = templating['name']
-            for template_param in template_params:
-                if template_param['type'] == 'data-source-name' and \
-                                templating['type'] == 'datasource':
-                    template_param['values'] = ['$' + variable]
-                if template_param['type'] == 'data-source-uid' and \
-                                templating['type'] == 'datasource':
-                    template_param['values'] = ['$' + variable]
-                if template_param['type'] == 'bucket' and \
-                                templating['type'] == 'custom':
-                    template_param['values'] = ['$' + variable]
+        for item in templating_list:
+            variable = item['name']
+            for idx, param_values in enumerate(template_params):
+                param = param_values[0]
+                pname = param.name()
+                if (item['type'] == 'datasource') and \
+                        (pname == 'data-source' or
+                         pname == 'data-source-name' or
+                         pname == 'data-source-uid') or \
+                        (pname == 'bucket' and item['type'] == 'custom'):
+                    value = param.make_single_valued_value(f'${variable}')
+                    template_params[idx] = (param, [value])
     return template_params
 
 
-def maybe_expand_templating(dashboard, template_params):
+def maybe_expand_templating(
+        dashboard: dict[str, Any],
+        template_params: list[Parameter.ValueList]):
+    """
+    Adds options to custom template parameters of type 'bucket', if present.
+    :param dashboard: the dashboard to update
+    :param template_params: the template parameters to use
+    """
     dashboard_template = dashboard.get('templating')
     logging.debug('dashboard_template:{}'.format(dashboard_template))
+    bucket_param = Parameter.find_parameter_by_name('bucket', template_params)
+    if not bucket_param:
+        return
     if dashboard_template:
         templating_list = dashboard_template.get('list')
         logging.debug('templating_list:{}'.format(templating_list))
         for element in templating_list:
-            for template_param in template_params:
-                if template_param['type'] == 'bucket' and \
-                                element['type'] == 'custom':
-                    options = element['options']
-                    option_template = options.pop()
-                    option_string = json.dumps(option_template)
-                    logging.debug('options:{}'.format(options))
-                    logging.debug('option_template:{}'.format(option_template))
-                    logging.debug('option_string:{}'.format(option_string))
-                    logging.debug('template_params:{}'.format(template_params))
-                    for idx, value in enumerate(template_param['values']):
-                        option = templating.replace(option_string, {'bucket': value})
-                        option_json = json.loads(option)
-                        if idx == 0:
-                            option_json['selected'] = True
-                            element['current'] = option_json
-                        options.append(option_json)
+            if element['type'] == 'custom':
+                options = element['options']
+                option_template = options.pop()
+                option_string = json.dumps(option_template)
+                logging.debug('options:{}'.format(options))
+                logging.debug('option_template:{}'.format(option_template))
+                logging.debug('option_string:{}'.format(option_string))
+                logging.debug('template_params:{}'.format(template_params))
+                for idx, value in enumerate(bucket_param[1]):
+                    option = templating.replace(option_string, {'bucket': value})
+                    option_json = json.loads(option)
+                    if idx == 0:
+                        option_json['selected'] = True
+                        element['current'] = option_json
+                    options.append(option_json)
 
 
 def make_dashboard(dashboard_meta,
-                   template_params,
+                   template_params: list[Parameter.ValueList],
                    min_time_string,
                    max_time_string,
                    refresh,

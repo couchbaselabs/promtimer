@@ -23,6 +23,7 @@ import ssl
 import re
 import logging
 import copy
+from typing import Any
 
 HTTP = 'http'
 HTTPS = 'https'
@@ -245,7 +246,7 @@ def execute_request(url, path, method='GET', data=None,
     return None
 
 
-_CommandOutputResults = {}
+_CommandOutputResults: dict[str, Any] = {}
 
 
 def search_command_output(command, pattern, cache=True):

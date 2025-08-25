@@ -25,7 +25,6 @@ import webbrowser
 import sys
 import getpass
 import logging
-import hashlib
 
 # Local Imports
 import annotations
@@ -112,10 +111,13 @@ def make_dashboards(stats_sources,
     os.makedirs(get_dashboards_dir(), exist_ok=True)
     data_source_names = [s.short_name() for s in stats_sources]
     data_source_uids = [s.uid() for s in stats_sources]
+
     template_params = \
-        [{'type': 'data-source-name', 'values': data_source_names},
-         {'type': 'data-source-uid', 'values': data_source_uids},
-         {'type': 'bucket', 'values': buckets if buckets else []}]
+        [(templating.Parameter('data-source', ['name', 'uid']),
+            [{'name': s.short_name(), 'uid': s.uid()} for s in stats_sources]),
+         (templating.Parameter('data-source-name'), data_source_names),
+         (templating.Parameter('data-source-uid'), data_source_uids),
+         (templating.Parameter('bucket'), buckets if buckets else [])]
     meta_file_names = glob.glob(path.join(util.get_root_dir(), 'dashboards', '*.json'))
     for meta_file_name in meta_file_names:
         with open(meta_file_name, 'r') as meta_file:
