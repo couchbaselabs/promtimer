@@ -65,7 +65,7 @@ class Parameter:
 
     It is permitted for template parameters to be multi-valued, in which case the
     placeholder string may look like this: {data-source:name} or
-    {data-sourceuid} where the type of the template parameter is
+    {data-source:uid} where the type of the template parameter is
     'data-source' and 'name' and 'uid' are attributes. In this case, the values
     associated with the parameter type are dictionaries, where the keys are the
     attributes (e.g., "name" and "uid").
