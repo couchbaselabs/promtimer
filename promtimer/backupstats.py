@@ -29,7 +29,7 @@ import cbstats
 def handle_backup_archive_mode(backup_archive_path: str,
                                cbmstatparser_bin: str,
                                prometheus_base_port: int) \
-        -> tuple[list[cbstats.BackupStatsFiles], str, str, str]:
+        -> tuple[list[cbstats.BackupStatsFiles], str, str]:
     """
     Handle setting up the backup archive so we're ready to run a Prometheus
     instance against it.
@@ -37,8 +37,7 @@ def handle_backup_archive_mode(backup_archive_path: str,
     :param cbmstatparser_bin: path to the cbmstatparser binary
     :param prometheus_base_port: base prometheus port to use
     :return: the list of stats sources, min and max timestamps associated
-             with the Prometheus metrics and whether any dashboard built
-             off this stats source should be refreshed
+             with the Prometheus metrics
     """
     archive_path = backup_archive_path
     if zipfile.is_zipfile(backup_archive_path):
@@ -80,4 +79,4 @@ def handle_backup_archive_mode(backup_archive_path: str,
     )
     min_time, max_time = min_time.isoformat(), max_time.isoformat()
 
-    return stats_sources, min_time, max_time, ""
+    return stats_sources, min_time, max_time
