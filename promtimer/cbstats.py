@@ -40,6 +40,9 @@ STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
 
 
 class Source(ABC):
+
+    PROMETHEUS_BIN = 'prometheus'
+
     """
     Represents a source of Couchbase stats data.
     """
@@ -142,6 +145,14 @@ class Source(ABC):
         """
         return '10s'
 
+    def get_timezone(self) -> str | None:
+        """
+        :return: the timezone associated with the metrics in this stats source, or None if
+                 this stats source does not have an opinion as to which timezone should be
+                 used
+        """
+        return None
+
     @staticmethod
     def maybe_start_stats_servers(stats_sources, log_dir):
         nodes = []
@@ -150,6 +161,21 @@ class Source(ABC):
             if node is not None:
                 nodes.append(node)
         return nodes
+
+    @staticmethod
+    def get_one_timezone(sources: list['Source']):
+        try:
+            default_timezone = \
+                functools.reduce(lambda prev, s:
+                                 prev if prev is not None else s.get_timezone(),
+                                 sources,
+                                 None)
+            if default_timezone is None:
+                default_timezone = 'Etc/UTC'
+            return default_timezone
+        except Exception as e:
+            logging.error(
+                'failed to determine the cluster timezone: {}'.format(e))
 
 
 class CBCollect(Source):
@@ -216,7 +242,7 @@ class CBCollect(Source):
         """
         return get_prometheus_times(self._cbcollect_dir)
 
-    def get_timezone(self):
+    def get_timezone(self) -> str | None:
         """
         Returns a timezone identifier specifying the timezone of the cluster.
         """
@@ -235,7 +261,6 @@ class CBCollect(Source):
             logging.warning(
                 'failed to determine timezone from cbcollect_info.log: {}'
                 .format(e))
-
         return None
 
     @staticmethod
@@ -420,21 +445,6 @@ class CBCollect(Source):
     def compute_min_and_max_times(sources):
         times = [s.get_min_and_max_times() for s in sources]
         return min([t[0] for t in times]), max([t[1] for t in times])
-
-    @staticmethod
-    def get_one_timezone(sources):
-        try:
-            default_timezone = \
-                functools.reduce(lambda prev, s:
-                                 prev if prev is not None else s.get_timezone(),
-                                 sources,
-                                 None)
-            if default_timezone is None:
-                default_timezone = 'Etc/UTC'
-            return default_timezone
-        except Exception as e:
-            logging.error(
-                'failed to determine the cluster timezone: {}'.format(e))
 
 
 class ServerNode(Source):

@@ -39,6 +39,7 @@ PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
 GRAFANA_BIN = 'grafana-server'
 CBMSTATPARSER_BIN = 'cbmstatparser'
+BACKUPMGR_STATS = 'cbbackupmgr-stats'
 
 
 def is_executable_file(candidate_file):
@@ -227,7 +228,7 @@ def connect_to_grafana(grafana_port):
 
 
 def maybe_open_browser(grafana_http_port, dont_open_browser, url_path):
-    url = f'http://localhost:{grafana_http_port}/{url_path}'
+    url = f'http://localhost:{grafana_http_port}/{url_path}'  # noqa: E231
 
     # Helpful for those who accidently close the browser
     if not dont_open_browser:
@@ -243,7 +244,181 @@ def maybe_open_browser(grafana_http_port, dont_open_browser, url_path):
         logging.info('not opening browser; navigate to {}'.format(url))
 
 
-def main():
+def setup_logging(verbose):
+    os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
+    stream_handler = logging.StreamHandler(sys.stdout)
+    level = logging.DEBUG if verbose else logging.INFO
+    stream_handler.setLevel(level)
+    stream_handler.setFormatter(logging.Formatter('%(message)s'))
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s:%(levelname)s: %(message)s',
+                        datefmt='%Y-%m-%dT%H:%M:%S%z',
+                        handlers=[
+                            logging.FileHandler(path.join(PROMTIMER_LOGS_DIR,
+                                                          'promtimer.log')),
+                            stream_handler])
+
+
+def make_stats_sources(
+        prometheus_base_port: int,
+        secure: bool | None,
+        cluster: str | None,
+        nodes: list[str],
+        user: str | None,
+        password: str | None,
+        backup_archive_path: str | None,
+        cbmstatparser_path: str | None):
+    live_cluster = cluster or nodes
+    if live_cluster:
+        if nodes:
+            secure = secure or any([util.has_secure_scheme(n) for n in nodes])
+            stats_sources = cbstats.ServerNode.get_stats_sources_from_nodes(nodes,
+                                                                            user,
+                                                                            password,
+                                                                            secure)
+        else:
+            secure = secure or util.has_secure_scheme(cluster)
+            stats_sources = cbstats.ServerNode.get_stats_sources(cluster,
+                                                                 user,
+                                                                 password,
+                                                                 secure)
+        if not stats_sources:
+            sys.exit(1)
+        min_time = 'now-30m'
+        max_time = 'now'
+    elif backup_archive_path:
+        stats_sources, min_time, max_time = backupstats.handle_backup_archive_mode(  # Here
+            backup_archive_path,
+            cbmstatparser_path,
+            prometheus_base_port
+        )
+    else:
+        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
+        if not stats_sources:
+            sys.exit(1)
+        times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
+        min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
+        max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
+
+    return stats_sources, min_time, max_time
+
+
+def start_processes_and_monitor(
+        stats_sources: list[cbstats.Source],
+        grafana_home_path: str,
+        grafana_port: int,
+        create_annotations: bool,
+        consult_events_log: bool,
+        dont_open_browser: bool,
+        initial_url: str):
+    processes = cbstats.Source.maybe_start_stats_servers(stats_sources,
+                                                         PROMTIMER_LOGS_DIR)
+    processes.append(start_grafana(grafana_home_path, grafana_port))
+
+    try:
+        connect_to_grafana(grafana_port)
+        process = util.Process.poll_processes(processes, 1)
+        if process is None:
+            maybe_open_browser(grafana_port, dont_open_browser, initial_url)
+            if create_annotations:
+                annotations.get_and_create_annotations(grafana_port,
+                                                       stats_sources,
+                                                       consult_events_log)
+            process = util.Process.poll_processes(processes)
+
+        logging.info('process {} exited with status {}'.format(process.name(),
+                                                               process.poll()))
+        log_filename = process.log_filename()
+        if log_filename:
+            line_count = 3
+            lines = util.read_last_n_lines(log_filename, line_count)
+            logging.info('last {} lines of {}'.format(line_count, log_filename))
+            for line in lines:
+                logging.info(line.strip())
+    except KeyboardInterrupt:
+        # do nothing and let the program quietly expire
+        pass
+
+
+def run_promtimer(
+        grafana_home_path: str,
+        grafana_port: int,
+        secure: bool | None,
+        cluster: str | None,
+        nodes: list[str],
+        user: str | None,
+        password: str | None,
+        buckets: list[str],
+        backup_archive_path: str | None,
+        cbmstatparser_path: str | None,
+        refresh: str,
+        dont_open_browser: bool):
+
+    # make the stats sources
+    stats_sources, min_time, max_time = \
+        make_stats_sources(
+            prometheus_base_port=grafana_port + 1,
+            secure=secure,
+            cluster=cluster,
+            nodes=nodes,
+            user=user,
+            password=password,
+            backup_archive_path=backup_archive_path,
+            cbmstatparser_path=cbmstatparser_path)
+
+    # determine timezone, list of buckets, refresh interval, etc
+    timezone_override = os.environ.get('GRAFANA_TZ', '')
+    if timezone_override != '':
+        default_timezone = timezone_override
+    else:
+        default_timezone = cbstats.Source.get_one_timezone(stats_sources)
+    if default_timezone is None:
+        default_timezone = 'browser'
+    logging.info('setting default timezone to {}'.format(default_timezone))
+
+    if not buckets and not backup_archive_path:
+        buckets = stats_sources[0].get_buckets()
+    elif buckets:
+        buckets = sorted(buckets)
+
+    live_cluster = cluster or nodes
+    if live_cluster:
+        refresh = refresh or '5s'
+    else:
+        refresh = ''
+    logging.info('using grafana home path:{} '.format(grafana_home_path))
+
+    dashboard_name_predicate = lambda x: not x.startswith(BACKUPMGR_STATS)  # noqa E731
+    if backup_archive_path:
+        dashboard_name_predicate = lambda x: x.startswith(BACKUPMGR_STATS)  # noqa E731
+
+    # create datasources, dashboards and Grafana initialization files
+    prepare_grafana(
+        grafana_port=grafana_port,
+        grafana_timezone=default_timezone,
+        stats_sources=stats_sources,
+        buckets=buckets,
+        min_time_string=min_time,
+        max_time_string=max_time,
+        refresh=refresh,
+        dashboard_name_predicate=dashboard_name_predicate)
+
+    url_path = 'dashboards'
+    if backup_archive_path:
+        url_path = f'd/{BACKUPMGR_STATS}/{BACKUPMGR_STATS}-dashboard'
+
+    # start Grafana and any stats servers, monitor them, and open the browser
+    start_processes_and_monitor(
+        stats_sources=stats_sources,
+        grafana_home_path=grafana_home_path,
+        grafana_port=grafana_port,
+        create_annotations=not backup_archive_path,
+        consult_events_log=not cluster,
+        dont_open_browser=dont_open_browser,
+        initial_url=url_path)
+
+
+def parse_args_validate_and_run():
     parser = argparse.ArgumentParser()
     grafana_home_default = None
     if sys.platform == 'darwin':
@@ -291,7 +466,7 @@ def main():
     parser.add_argument('-n', '--node', dest='nodes', nargs="*",
                         help='Explicit list of nodes to connect to. Supply multiple values for multiple nodes. '
                              'Useful if the nodes are not accessed using their cluster hostnames '
-                             '(e.g. support using portforwarding in Capella)')
+                             '(e.g. support using port-forwarding in Capella)')
     parser.add_argument('-s', '--secure', dest='secure', action="store_true",
                         help='Default to connect to nodes using HTTPS and secure ports if these are not'
                              'explicitly specified in the -c or -n options. '
@@ -304,19 +479,8 @@ def main():
                         default=False, help="verbose output")
     args = parser.parse_args()
 
-    os.makedirs(PROMTIMER_LOGS_DIR, exist_ok=True)
+    setup_logging(args.verbose)
 
-    stream_handler = logging.StreamHandler(sys.stdout)
-    level = logging.DEBUG if args.verbose else logging.INFO
-    stream_handler.setLevel(level)
-    stream_handler.setFormatter(logging.Formatter('%(message)s'))
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s:%(levelname)s: %(message)s',
-                        datefmt='%Y-%m-%dT%H:%M:%S%z',
-                        handlers=[
-                            logging.FileHandler(path.join(PROMTIMER_LOGS_DIR,
-                                                          'promtimer.log')),
-                            stream_handler])
     if args.cluster and not args.user:
         logging.error('User must be specified when running Promtimer directly '
                       'against a Couchbase Server cluster')
@@ -332,127 +496,38 @@ def main():
         logging.error('Invalid grafana path: {}'.format(args.grafana_home_path))
         sys.exit(1)
 
-    grafana_port = args.grafana_port
-    prometheus_base_port = grafana_port + 1
-    live_cluster = args.cluster or args.nodes
-    default_timezone = 'browser'
+    nodes = []
+    for node in (args.nodes if args.nodes else []):
+        nodes.extend(node.split(","))
 
+    live_cluster = args.cluster or nodes
     if live_cluster and args.backup_archive_path:
-        print("--cluster and --backup-archive-path are mutually exclusive options")
+        logging.error("--cluster/--nodes and --backup-archive-path are mutually exclusive options")
         sys.exit(1)
 
-    BACKUPMGR_STATS = 'cbbackupmgr-stats'
-    buckets = None
-
-    if args.cbmstatparser_bin:
-        global CBMSTATPARSER_BIN
-        CBMSTATPARSER_BIN = args.cbmstatparser_bin
-
-    if live_cluster:
-        if args.nodes:
-            secure = args.secure or any([util.has_secure_scheme(n) for n in args.nodes])
-            nodes = []
-            for node in args.nodes:
-                nodes.extend(node.split(","))
-            stats_sources = cbstats.ServerNode.get_stats_sources_from_nodes(nodes,
-                                                                            args.user,
-                                                                            args.password,
-                                                                            secure)
-        else:
-            secure = args.secure or util.has_secure_scheme(args.cluster)
-            stats_sources = cbstats.ServerNode.get_stats_sources(args.cluster,
-                                                                 args.user,
-                                                                 args.password,
-                                                                 secure)
-        if not stats_sources:
-            sys.exit(1)
-        min_time = 'now-30m'
-        max_time = 'now'
-        refresh = args.refresh or '5s'
-    elif args.backup_archive_path:
-        stats_sources, min_time, max_time, refresh = backupstats.handle_backup_archive_mode(  # Here
-            args.backup_archive_path,
-            CBMSTATPARSER_BIN,
-            prometheus_base_port
-        )
-    else:
-        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
-        if not stats_sources:
-            sys.exit(1)
-        times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
-        min_time = datetime.datetime.fromtimestamp(times[0]).isoformat()
-        max_time = datetime.datetime.fromtimestamp(times[1]).isoformat()
-
-        timezone_override = os.environ.get('GRAFANA_TZ', '')
-        if timezone_override != '':
-            default_timezone = timezone_override
-        else:
-            default_timezone = cbstats.CBCollect.get_one_timezone(stats_sources)
-        logging.info('setting default timezone to {}'.format(
-            default_timezone))
-
-        refresh = ''
-
-    if not args.buckets and not args.backup_archive_path:
-        buckets = stats_sources[0].get_buckets()
-    elif args.buckets:
-        buckets = sorted(args.buckets.split(','))
-
-    logging.info('using grafana home path:{} '.format(args.grafana_home_path))
-
-    dashboard_name_predicate = lambda x: not x.startswith(BACKUPMGR_STATS)
-    if args.backup_archive_path:
-        dashboard_name_predicate = lambda x: x.startswith(BACKUPMGR_STATS)
-
-    prepare_grafana(grafana_port,
-                    default_timezone,
-                    stats_sources,
-                    buckets,
-                    min_time,
-                    max_time,
-                    refresh,
-                    dashboard_name_predicate)
-
+    # Prometheus binary validation
+    prometheus_bin = PROMETHEUS_BIN
     if args.prom_bin:
-        global PROMETHEUS_BIN
-        PROMETHEUS_BIN = args.prom_bin
-
-    if not live_cluster and not is_executable_file(PROMETHEUS_BIN):
-        logging.error('Invalid prometheus executable path: {}'.format(
-            PROMETHEUS_BIN))
+        prometheus_bin = args.prom_bin
+    if not live_cluster and not is_executable_file(prometheus_bin):
+        logging.error('Invalid prometheus executable path: {}'.format(prometheus_bin))
         sys.exit(1)
+    cbstats.Source.PROMETHEUS_BIN = prometheus_bin
 
-    cbstats.Source.PROMETHEUS_BIN = PROMETHEUS_BIN
-    processes = cbstats.Source.maybe_start_stats_servers(stats_sources,
-                                                         PROMTIMER_LOGS_DIR)
-    processes.append(start_grafana(args.grafana_home_path, grafana_port))
-
-    try:
-        connect_to_grafana(grafana_port)
-        process = util.Process.poll_processes(processes, 1)
-        if process is None:
-            url_path = 'dashboards'
-            if args.backup_archive_path:
-                url_path = f'd/{BACKUPMGR_STATS}/{BACKUPMGR_STATS}-dashboard'
-            maybe_open_browser(grafana_port, args.dont_open_browser, url_path)
-            if not args.backup_archive_path:
-                annotations.get_and_create_annotations(grafana_port, stats_sources,
-                                                       not args.cluster)
-            process = util.Process.poll_processes(processes)
-
-        logging.info('process {} exited with status {}'.format(process.name(),
-                                                               process.poll()))
-        log_filename = process.log_filename()
-        if log_filename:
-            line_count = 3
-            lines = util.read_last_n_lines(log_filename, line_count)
-            logging.info('last {} lines of {}'.format(line_count, log_filename))
-            for line in lines:
-                logging.info(line.strip())
-    except KeyboardInterrupt:
-        # do nothing and let the program quietly expire
-        pass
+    run_promtimer(
+        grafana_home_path=args.grafana_home_path,
+        grafana_port=args.grafana_port,
+        secure=args.secure,
+        cluster=args.cluster,
+        nodes=nodes,
+        user=args.user,
+        password=args.password,
+        buckets=args.buckets.split(',') if args.buckets else [],
+        backup_archive_path=args.backup_archive_path,
+        cbmstatparser_path=args.cbmstatparser_bin if args.cbmstatparser_bin else CBMSTATPARSER_BIN,
+        refresh=args.refresh if args.refresh else '',
+        dont_open_browser=args.dont_open_browser)
 
 
 if __name__ == '__main__':
-    main()
+    parse_args_validate_and_run()
