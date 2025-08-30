@@ -37,7 +37,6 @@ import util
 PROMETHEUS_BIN = os.environ.get('PROM_BIN', 'prometheus')
 PROMTIMER_DIR = '.promtimer'
 PROMTIMER_LOGS_DIR = path.join(PROMTIMER_DIR, 'logs')
-GRAFANA_BIN = 'grafana-server'
 CBMSTATPARSER_BIN = 'cbmstatparser'
 BACKUPMGR_STATS = 'cbbackupmgr-stats'
 
@@ -190,7 +189,7 @@ def prepare_grafana(grafana_port,
     )
 
 
-def start_grafana(grafana_home_path, grafana_port):
+def start_grafana(grafana_bin, grafana_home_path, grafana_port):
     """
     Starts grafana-server wthe the specified home path listening to the specfied
     port.
@@ -200,7 +199,7 @@ def start_grafana(grafana_home_path, grafana_port):
     :return: a Process instance wrapping the underlying process handle
     """
     name = 'grafana-server'
-    args = [GRAFANA_BIN,
+    args = [grafana_bin,
             '--homepath', grafana_home_path,
             '--config', 'custom.ini']
     log_path = path.join(PROMTIMER_DIR, 'logs/grafana.log')
@@ -266,7 +265,7 @@ def make_stats_sources(
         user: str | None,
         password: str | None,
         backup_archive_path: str | None,
-        cbmstatparser_path: str | None):
+        cbmstatparser_path: str):
     live_cluster = cluster or nodes
     if live_cluster:
         if nodes:
@@ -304,6 +303,7 @@ def make_stats_sources(
 
 def start_processes_and_monitor(
         stats_sources: list[cbstats.Source],
+        grafana_bin: str,
         grafana_home_path: str,
         grafana_port: int,
         create_annotations: bool,
@@ -312,7 +312,9 @@ def start_processes_and_monitor(
         initial_url: str):
     processes = cbstats.Source.maybe_start_stats_servers(stats_sources,
                                                          PROMTIMER_LOGS_DIR)
-    processes.append(start_grafana(grafana_home_path, grafana_port))
+    processes.append(start_grafana(grafana_bin,
+                                   grafana_home_path,
+                                   grafana_port))
 
     try:
         connect_to_grafana(grafana_port)
@@ -340,6 +342,7 @@ def start_processes_and_monitor(
 
 
 def run_promtimer(
+        grafana_bin: str,
         grafana_home_path: str,
         grafana_port: int,
         secure: bool | None,
@@ -349,7 +352,7 @@ def run_promtimer(
         password: str | None,
         buckets: list[str],
         backup_archive_path: str | None,
-        cbmstatparser_path: str | None,
+        cbmstatparser_path: str,
         refresh: str,
         dont_open_browser: bool):
 
@@ -409,6 +412,7 @@ def run_promtimer(
     # start Grafana and any stats servers, monitor them, and open the browser
     start_processes_and_monitor(
         stats_sources=stats_sources,
+        grafana_bin=grafana_bin,
         grafana_home_path=grafana_home_path,
         grafana_port=grafana_port,
         create_annotations=not backup_archive_path,
@@ -426,7 +430,6 @@ def parse_args_validate_and_run():
         grafana_home_default = '/usr/share/grafana'
 
     parser.add_argument('-g', '--grafana-home', dest='grafana_home_path',
-                        default=grafana_home_default,
                         help='''
                         Grafana configuration "homepath"; should be set to the
                         out-of-the-box Grafana config path. On brew-installed Grafana on
@@ -434,6 +437,16 @@ def parse_args_validate_and_run():
                             /usr/local/share/grafana
                         On linux systems the homepath should usually be:
                             /usr/share/grafana
+                        On Mac and Linux 
+                        ''')
+    parser.add_argument('--grafana-install-path', dest='grafana_install_path',
+                        help='''
+                        Grafana installation path. If specified, this path is used to
+                        find the Grafana binary (in ${install}/bin/grafana-server) and to 
+                        find the Grafana homepath (in ${install}/share/grafana).
+                        If not specified, then the Grafana binary is assumed to be
+                        available on $PATH and the Grafana home directory is assumed to be
+                        the value of --grafana-home.
                         ''')
     parser.add_argument('-p', '--prometheus', dest='prom_bin',
                         help='path to prometheus binary if it\'s not available on $PATH')
@@ -480,6 +493,24 @@ def parse_args_validate_and_run():
 
     setup_logging(args.verbose)
 
+    if args.grafana_install_path:
+        grafana_bin = os.path.join(args.grafana_install_path, 'bin', 'grafana-server')
+        if not os.path.isfile(grafana_bin):
+            logging.error('No Grafana binary found in specified installation path: {}'.
+                          format(grafana_bin))
+            sys.exit(1)
+        if not os.access(grafana_bin, os.X_OK):
+            logging.error('Grafana binary is not executable: {}'.format(grafana_bin))
+            sys.exit(1)
+        logging.info('using Grafana binary: {}'.format(grafana_bin))
+        if args.grafana_home_path is None:
+            args.grafana_home_path = os.path.join(args.grafana_install_path, 'share', 'grafana')
+    else:
+        grafana_bin = 'grafana-server'
+
+    if args.grafana_home_path is None:
+        args.grafana_home_path = grafana_home_default
+
     if args.cluster and not args.user:
         logging.error('User must be specified when running Promtimer directly '
                       'against a Couchbase Server cluster')
@@ -514,6 +545,7 @@ def parse_args_validate_and_run():
     cbstats.Source.PROMETHEUS_BIN = prometheus_bin
 
     run_promtimer(
+        grafana_bin=grafana_bin,
         grafana_home_path=args.grafana_home_path,
         grafana_port=args.grafana_port,
         secure=args.secure,
