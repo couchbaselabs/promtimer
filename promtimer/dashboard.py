@@ -179,6 +179,8 @@ def maybe_expand_templating(
                         option_json['selected'] = True
                         element['current'] = option_json
                     options.append(option_json)
+                escaped = [b.replace(',', '\\,') for b in bucket_param[1]]
+                element['query'] = ','.join(escaped)
 
 
 def make_dashboard(dashboard_meta,
