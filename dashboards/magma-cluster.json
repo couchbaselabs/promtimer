@@ -10,9 +10,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_gets[1m]))",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -25,9 +25,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_sets[1m]))",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -40,9 +40,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_inserts[1m]))",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -55,9 +55,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(kv_ep_magma_total_mem_used_bytes)",
-                   "legendFormat": "{data-source-name}",
+                   "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -75,9 +75,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_write_bytes_bytes[1m]))",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -90,9 +90,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(kv_ep_magma_write_bytes_bytes)",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -105,9 +105,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_bytes_incoming_bytes[1m]))",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -120,9 +120,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(kv_ep_magma_bytes_incoming_bytes)",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -135,9 +135,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_read_bytes_bytes[1m]))",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -150,9 +150,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(kv_ep_magma_read_bytes_bytes)",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -165,9 +165,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_bytes_outgoing_bytes[1m]))",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -180,9 +180,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(kv_ep_magma_bytes_outgoing_bytes)",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]
@@ -200,9 +200,9 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum(kv_ep_magma_total_disk_usage_bytes)",
-                    "legendFormat": "{data-source-name}",
+                    "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
             ]

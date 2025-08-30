@@ -43,9 +43,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_cpu_utilization_rate",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -69,15 +69,15 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_cpu_utilization_rate * ignoring(name)sys_cpu_cores_available",
-          "legendFormat": "{data-source-name} sys_cpu_utilization_rate (in cores)",
+          "legendFormat": "{data-source:name} sys_cpu_utilization_rate (in cores)",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_cpu_utilization{proc=\"ns_server\"}",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         }
       ],
@@ -101,9 +101,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_cpu_stolen_rate",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -127,9 +127,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_cpu_irq_rate",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -153,9 +153,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_cpu_cores_available",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -183,9 +183,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_mem_resident{proc=\"ns_server\"}",
-          "legendFormat": "{data-source-name}",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -209,15 +209,15 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_mem_limit",
-          "legendFormat": "{data-source-name} sys_mem_limit",
+          "legendFormat": "{data-source:name} sys_mem_limit",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_mem_actual_used",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -241,15 +241,15 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_mem_size{proc=\"ns_server\"}",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_mem_resident{proc=\"ns_server\"}",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         }
       ],
@@ -273,9 +273,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_major_faults_raw{proc=\"ns_server\"}",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -299,9 +299,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(sysproc_major_faults_raw{proc=\"ns_server\"}[1m])",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         }
       ],
@@ -325,9 +325,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(sysproc_minor_faults_raw{proc=\"ns_server\"}[1m])",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         }
       ],
@@ -351,9 +351,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_allocstall",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -377,9 +377,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(sys_allocstall[1m])",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -403,15 +403,15 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_swap_total",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_swap_used",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -439,9 +439,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(cm_rest_request_leaves_total[1m])",
-          "legendFormat": "{data-source-name} sum(cm_rest_request_leaves_total[1m])",
+          "legendFormat": "{data-source:name} sum(cm_rest_request_leaves_total[1m])",
           "_base": "target"
         }
       ],
@@ -465,9 +465,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
-          "legendFormat": "{data-source-name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
+          "legendFormat": "{data-source:name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
           "_base": "target"
         }
       ],
@@ -491,9 +491,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sum(irate(cm_http_requests_total[5m]))",
-          "legendFormat": "{data-source-name} sum(irate(cm_http_requests_total[5m]))",
+          "legendFormat": "{data-source:name} sum(irate(cm_http_requests_total[5m]))",
           "_base": "target"
         }
       ],
@@ -517,15 +517,15 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(cm_request_hibernates_total[5m])",
-          "legendFormat": "{data-source-name} irate(cm_request_hibernates_total[5m])",
+          "legendFormat": "{data-source:name} irate(cm_request_hibernates_total[5m])",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(cm_request_unhibernates_total[5m])",
-          "legendFormat": "{data-source-name} irate(cm_request_unhibernates_total[5m])",
+          "legendFormat": "{data-source:name} irate(cm_request_unhibernates_total[5m])",
           "_base": "target"
         }
       ],
@@ -553,9 +553,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "cm_ns_config_merger_queue_len_1m_max",
-          "legendFormat": "{data-source-name} {{name}}",
+          "legendFormat": "{data-source:name} {{name}}",
           "_base": "target"
         }
       ],
@@ -579,21 +579,21 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "histogram_quantile(0.999, irate(cm_timer_lag_seconds_bucket[5m]))",
-          "legendFormat": "{data-source-name} timer_lag 99.9th percentile",
+          "legendFormat": "{data-source:name} timer_lag 99.9th percentile",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "histogram_quantile(0.9, irate(cm_timer_lag_seconds_bucket[5m]))",
-          "legendFormat": "{data-source-name} timer_lag 90th percentile",
+          "legendFormat": "{data-source:name} timer_lag 90th percentile",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "histogram_quantile(0.5, irate(cm_timer_lag_seconds_bucket[5m]))",
-          "legendFormat": "{data-source-name} timer_lag 50th percentile",
+          "legendFormat": "{data-source:name} timer_lag 50th percentile",
           "_base": "target"
         }
       ],
@@ -621,9 +621,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_pressure_share_time_stalled{resource=\"cpu\",level=\"host\"}",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -647,9 +647,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\"}/1000",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -673,9 +673,9 @@
       "_base": "panel",
       "_targets": [
           {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\"}[1m])/1000",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -699,9 +699,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_pressure_share_time_stalled{resource=\"memory\",level=\"host\"}",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -725,9 +725,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\"}/1000",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -751,9 +751,9 @@
       "_base": "panel",
       "_targets": [
           {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\"}[1m])/1000",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -777,9 +777,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_pressure_share_time_stalled{resource=\"io\",level=\"host\"}",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -803,9 +803,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\"}/1000",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],
@@ -829,9 +829,9 @@
       "_base": "panel",
       "_targets": [
           {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\"}[1m])/1000",
-          "legendFormat": "{data-source-name} {{level}} {{quantifier}} {{interval}}",
+          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
           "_base": "target"
         }
       ],

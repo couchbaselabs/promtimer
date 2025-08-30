@@ -7,9 +7,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_changes_left_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_changes_left_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_changes_left_total",
           "_base": "target"
         }
       ]
@@ -19,9 +19,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_pipeline_errors",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_pipeline_errors",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_pipeline_errors",
           "_base": "target"
         }
       ]
@@ -31,9 +31,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_processed_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_processed_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_processed_total",
           "_base": "target"
         }
       ]
@@ -43,9 +43,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(xdcr_docs_processed_total[5m])",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_processed_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_processed_total",
           "_base": "target"
         }
       ]
@@ -55,9 +55,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_received_from_dcp_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_received_from_dcp_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_received_from_dcp_total",
           "_base": "target"
         }
       ]
@@ -67,9 +67,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(xdcr_docs_received_from_dcp_total[5m])",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_received_from_dcp_rate",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_received_from_dcp_rate",
           "_base": "target"
         }
       ]
@@ -79,9 +79,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_expiry_received_from_dcp_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_received_from_dcp_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_received_from_dcp_total",
           "_base": "target"
         }
       ]
@@ -91,9 +91,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_deletion_received_from_dcp_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_received_from_dcp_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_received_from_dcp_total",
           "_base": "target"
         }
       ]
@@ -103,9 +103,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_set_received_from_dcp_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_received_from_dcp_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_received_from_dcp_total",
           "_base": "target"
         }
       ]
@@ -115,9 +115,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_dcp_datach_length_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_dcp_datach_length_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_dcp_datach_length_total",
           "_base": "target"
         }
       ]
@@ -127,9 +127,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_dcp_dispatch_time_seconds",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_dcp_dispatch_time_seconds",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_dcp_dispatch_time_seconds",
           "_base": "target"
         }
       ]
@@ -139,9 +139,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_filtered_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_filtered_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_filtered_total",
           "_base": "target"
         }
       ]
@@ -151,9 +151,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_set_filtered_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_filtered_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_filtered_total",
           "_base": "target"
         }
       ]
@@ -163,9 +163,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_expiry_filtered_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_filtered_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_filtered_total",
           "_base": "target"
         }
       ]
@@ -175,9 +175,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_deletion_filtered_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_filtered_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_filtered_total",
           "_base": "target"
         }
       ]
@@ -187,9 +187,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_expiry_stripped_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_stripped_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_stripped_total",
           "_base": "target"
         }
       ]
@@ -199,9 +199,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_binary_filtered_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_binary_filtered_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_binary_filtered_total",
           "_base": "target"
         }
       ]
@@ -211,9 +211,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_unable_to_filter_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_unable_to_filter_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_unable_to_filter_total",
           "_base": "target"
         }
       ]
@@ -223,9 +223,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_cloned_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_cloned_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_cloned_total",
           "_base": "target"
         }
       ]
@@ -235,9 +235,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_deletion_cloned_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_cloned_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_cloned_total",
           "_base": "target"
         }
       ]
@@ -247,9 +247,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_size_rep_queue_bytes",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_size_rep_queue_bytes",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_size_rep_queue_bytes",
           "_base": "target"
         }
       ]
@@ -259,9 +259,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_pipeline_status",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_pipeline_status",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_pipeline_status",
           "_base": "target"
         }
       ]
@@ -271,9 +271,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_wtavg_meta_latency_seconds",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_wtavg_meta_latency_seconds",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_wtavg_meta_latency_seconds",
           "_base": "target"
         }
       ]
@@ -283,10 +283,10 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_wtavg_docs_latency_seconds",
           "description": "The rolling average amount of time it takes for the source cluster to receive the acknowledgement of a SET_WITH_META response after the Memcached request has been composed to be processed by the XDCR Target Nozzle",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_wtavg_docs_latency_seconds",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_wtavg_docs_latency_seconds",
           "_base": "target"
         }
       ]
@@ -296,9 +296,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_resp_wait_time_seconds",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_resp_wait_time_seconds",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_resp_wait_time_seconds",
           "_base": "target"
         }
       ]
@@ -308,9 +308,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_written_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_written_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_written_total",
           "_base": "target"
         }
       ]
@@ -320,9 +320,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(xdcr_docs_written_total[5m])",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_written_rate",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_written_rate",
           "_base": "target"
         }
       ]
@@ -332,9 +332,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_data_replicated_bytes",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_bytes",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_bytes",
           "_base": "target"
         }
       ]
@@ -344,9 +344,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(xdcr_data_replicated_bytes[5m])",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_bytes_rate",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_bytes_rate",
           "_base": "target"
         }
       ]
@@ -356,9 +356,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_opt_repd_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_opt_repd_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_opt_repd_total",
           "_base": "target"
         }
       ]
@@ -368,9 +368,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(xdcr_docs_opt_repd_total[5m])",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_opt_repd_rate",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_opt_repd_rate",
           "_base": "target"
         }
       ]
@@ -380,9 +380,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_failed_cr_source_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_failed_cr_source_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_failed_cr_source_total",
           "_base": "target"
         }
       ]
@@ -392,9 +392,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_expiry_failed_cr_source_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_failed_cr_source_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_failed_cr_source_total",
           "_base": "target"
         }
       ]
@@ -404,9 +404,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_deletion_failed_cr_source_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_failed_cr_source_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_failed_cr_source_total",
           "_base": "target"
         }
       ]
@@ -416,9 +416,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_set_failed_cr_source_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_failed_cr_source_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_failed_cr_source_total",
           "_base": "target"
         }
       ]
@@ -428,9 +428,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_failed_cr_target_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_failed_cr_target_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_failed_cr_target_total",
           "_base": "target"
         }
       ]
@@ -440,9 +440,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_throttle_latency_seconds",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_throttle_latency_seconds",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_throttle_latency_seconds",
           "_base": "target"
         }
       ]
@@ -452,9 +452,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_throughput_throttle_latency_seconds",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_throughput_throttle_latency_seconds",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_throughput_throttle_latency_seconds",
           "_base": "target"
         }
       ]
@@ -464,9 +464,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_expiry_docs_written_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_docs_written_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_docs_written_total",
           "_base": "target"
         }
       ]
@@ -476,9 +476,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_expiry_failed_cr_target_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_failed_cr_target_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_expiry_failed_cr_target_total",
           "_base": "target"
         }
       ]
@@ -488,9 +488,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_deletion_docs_written_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_docs_written_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_docs_written_total",
           "_base": "target"
         }
       ]
@@ -500,9 +500,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_deletion_failed_cr_target_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_failed_cr_target_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_deletion_failed_cr_target_total",
           "_base": "target"
         }
       ]
@@ -512,9 +512,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_set_docs_written_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_docs_written_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_docs_written_total",
           "_base": "target"
         }
       ]
@@ -524,9 +524,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_set_failed_cr_target_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_failed_cr_target_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_set_failed_cr_target_total",
           "_base": "target"
         }
       ]
@@ -536,9 +536,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_docs_checked_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_checked_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_docs_checked_total",
           "_base": "target"
         }
       ]
@@ -548,9 +548,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_num_checkpoints_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_num_checkpoints_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_num_checkpoints_total",
           "_base": "target"
         }
       ]
@@ -560,9 +560,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_time_committing_seconds",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_time_committing_seconds",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_time_committing_seconds",
           "_base": "target"
         }
       ]
@@ -572,9 +572,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_data_replicated_uncompress_bytes",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_uncompress_bytes",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_data_replicated_uncompress_bytes",
           "_base": "target"
         }
       ]
@@ -584,9 +584,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_target_eaccess_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_target_eaccess_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_target_eaccess_total",
           "_base": "target"
         }
       ]
@@ -596,9 +596,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_target_tmpfail_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_target_tmpfail_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_target_tmpfail_total",
           "_base": "target"
         }
       ]
@@ -608,9 +608,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_num_failedckpts_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_num_failedckpts_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_num_failedckpts_total",
           "_base": "target"
         }
       ]
@@ -620,9 +620,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_datapool_failed_gets_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_datapool_failed_gets_total",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} {{pipelineType}} xdcr_datapool_failed_gets_total",
           "_base": "target"
         }
       ]
@@ -632,15 +632,15 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_mem_size{proc=\"goxdcr\"}",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_mem_resident{proc=\"goxdcr\"}",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         }
       ],
@@ -658,9 +658,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sum by (status) (xdcr_pipeline_status{status=\"Running\"})",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}} number of running replications}",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}} number of running replications}",
           "_base": "target"
         }
       ]
@@ -670,9 +670,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "xdcr_number_of_replications_total",
-          "legendFormat": "{data-source-name} {{targetClusterUUID}} number of total replications per remote cluster}",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}} number of total replications per remote cluster}",
           "_base": "target"
         }
       ]
@@ -683,9 +683,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "count(xdcr_number_of_replications_total < xdcr_number_of_replications_total offset 1m)",
-          "legendFormat": "{data-source-name} Replication count decreased in the past minute",
+          "legendFormat": "{data-source:name} Replication count decreased in the past minute",
           "_base": "target"
         }
       ]
@@ -695,9 +695,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sysproc_mem_resident{proc=\"goxdcr\"} / ignoring(status, category, instance, job, name, proc) (sum by (status) (xdcr_pipeline_status{status=\"Running\"})) ",
-          "legendFormat": "{data-source-name} {{name}} {{proc}}",
+          "legendFormat": "{data-source:name} {{name}} {{proc}}",
           "_base": "target"
         }
       ],

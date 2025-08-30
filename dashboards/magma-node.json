@@ -27,7 +27,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (rate(kv_ep_magma_gets[1m]))",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -42,7 +42,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (rate(kv_ep_magma_sets[1m]))",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -57,7 +57,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (rate(kv_ep_magma_inserts[1m]))",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -72,7 +72,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "kv_ep_magma_total_mem_used_bytes",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -87,7 +87,7 @@
             },
             "_targets": [
               {
-                "datasource": "{data-source-name}",
+                "datasource": "{data-source:name}",
                 "expr": "sum by (thread_pool) (rate(kv_thread_cpu_usage_seconds[6m]))",
                 "legendFormat": "{{label_name}}",
                 "_base": "target"
@@ -107,7 +107,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (rate(kv_ep_magma_write_bytes_bytes[1m]))",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -122,7 +122,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_write_bytes_bytes)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -137,7 +137,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (rate(kv_ep_magma_bytes_incoming_bytes[1m]))",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -152,7 +152,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_bytes_incoming_bytes)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -167,7 +167,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (rate(kv_ep_magma_read_bytes_bytes[1m]))",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -182,7 +182,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_read_bytes_bytes)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -197,7 +197,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (rate(kv_ep_magma_bytes_outgoing_bytes[1m]))",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -212,7 +212,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_bytes_outgoing_bytes)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -232,7 +232,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_total_disk_usage_bytes)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -247,7 +247,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_data_blocks_uncompressed_size)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -262,7 +262,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_data_blocks_compressed_size)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -277,7 +277,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_fragmentation_ratio*100)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -297,7 +297,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_history_size_evicted_bytes)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"
@@ -312,7 +312,7 @@
             },
             "_targets": [
                 {
-                    "datasource": "{data-source-name}",
+                    "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_history_time_evicted_bytes)",
                     "legendFormat": "{{bucket}}",
                     "_base": "target"

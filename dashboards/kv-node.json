@@ -88,7 +88,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sum by (bucket) (irate(kv_ops[5m]))",
           "legendFormat": "{{bucket}}",
           "_base": "target"
@@ -104,7 +104,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sum by (bucket) (irate(kv_ops{op=\"get\"}[5m]))",
           "legendFormat": "{{bucket}}",
           "_base": "target"
@@ -120,7 +120,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sum by (bucket) (irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[5m]))",
           "legendFormat": "{{bucket}}",
           "_base": "target"
@@ -136,7 +136,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sum(irate(kv_ep_bg_fetched[5m]))",
           "legendFormat": "BG Fetches",
           "_base": "target"
@@ -149,13 +149,13 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "histogram_quantile(0.90, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))",
           "legendFormat": "90th GET/GAT",
           "_base": "target"
         },
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "histogram_quantile(0.50, sum by (le) (irate(kv_cmd_duration_seconds_bucket{opcode=~\"GET|GAT\"}[10m])))",
           "legendFormat": "50th GET/GAT",
           "_base": "target"
@@ -173,7 +173,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "topk(5, sum by (opcode) (kv_cmd_duration_seconds_count{opcode!~\"DCP.*\"}))",
           "legendFormat": "{{opcode}}",
           "_base": "target"
@@ -186,7 +186,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "exposer_request_latencies{quantile=\"0.990000\"}",
           "legendFormat": "99th {{job}}",
           "_base": "target"
@@ -232,7 +232,7 @@
     },
     {
       "title": "Data Read Failures",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -245,7 +245,7 @@
     },
     {
       "title": "Data Write Failures",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -258,7 +258,7 @@
     },
     {
       "title": "Doc Size",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -282,7 +282,7 @@
     },
     {
       "title": "Number of Docs (inc. Replicas)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -306,7 +306,7 @@
     },
     {
       "title": "Percentage Memory Resident",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -330,7 +330,7 @@
     },
     {
       "title": "Compaction write & read bytes",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -359,7 +359,7 @@
     },
     {
       "title": "Rate of Deletes",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -372,7 +372,7 @@
     },
     {
       "title": "Rate of Doc Expirations",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -385,7 +385,7 @@
     },
     {
       "title": "Rollback Item Count",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -399,7 +399,7 @@
     {
       "title": "Size of Key",
       "type": "stat",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -416,7 +416,7 @@
     },
     {
       "title": "Data Size",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -429,7 +429,7 @@
     },
     {
       "title": "Disk Queue Items",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -442,7 +442,7 @@
     },
     {
       "title": "Disk Queue Memory Usage",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -455,7 +455,7 @@
     },
     {
       "title": "New and Persisted Items",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -468,7 +468,7 @@
     },
     {
       "title": "Written Bytes over All Network Interfaces (including Loopback)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 6
       },
@@ -484,7 +484,7 @@
     },
     {
       "title": "Read Bytes over All Network Interfaces (including Loopback)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 6
       },
@@ -504,7 +504,7 @@
     },
     {
       "title": "KV CPU Utilization",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -517,7 +517,7 @@
     },
     {
       "title": "KV CPU Utilization By Thread",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -539,7 +539,7 @@
     },
     {
       "title": "Failed KV Operations",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -552,7 +552,7 @@
     },
     {
       "title": "KV Operations",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -566,7 +566,7 @@
     },
     {
       "title": "KV Uptime",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -579,7 +579,7 @@
     },
     {
       "title": "KV Memory Usage",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -596,7 +596,7 @@
     },
     {
       "title": "Checkpoint Memory Size",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -610,7 +610,7 @@
     {
       "title": "Defragmenter Enabled",
       "type": "bargauge",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -639,7 +639,7 @@
     {
       "title": "Defragmenter Interval",
       "type": "gauge",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -665,7 +665,7 @@
     },
     {
       "title": "Metadata Overhead",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -678,7 +678,7 @@
     },
     {
       "title": "OOM Errors Total",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -691,7 +691,7 @@
     },
     {
       "title": "OOM Errors at Warmup",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -708,7 +708,7 @@
     },
     {
       "title": "Backoff Events",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -722,7 +722,7 @@
     {
       "title": "Idle Timeout",
       "type": "gauge",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -748,7 +748,7 @@
     },
     {
       "title": "Producer Count",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -761,7 +761,7 @@
     },
     {
       "title": "Remaining Items",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -774,7 +774,7 @@
     },
     {
       "title": "Sent Items",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -787,7 +787,7 @@
     },
     {
       "title": "Total Connections",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -800,7 +800,7 @@
     },
     {
       "title": "Total Data Size",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -817,7 +817,7 @@
     },
     {
       "title": "vBucket Operations (Active)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8
       },
@@ -833,7 +833,7 @@
     },
     {
       "title": "vBucket Operations (Replica)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8
       },
@@ -849,7 +849,7 @@
     },
     {
       "title": "vBucket Operations (Pending)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8
       },
@@ -865,7 +865,7 @@
     },
     {
       "title": "Total",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -882,7 +882,7 @@
     },
     {
       "title": "Memory Used by Collection",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -896,7 +896,7 @@
     },
     {
       "title": "Operations Run on Collection",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -913,7 +913,7 @@
     },
     {
       "title": "Connections Ever Opened",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -926,7 +926,7 @@
     },
     {
       "title": "Current Connections",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -955,7 +955,7 @@
     },
     {
       "title": "Number of Auth Errors",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -968,7 +968,7 @@
     },
     {
       "title": "Data/History Size",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -997,7 +997,7 @@
     },
     {
       "title": "Fragmentation (couch_docs_fragmentation)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {

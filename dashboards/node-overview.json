@@ -53,7 +53,7 @@
   "_panels": [
     {
       "title": "sys_cpu_utilization_rate",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -71,7 +71,7 @@
     },
     {
       "title": "sysproc_cpu_utilization",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -88,7 +88,7 @@
     },
     {
       "title": "sys_cpu_host_seconds_total",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -101,7 +101,7 @@
     },
     {
       "title": "sysproc_mem_resident",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -118,7 +118,7 @@
     },
     {
       "title": "kv_curr_items",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -130,7 +130,7 @@
     },
     {
       "title": "sum(irate(kv_ops[1m]))",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -142,7 +142,7 @@
     },
     {
       "title": "kv gets and mutations",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -159,7 +159,7 @@
     },
     {
       "title": "total ops by bucket",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -171,7 +171,7 @@
     },
     {
       "title": "90th percentile GET latency",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -191,9 +191,9 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(cm_rest_request_leaves_total[1m])",
-          "legendFormat": "{data-source-name} sum(cm_rest_request_leaves_total[1m])",
+          "legendFormat": "{data-source:name} sum(cm_rest_request_leaves_total[1m])",
           "_base": "target"
         }
       ]
@@ -203,16 +203,16 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
-          "legendFormat": "{data-source-name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
+          "legendFormat": "{data-source:name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
           "_base": "target"
         }
       ]
     },
     {
       "title": "90th percentile ns-server outgoing request latencies",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -229,7 +229,7 @@
     },
     {
       "title": "sys_mem_cgroup (limit/used)",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -252,7 +252,7 @@
     {
       "title": "sys_disk_read_bytes (per second)",
       "description": "The number of bytes read from disk per second.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -270,7 +270,7 @@
     {
       "title": "sys_disk_write_bytes (per second)",
       "description": "The number of bytes written to disk per second.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -288,7 +288,7 @@
     {
       "title": "sys_disk_reads (per second)",
       "description": "Disk read operations per second.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -301,7 +301,7 @@
     {
       "title": "sys_disk_writes (per second)",
       "description": "Disk write operations per second.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -314,7 +314,7 @@
     {
       "title": "sys_disk_read_time",
       "description": "Amount of time disk spent reading.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -332,7 +332,7 @@
     {
       "title": "sys_disk_write_time",
       "description": "Amount of time disk spent writing.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
@@ -350,7 +350,7 @@
     {
       "title": "sys_disk_queue",
       "description": "Current disk queue length.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {

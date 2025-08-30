@@ -55,7 +55,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "cm_chronicle_disk_latency_seconds_bucket{le=\"+Inf\"} - ignoring(le) cm_chronicle_disk_latency_seconds_bucket{le=\"1.0\"}",
           "legendFormat": "{{op}}",
           "_base": "target"
@@ -67,7 +67,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(cm_chronicle_disk_latency_seconds_count[5m])",
           "legendFormat": "{{op}}",
           "_base": "target"
@@ -81,7 +81,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "1000 * irate(cm_chronicle_disk_latency_seconds_sum{op=\"sync\"}[5m]) / ignoring(name) irate(cm_chronicle_disk_latency_seconds_count{op=\"sync\"}[5m])",
           "_base": "target"
         }
@@ -98,7 +98,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "sum by (le)(increase(cm_chronicle_disk_latency_seconds_bucket{op=\"sync\"}[5m]))",
           "legendFormat": "{{le}}",
           "format": "heatmap",
@@ -110,11 +110,11 @@
     },
     {
       "title": "number of chronicle appends / s",
-      "legendFormat": "{data-source-name}",
+      "legendFormat": "{data-source:name}",
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "irate(cm_chronicle_append_num_total[5m])",
           "_base": "target"
         }
@@ -127,7 +127,7 @@
       "_base": "panel",
       "_targets": [
         {
-          "datasource": "{data-source-name}",
+          "datasource": "{data-source:name}",
           "expr": "cm_chronicle_append_batch_size_1m_max",
           "_base": "target"
         }
