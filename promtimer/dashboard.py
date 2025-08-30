@@ -164,7 +164,7 @@ def maybe_expand_templating(
         templating_list = dashboard_template.get('list')
         logging.debug('templating_list:{}'.format(templating_list))
         for element in templating_list:
-            if element['type'] == 'custom':
+            if element['type'] == 'custom' and element['name'] == 'bucket':
                 options = element['options']
                 option_template = options.pop()
                 option_string = json.dumps(option_template)
@@ -172,6 +172,8 @@ def maybe_expand_templating(
                 logging.debug('option_template:{}'.format(option_template))
                 logging.debug('option_string:{}'.format(option_string))
                 logging.debug('template_params:{}'.format(template_params))
+                # Grafana versions < 12 require the different values of the templating
+                # variable to be specified as options in the option list
                 for idx, value in enumerate(bucket_param[1]):
                     option = templating.replace(option_string, {'bucket': value})
                     option_json = json.loads(option)
@@ -180,6 +182,8 @@ def maybe_expand_templating(
                         element['current'] = option_json
                     options.append(option_json)
                 escaped = [b.replace(',', '\\,') for b in bucket_param[1]]
+                # Grafana 12 requires the query to be set as a comma-separated list
+                # of the different templating variable options
                 element['query'] = ','.join(escaped)
 
 
