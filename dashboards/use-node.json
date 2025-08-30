@@ -44,7 +44,7 @@
     {
       "title": "CPU Utilization",
       "description": "What did CPU(s) spent their time doing. Blues represent time that the system is doing work, yellow represents time waiting.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -151,7 +151,7 @@
     },
     {
       "title": "CPU Saturation",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -236,7 +236,7 @@
     {
       "_base": "text",
       "title": "CPU Errors",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -258,7 +258,7 @@
     {
       "title": "Memory Utilization",
       "description": "What is system memory being used for. Blues represent memory explicitly used by applications, yellows represent memory used by OS / on applications' behalf.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -329,7 +329,7 @@
     {
       "title": "Memory Saturation",
       "description": "Indicators that memory is saturated.  Swap Used: bytes of memory used by swap; generally this should be (close to) zero, increasing values can be a sign of problems.What is system memory being used for.\nAllocation Stalls: rate of Linux kernel allocation stalls, when a userspace thread is prevented from running due to memory allocation request which cannot be immediately satisfied due to low kernel memory. A non-zero value means userspace threads are being delayed due t memory pressure.",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -399,7 +399,7 @@
     {
       "_base": "text",
       "title": "Memory Errors",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -421,7 +421,7 @@
     {
       "title": "Network Utilization",
       "description": "Data read from (ingress) and written to (egress) the network in bits/s. Y axis scale: log(10).",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -490,7 +490,7 @@
     },
     {
       "title": "Network Saturation",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -510,7 +510,7 @@
     },
     {
       "title": "Network Errors",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -537,7 +537,7 @@
     {
       "title": "Disk Utilization",
       "description": "Y axis scale: log(10).",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -646,7 +646,7 @@
     },
     {
       "title": "Disk Saturation",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8
@@ -667,7 +667,7 @@
     {
       "_base": "text",
       "title": "Disk Errors",
-      "datasource": "{data-source-name}",
+      "datasource": "{data-source:name}",
       "gridPos": {
         "w": 8,
         "h": 8

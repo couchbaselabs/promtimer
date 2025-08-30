@@ -138,10 +138,10 @@ def maybe_substitute_templating_variables(
             for idx, param_values in enumerate(template_params):
                 param = param_values[0]
                 pname = param.name()
-                if (item['type'] == 'datasource') and \
-                        (pname == 'data-source' or
-                         pname == 'data-source-name') or \
-                        (pname == 'bucket' and item['type'] == 'custom'):
+                should_substitute = \
+                    (item['type'] == 'datasource' and pname == 'data-source') or \
+                    (item['type'] == 'custom' and pname == 'bucket' and item['name'] == 'bucket')
+                if should_substitute:
                     value = param.make_single_valued_value(f'${variable}')
                     template_params[idx] = (param, [value])
     return template_params

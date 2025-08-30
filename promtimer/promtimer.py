@@ -115,7 +115,6 @@ def make_dashboards(stats_sources,
     template_params = \
         [(templating.Parameter('data-source', ['name', 'uid']),
             [{'name': s.short_name(), 'uid': s.uid()} for s in stats_sources]),
-         (templating.Parameter('data-source-name'), data_source_names),
          (templating.Parameter('bucket'), buckets if buckets else [])]
     meta_file_names = glob.glob(path.join(util.get_root_dir(), 'dashboards', '*.json'))
     for meta_file_name in meta_file_names:
