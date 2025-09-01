@@ -45,7 +45,7 @@
     {
       "_base": "panel",
       "datasource": "${node}",
-      "description": "* Bucket Quota - configured quota\n* Mutation threshold - non-configurable threshold above which mutations fail (TmpOOM)\n* HWM - high watermark at which eviction (ItemPager) is triggered\n* LWM - low watermark at which eviction should stop\n* Total mem used - total memory usage of the bucket (triggers eviction when above HWM)",
+      "description": "* Bucket Quota - configured quota - `kv_ep_max_size`\n* Mutation threshold - non-configurable threshold above which mutations fail (TmpOOM) - `kv_ep_mutation_mem_ratio`\n* HWM - high watermark at which eviction (ItemPager) is triggered - `kv_ep_mem_high_wat`\n* LWM - low watermark at which eviction should stop - `kv_ep_mem_low_wat`\n* Total mem used - total memory usage of the bucket (triggers eviction when above HWM) - `kv_mem_used_bytes`",
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
@@ -227,7 +227,7 @@
         }
       ],
       "title": "Checkpoint mem details",
-      "description": "* Checkpoint Quota - memory limit for checkpoints (fixed percentage of quota) above which mutations fail (TmpOOM)\n* Checkpoint Upper Mark - threshold at which we trigger checkpoint memory recovery\n* Checkpoint Lower Mark - threshold at which we stop checkpoint memory recovery\n* checkpoint_total - total memory used by checkpoints (triggers checkpoint memory recovery)",
+      "description": "* Checkpoint Quota - memory limit for checkpoints (fixed percentage of quota) above which mutations fail (TmpOOM) - `kv_ep_checkpoint_memory_quota_bytes`\n* Checkpoint Upper Mark - threshold at which we trigger checkpoint memory recovery - `kv_ep_checkpoint_memory_recovery_upper_mark_bytes`\n* Checkpoint Lower Mark - threshold at which we stop checkpoint memory recovery - `kv_ep_checkpoint_memory_recovery_lower_mark_bytes`\n* checkpoint_total - total memory used by checkpoints (triggers checkpoint memory recovery) - `kv_ep_checkpoint_memory_bytes`",
       "type": "timeseries"
     },
     {
@@ -269,6 +269,7 @@
           "legendFormat": "Items (active+replica)"
         }
       ],
+      "description": "* Read / Write rate of front-end operations grouped by kind (excl. replication) - `kv_cmd_lookup` / `kv_cmd_mutation`\n* TempOOM - temporary out of memory errors - `kv_ep_tmp_oom_errors`\n* OOM - out of memory errors - `kv_ep_oom_errors`\n* Items - rate of change of the total number of items in the bucket (incl. replica counts) - `kv_curr_items_tot`",
       "title": "OPS rate",
       "type": "timeseries"
     },
@@ -321,7 +322,7 @@
         }
       ],
       "title": "Num items",
-      "description": "* items - documents in vBuckets by state\n* blobs - item values (in HT or in DCP queues)\n* storedvals - item metadata in the HT\n* queued_items - `Item` objects in DCP queues or passed between memcached/ep-engine\n* disk queue - items waiting for persistence",
+      "description": "* items - documents in vBuckets by state - `kv_curr_items`\n* blobs - item values (in HT or in DCP queues) - `kv_ep_blob_num`\n* storedvals - item metadata in the HT - `kv_ep_storedval_num`\n* queued_items - `Item` objects in DCP queues or passed between memcached/ep-engine - `kv_ep_item_num`\n* disk queue - items waiting for persistence - `kv_ep_diskqueue_items`",
       "tooltip": {
         "value_type": "individual"
       },
@@ -334,6 +335,7 @@
         "h": 10,
         "w": 8
       },
+      "description": "* RR - ratio of resident items to total items in the vBucket - `kv_vb_perc_mem_resident_ratio`",
       "targets": [
         {
           "expr": "kv_vb_perc_mem_resident_ratio{bucket=\"$bucket\"}",
@@ -384,6 +386,7 @@
           "legendFormat": "Released by ItemExpel"
         }
       ],
+      "description": "* Released by CheckpointRemoval - memory released by CheckpointRemoval - `kv_ep_mem_freed_by_checkpoint_removal_bytes`\n* Released by ItemExpel - memory released by ItemExpel - `kv_ep_mem_freed_by_checkpoint_item_expel_bytes`",
       "title": "Memory Released from Checkpoints",
       "type": "timeseries"
     },
@@ -407,6 +410,7 @@
           "legendFormat": "Num Checkpoints"
         }
       ],
+      "description": "* Num Checkpoints - number of checkpoints - `kv_ep_num_checkpoints`",
       "title": "Num Checkpoints",
       "type": "timeseries"
     },
@@ -439,7 +443,8 @@
           "legendFormat": "Removed from checkpoints - Ckpt Rem"
         }
       ],
-      "title": "HT Eject - CM Expel/Rem",
+      "description": "* Num ejected - items ejected from the HT due to HT ejection - `kv_vb_eject`\n* Removed from checkpoints - items removed from checkpoints due to Checkpoint Removal - `kv_ep_items_rm_from_checkpoints`\n* Removed from checkpoints - items removed from checkpoints due to Item Expel - `kv_ep_items_expelled_from_checkpoints`",
+      "title": "Item pager (HT Ejection) and Checkpoint Expel/Removal",
       "type": "timeseries"
     },
     {
@@ -475,6 +480,7 @@
           "legendFormat": "{{connection_type}} - paused rate"
         }
       ],
+      "description": "* DCP - items sent rate - rate of items sent out by all _currently existing_ outgoing DCP streams, since each stream was created - `kv_dcp_items_sent`\n* DCP - queue size - total number of items remaining for to be sent for all outgoing DCP streams (approximate) - `kv_dcp_items_remaining`\n* DCP - Backoff - rate of number of times Consumer DCP connections (i.e., replica) have paused consuming items because memory usage is too high - `kv_dcp_backoff`\n* DCP - paused rate - rate of number of times the DCP connection has been paused - `kv_dcp_paused_count`",
       "title": "DCP",
       "type": "timeseries"
     },
@@ -499,6 +505,7 @@
           "legendFormat": "Num dropped"
         }
       ],
+      "description": "* Num dropped - number of DCP cursors dropped - `kv_ep_cursors_dropped`",
       "title": "DCP Cursors",
       "type": "timeseries"
     },
@@ -527,6 +534,7 @@
           "legendFormat": "disk-queue drain rate"
         }
       ],
+      "description": "* disk-queue fill rate - rate of items being added to the disk queue - `kv_ep_diskqueue_fill`\n* disk-queue drain rate - rate of items being removed from the disk queue - `kv_ep_diskqueue_drain`",
       "title": "Disk queue rates (items/s)",
       "type": "timeseries"
     },
@@ -550,9 +558,14 @@
         {
           "expr": "kv_ep_db_data_size_bytes{bucket=\"$bucket\"}",
           "legendFormat": "Data Bytes"
+        },
+        {
+          "expr": "kv_ep_db_file_size_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "File Bytes"
         }
       ],
       "title": "Disk",
+      "description": "* Data Bytes - size of the data on disk (incl. replicas, excl. overheads) - `kv_ep_db_data_size_bytes`\n* File Bytes - size of the data files on disk (incl. replicas) - `kv_ep_db_file_size_bytes`",
       "type": "timeseries"
     },
     {
@@ -595,7 +608,7 @@
           "legendFormat": "reject_{{state}}"
         }
       ],
-      "title": "Total operations by vBucket state",
+      "title": "Total internal operations by vBucket state",
       "type": "timeseries"
     },
     {
@@ -622,7 +635,7 @@
         "h": 10,
         "w": 8
       },
-      "description": "Number of MCBP commands executed per second, averaged over 5 minutes."
+      "description": "Number of MCBP commands executed per second, averaged over 10 minutes (excl. DCP) - `kv_cmd_duration_seconds_count{opcode!~\"DCP_.*\"}`"
     },
     {
       "title": "Rate of DCP operations",
@@ -653,7 +666,7 @@
         "h": 10,
         "w": 8
       },
-      "description": "Number of DCP commands executed per second, averaged over 5 minutes."
+      "description": "Number of DCP commands executed per second, averaged over 10 minutes - `kv_cmd_duration_seconds_count{opcode=~\"DCP_.*\"}`"
     },
     {
       "title": "Item Sizes",
