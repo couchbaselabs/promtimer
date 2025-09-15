@@ -540,7 +540,7 @@ class ServerNode(Source):
         netloc = u.netloc
         if u.port is None:
             port = ServerNode.DEFAULT_SECURE_PORT if secure else ServerNode.DEFAULT_PORT
-            u.netloc = '{}:{}'.format(u.hostname, port)
+            netloc = '{}:{}'.format(u.hostname, port)
         result = urlunparse((u.scheme, netloc, u.path, u.params, u.query, u.fragment))
         return urlparse(result)
 
