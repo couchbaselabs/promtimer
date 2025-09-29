@@ -569,7 +569,7 @@
       },
       "targets": [
         {
-          "expr": "kv_ep_fusion_log_store_size_bytes{bucket=\"$bucket\"}",
+          "expr": "kv_ep_fusion_log_store_data_size_bytes{bucket=\"$bucket\"}",
           "legendFormat": "total log size",
           "refId": "A"
         },
@@ -607,8 +607,8 @@
         },
         "targets": [
           {
-            "expr": "kv_ep_fusion_log_store_size_bytes{bucket=\"$bucket\"}",
-            "legendFormat": "total",
+            "expr": "kv_ep_fusion_log_store_data_size_bytes{bucket=\"$bucket\"}",
+            "legendFormat": "data",
             "refId": "A"
           },
           {
@@ -626,7 +626,7 @@
                 "left": "garbage",
                 "operator": "/",
                 "reducer": "sum",
-                "right": "total"
+                "right": "data"
               },
               "mode": "binary",
               "reduce": {
