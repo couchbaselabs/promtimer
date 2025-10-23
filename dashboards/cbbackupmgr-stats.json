@@ -94,10 +94,18 @@
               "uid": "{data-source:uid}"
             },
             "editorMode": "builder",
-            "expr": "read_bytes",
+            "expr": "rate(read_bytes[1m])",
             "legendFormat": "__auto"
           }
         ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 1
+            },
+            "unit": "binBps"
+          }
+        },
         "title": "Read Bytes"
       },
       {
@@ -112,10 +120,18 @@
               "type": "prometheus",
               "uid": "{data-source:uid}"
             },
-            "expr": "write_bytes{type=\"disk\"}",
+            "expr": "rate(write_bytes{type=\"disk\"}[1m])",
             "legendFormat": "__auto"
           }
         ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 1
+            },
+            "unit": "binBps"
+          }
+        },
         "title": "Write Bytes"
       },
       {
@@ -461,10 +477,18 @@
               "uid": "{data-source:uid}"
             },
             "editorMode": "builder",
-            "expr": "bytes_sent{type=\"net\", stat=\"global_net_stats\"}",
+            "expr": "rate(bytes_sent{type=\"net\", stat=\"global_net_stats\"}[1m])",
             "legendFormat": "__auto"
           }
         ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 1
+            },
+            "unit": "binBps"
+          }
+        },
         "title": "Bytes Sent"
       },
       {
@@ -480,10 +504,18 @@
               "uid": "{data-source:uid}"
             },
             "editorMode": "builder",
-            "expr": "bytes_received{type=\"net\", stat=\"global_net_stats\"}",
+            "expr": "rate(bytes_received{type=\"net\", stat=\"global_net_stats\"}[1m])",
             "legendFormat": "__auto"
           }
         ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 1
+            },
+            "unit": "binBps"
+          }
+        },
         "title": "Bytes Received"
       },
       {
