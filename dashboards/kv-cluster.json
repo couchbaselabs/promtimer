@@ -368,7 +368,7 @@
       "type": "timeseries"
     },
     {
-      "title": "History",
+      "title": "History / Data",
       "_base": "row"
     },
     {
@@ -527,6 +527,60 @@
           "datasource": "{data-source:name}",
           "expr": "sum(kv_ep_db_history_file_size_bytes)",
           "legendFormat": "{data-source:name}:history_size",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Rate Total Disk Write I/O",
+      "description": "`irate(kv_ep_io_total_write_bytes_bytes[5m])`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source:name}",
+          "expr": "irate(kv_ep_io_total_write_bytes_bytes[5m])",
+          "legendFormat": "{data-source:name}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "bytes"
+        }
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "type": "timeseries"
+    },
+    {
+      "title": "Rate Total Disk Read I/O",
+      "description": "`irate(kv_ep_io_total_read_bytes_bytes[5m])`",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source:name}",
+          "expr": "irate(kv_ep_io_total_read_bytes_bytes[5m])",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
