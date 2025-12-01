@@ -617,6 +617,32 @@ class ServerNode(Source):
             return []
 
 
+def get_stats_paths(archive_path):
+    """
+    Returns all paths where stats may exist (archive-level and repo-level).
+    :param archive_path: path to the backup archive
+    :return: list of paths to stats directories
+    """
+    stats_paths = []
+
+    # Check archive-level stats
+    archive_stats = path.join(archive_path, 'logs', 'stats')
+    if path.isdir(archive_stats):
+        stats_paths.append(archive_stats)
+
+    # Check repo-level stats (any directory at archive level that isn't 'logs')
+    for entry in os.listdir(archive_path):
+        entry_path = path.join(archive_path, entry)
+        if not path.isdir(entry_path) or entry == 'logs':
+            continue
+
+        repo_stats = path.join(entry_path, 'logs', 'stats')
+        if path.isdir(repo_stats):
+            stats_paths.append(repo_stats)
+
+    return stats_paths
+
+
 class BackupStatsFiles(Source):
     """
     Represents a source of stats data that is a Prometheus instance running
@@ -657,26 +683,37 @@ class BackupStatsFiles(Source):
     def compute_min_and_max_times(archive_path):
         """
         Returns a 2-tuple containing an estimate of the min and max POSIX
-        timestamps times associated with this stats Source
+        timestamps times associated with this stats Source. Searches both
+        archive-level and repo-level stats directories.
         :return: 2-tuple (min time, max time)
         """
-        cpu_stats_dir = path.join(archive_path, 'logs', 'stats', 'cpu')
+        stats_paths = get_stats_paths(archive_path)
+        if not stats_paths:
+            raise FileNotFoundError(f'No stats directories found in {archive_path}')
 
+        # Collect all CPU stat file paths from all stats directories
         stat_files = []
-        for file in os.listdir(cpu_stats_dir):
-            if path.isfile(path.join(cpu_stats_dir, file)) and file[0] != '.':
-                stat_files.append(file)
+        for stats_path in stats_paths:
+            cpu_stats_dir = path.join(stats_path, 'cpu')
+            if not path.isdir(cpu_stats_dir):
+                logging.warning(f'No cpu stats directory found in {stats_path}')
+                continue
+
+            for file in os.listdir(cpu_stats_dir):
+                file_path = path.join(cpu_stats_dir, file)
+                if path.isfile(file_path) and file[0] != '.':
+                    stat_files.append(file_path)
 
         if len(stat_files) == 0:
-            raise FileNotFoundError('No cpu stat files present in ' + cpu_stats_dir)
+            raise FileNotFoundError(f'No cpu stat files found in any stats directory in {archive_path}')
 
         get_date_time = lambda x: datetime.datetime.fromtimestamp(int(x[x.rfind('-')+1:]))
-        stat_files.sort(key=get_date_time)
+        stat_files.sort(key=lambda x: get_date_time(path.basename(x)))
 
-        first_stat_file_name = stat_files[0]
-        first_stat_file_timestamp = get_date_time(first_stat_file_name)
+        first_stat_file = stat_files[0]
+        first_stat_file_timestamp = get_date_time(path.basename(first_stat_file))
 
-        last_stat_file = os.path.join(cpu_stats_dir, stat_files[-1])
+        last_stat_file = stat_files[-1]
 
         last_line = util.read_last_line(last_stat_file)
         if not last_line:
