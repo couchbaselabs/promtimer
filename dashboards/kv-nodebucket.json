@@ -820,6 +820,12 @@
           "expr": "rate(kv_ep_snapshot_read_bytes{bucket=\"$bucket\"}[3m])",
           "legendFormat": "Snapshot Download rate",
           "_base": "target"
+        },
+        {
+          "datasource": "${node}",
+          "expr": "rate(kv_file_chunk_read_bytes{bucket=\"$bucket\"}[3m])",
+          "legendFormat": "Snapshot (file) Upload rate",
+          "_base": "target"
         }
       ],
       "unit": "short",
