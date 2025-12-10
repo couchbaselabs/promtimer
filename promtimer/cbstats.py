@@ -620,6 +620,22 @@ class ServerNode(Source):
 def get_stats_paths(archive_path):
     """
     Returns all paths where stats may exist (archive-level and repo-level).
+
+    Stats were moved from archive-level to repo-level to support encryption-at-rest.
+    New archives have stats only at repo-level, but older archives may have stats at
+    archive-level. For backwards compatibility, we check both locations.
+
+    Archive structure after this change:
+
+        archive/
+        ├── logs/stats/...           # legacy archive-level stats (if present)
+        ├── repo1/
+        │   ├── logs/stats/...       # repo-level stats
+        │   └── 2024-01-01T12_00_00/
+        └── repo2/
+            ├── logs/stats/...       # repo-level stats
+            └── 2024-01-02T12_00_00/
+
     :param archive_path: path to the backup archive
     :return: list of paths to stats directories
     """
