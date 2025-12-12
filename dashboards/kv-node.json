@@ -376,12 +376,12 @@
       "_base": "panel",
       "_targets": [
         {
-          "expr": "sum(rate(kv_vb_expired[1m])) by (bucket)",
+          "expr": "sum by (bucket) (rate(kv_ep_expired_compactor[1m])) + sum by (bucket) (rate(kv_ep_expired_pager[1m])) + sum by (bucket) (rate(kv_ep_expired_access[1m]))",
           "legendFormat": "{{bucket}}",
           "_base": "target"
         }
       ],
-      "description": "kv_vb_expired"
+      "description": "rate of expiration"
     },
     {
       "title": "Rollback Item Count",
