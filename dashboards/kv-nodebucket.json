@@ -889,15 +889,15 @@
       },
       "targets": [
         {
-          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"} / ignoring (name) kv_ep_vb_total{bucket=\"$bucket\"} * ignoring (name) sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state~=\"active|pending\"})",
+          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"} / ignoring (name) kv_ep_vb_total{bucket=\"$bucket\"} * ignoring (name) sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state=~\"active|pending\"})",
           "legendFormat": "Pageable LWM"
         },
         {
-          "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"} / ignoring (name) kv_ep_vb_total{bucket=\"$bucket\"} * ignoring (name) sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state~=\"active|pending\"})",
+          "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"} / ignoring (name) kv_ep_vb_total{bucket=\"$bucket\"} * ignoring (name) sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state=~\"active|pending\"})",
           "legendFormat": "Pageable HWM"
         },
         {
-          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"} - ignoring (name) sum without (state) (kv_vb_ht_item_memory_bytes{bucket=\"$bucket\", state~=\"replica|dead\"}) - ignoring (name) sum without (state) (kv_vb_checkpoint_memory_overhead_bytes{bucket=\"$bucket\",state~=\"replica|dead\"})",
+          "expr": "kv_mem_used_bytes{bucket=\"$bucket\"} - ignoring (name) sum without (state) (kv_vb_ht_item_memory_bytes{bucket=\"$bucket\", state=~\"replica|dead\"}) - ignoring (name) sum without (state) (kv_vb_checkpoint_memory_overhead_bytes{bucket=\"$bucket\",state=~\"replica|dead\"})",
           "legendFormat": "Pageable Mem Used"
         }
       ],
