@@ -4,7 +4,7 @@
     "_panels": [
         {
             "_base": "panel",
-            "title": "Gets rate",
+            "title": "Magma Gets rate",
             "gridPos": {
                 "h": 9
             },
@@ -19,7 +19,7 @@
         },
         {
             "_base": "panel",
-            "title": "Sets rate",
+            "title": "Magma Sets rate",
             "gridPos": {
                 "h": 9
             },
@@ -34,7 +34,7 @@
         },
         {
             "_base": "panel",
-            "title": "Inserts rate",
+            "title": "Magma Inserts rate",
             "gridPos": {
                 "h": 9
             },
@@ -42,6 +42,66 @@
                 {
                     "datasource": "{data-source:name}",
                     "expr": "sum(rate(kv_ep_magma_inserts[1m]))",
+                    "legendFormat": "{data-source:name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "KV Gets rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sum(rate(kv_vb_ops_get[1m]))",
+                    "legendFormat": "{data-source:name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "KV Updates rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sum(rate(kv_vb_ops_update[1m]))",
+                    "legendFormat": "{data-source:name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "KV Inserts rate",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sum(rate(kv_vb_ops_create[1m]))",
+                    "legendFormat": "{data-source:name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Item count",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sum(kv_curr_items_tot)",
                     "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
@@ -202,6 +262,36 @@
                 {
                     "datasource": "{data-source:name}",
                     "expr": "sum(kv_ep_magma_total_disk_usage_bytes)",
+                    "legendFormat": "{data-source:name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "KV data size",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sum(kv_logical_data_size_bytes)",
+                    "legendFormat": "{data-source:name}",
+                    "_base": "target"
+                }
+            ]
+        },
+        {
+            "_base": "panel",
+            "title": "Magma data size",
+            "gridPos": {
+                "h": 9
+            },
+            "_targets": [
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sum(kv_ep_magma_logical_data_size_bytes)",
                     "legendFormat": "{data-source:name}",
                     "_base": "target"
                 }
