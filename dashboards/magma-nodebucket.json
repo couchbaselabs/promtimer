@@ -41,7 +41,7 @@
     {
       "_base": "panel",
       "datasource": "${node}",
-      "title": "OPS rate",
+      "title": "Magma OPS rate",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -80,6 +80,82 @@
         }
       ]
     },
+    {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "KV OPS rate",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "rate(kv_vb_ops_get{bucket=\"$bucket\"}[1m])",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "vb_{{state}} gets",
+            "refId": "A"
+          },
+          {
+            "exemplar": true,
+            "expr": "rate(kv_vb_ops_update{bucket=\"$bucket\"}[1m])",
+            "hide": false,
+            "interval": "",
+            "legendFormat": "vb_{{state}} updates",
+            "refId": "E"
+          },
+          {
+            "exemplar": true,
+            "expr": "rate(kv_vb_ops_create{bucket=\"$bucket\"}[1m])",
+            "hide": false,
+            "interval": "",
+            "legendFormat": "vb_{{state}} inserts",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "_base": "panel",
+        "datasource": "${node}",
+        "title": "Item count",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 5
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "kv_curr_items{bucket=\"$bucket\"}",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "active",
+            "refId": "A"
+          },
+          {
+            "exemplar": true,
+            "expr": "kv_curr_items_tot{bucket=\"$bucket\"}",
+            "hide": false,
+            "interval": "",
+            "legendFormat": "active+replica",
+            "refId": "E"
+          }
+        ]
+      },
     {
       "_base": "panel",
       "title": "Memory",
@@ -1068,14 +1144,14 @@
           "range": true,
           "refId": "D"
         },
-	{
-	  "editorMode": "code",
-          "expr": "couch_docs_actual_disk_size{bucket=\"$bucket\"}",
-          "hide": false,
-          "legendFormat": "couch_docs_actual",
-          "range": true,
-          "refId": "E"
-	}
+        {
+        "editorMode": "code",
+            "expr": "couch_docs_actual_disk_size{bucket=\"$bucket\"}",
+            "hide": false,
+            "legendFormat": "couch_docs_actual",
+            "range": true,
+            "refId": "E"
+        }
       ],
       "title": "Disk usage"
     },
@@ -1125,6 +1201,14 @@
           "legendFormat": "history disk",
           "range": true,
           "refId": "D"
+        },
+        {
+            "editorMode": "code",
+            "expr": "sum (kv_logical_data_size_bytes{bucket=\"$bucket\"})",
+            "hide": false,
+            "legendFormat": "kv data size",
+            "range": true,
+            "refId": "E"
         }
       ],
       "title": "Logical size"
