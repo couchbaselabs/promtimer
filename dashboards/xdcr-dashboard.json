@@ -709,6 +709,18 @@
           "unit": "bytes"
         }
       }
+    },
+    {
+      "title": "DCP Flow Throttling Effect on Source-Mutations v/s Main-Pipeline Pace Difference",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source:name}",
+          "expr": "clamp_min(xdcr_changes_left_total{pipelineType=\"Main\"} - ignoring(name) rate(xdcr_docs_processed_total{pipelineType=\"Main\"}[1m]), 0)",
+          "legendFormat": "{data-source:name} {{targetClusterUUID}}/{{sourceBucketName}}/{{targetBucketName}} source-mutations v/s main-pipeline pace difference",
+          "_base": "target"
+        }
+      ]
     }
   ]
 }
