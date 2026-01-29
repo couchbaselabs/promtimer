@@ -802,7 +802,7 @@
       "_base": "panel",
       "fieldConfig": {
         "defaults": {
-          "unit": "Bps",
+          "unit": "binBps",
           "custom": {
             "fillOpacity": 10
           }
@@ -811,19 +811,19 @@
       "_targets": [
         {
           "datasource": "${node}",
-          "expr": "rate(kv_ep_dcp_cache_transfer_read_bytes{bucket=\"$bucket\"}[3m])",
+          "expr": "irate(kv_ep_dcp_cache_transfer_read_bytes{bucket=\"$bucket\"}[$__rate_interval])",
           "legendFormat": "Cache Read (consumer) rate  ",
           "_base": "target"
         },
         {
           "datasource": "${node}",
-          "expr": "rate(kv_ep_snapshot_read_bytes{bucket=\"$bucket\"}[3m])",
+          "expr": "irate(kv_ep_snapshot_read_bytes{bucket=\"$bucket\"}[$__rate_interval])",
           "legendFormat": "Snapshot Download rate",
           "_base": "target"
         },
         {
           "datasource": "${node}",
-          "expr": "rate(kv_file_chunk_read_bytes{bucket=\"$bucket\"}[3m])",
+          "expr": "irate(kv_file_chunk_read_bytes{bucket=\"$bucket\"}[$__rate_interval])",
           "legendFormat": "Snapshot (file) Upload rate",
           "_base": "target"
         }
