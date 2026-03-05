@@ -889,11 +889,11 @@
       },
       "targets": [
         {
-          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"} / ignoring (name) kv_ep_vb_total{bucket=\"$bucket\"} * ignoring (name) sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state=~\"active|pending\"})",
+          "expr": "kv_ep_mem_low_wat{bucket=\"$bucket\"} / on() kv_ep_vb_total{bucket=\"$bucket\"} * on() sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state=~\"active|pending\"})",
           "legendFormat": "Pageable LWM"
         },
         {
-          "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"} / ignoring (name) kv_ep_vb_total{bucket=\"$bucket\"} * ignoring (name) sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state=~\"active|pending\"})",
+          "expr": "kv_ep_mem_high_wat{bucket=\"$bucket\"} / on() kv_ep_vb_total{bucket=\"$bucket\"} * on() sum without (state) (kv_num_vbuckets{bucket=\"$bucket\",state=~\"active|pending\"})",
           "legendFormat": "Pageable HWM"
         },
         {
