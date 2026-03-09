@@ -135,6 +135,10 @@
         {
           "expr": "kv_dcp_ready_queue_size_bytes{bucket=\"$bucket\"}",
           "legendFormat": "DCP readyQ ({{connection_type}})"
+        },
+        {
+          "expr": "kv_ep_pageable_mem{bucket=\"$bucket\"}",
+          "legendFormat": "Pageable Memory"
         }
       ],
       "title": "Memory usage",
@@ -898,7 +902,11 @@
         },
         {
           "expr": "kv_mem_used_bytes{bucket=\"$bucket\"} - ignoring (name) sum without (state) (kv_vb_ht_item_memory_bytes{bucket=\"$bucket\", state=~\"replica|dead\"}) - ignoring (name) sum without (state) (kv_vb_checkpoint_memory_overhead_bytes{bucket=\"$bucket\",state=~\"replica|dead\"})",
-          "legendFormat": "Pageable Mem Used"
+          "legendFormat": "Pageable Mem Used (est)"
+        },
+        {
+          "expr": "kv_ep_pageable_mem{bucket=\"$bucket\"}",
+          "legendFormat": "Pageable Memory (actual)"
         }
       ],
       "title": "Ephemeral Adjusted Memory counters"
