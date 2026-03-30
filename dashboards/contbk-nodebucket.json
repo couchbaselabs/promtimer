@@ -51,6 +51,18 @@
       ]
     },
     {
+      "title": "$bucket: Events processed",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source:name}",
+          "expr": "contbk_events_processed{bucket=\"$bucket\"}",
+          "legendFormat": "__auto",
+          "_base": "target"
+        }
+      ]
+    },
+    {
       "title": "$bucket: Backup throughput",
       "_base": "panel",
       "fieldConfig": {
