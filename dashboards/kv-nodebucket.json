@@ -251,30 +251,34 @@
       },
       "targets": [
         {
-          "expr": "rate(kv_cmd_mutation{bucket=\"$bucket\"}[20s])",
+          "expr": "irate(kv_cmd_mutation{bucket=\"$bucket\"}[20s])",
           "format": "time_series",
           "instant": false,
           "legendFormat": "Write (frontend)"
         },
         {
-          "expr": "rate(kv_cmd_lookup{bucket=\"$bucket\"}[20s])",
+          "expr": "irate(kv_cmd_lookup{bucket=\"$bucket\"}[20s])",
           "legendFormat": "Read (frontend)"
         },
         {
-          "expr": "rate(kv_ep_tmp_oom_errors{bucket=\"$bucket\"}[20s])",
+          "expr": "irate(kv_ep_tmp_oom_errors{bucket=\"$bucket\"}[20s])",
           "legendFormat": "TempOOM"
         },
         {
-          "expr": "rate(kv_ep_oom_errors{bucket=\"$bucket\"}[20s])",
+          "expr": "irate(kv_ep_oom_errors{bucket=\"$bucket\"}[20s])",
           "legendFormat": "OOM"
+        },
+        {
+          "expr": "irate(kv_ep_bg_meta_fetched{bucket=\"$bucket\"}[20s]) + on(bucket) irate(kv_ep_bg_fetched{bucket=\"$bucket\"}[20s])",
+          "legendFormat": "Rate of BG fetch (meta + value)"
         },
         {
           "expr": "deriv(kv_curr_items_tot{bucket=\"$bucket\"}[20s])",
           "legendFormat": "Items (active+replica)"
         }
       ],
-      "description": "* Read / Write rate of front-end operations grouped by kind (excl. replication) - `kv_cmd_lookup` / `kv_cmd_mutation`\n* TempOOM - temporary out of memory errors - `kv_ep_tmp_oom_errors`\n* OOM - out of memory errors - `kv_ep_oom_errors`\n* Items - rate of change of the total number of items in the bucket (incl. replica counts) - `kv_curr_items_tot`",
-      "title": "OPS rate",
+      "description": "* Read / Write rate of front-end operations grouped by kind (excl. replication) - `kv_cmd_lookup` / `kv_cmd_mutation`\n* TempOOM - temporary out of memory errors - `kv_ep_tmp_oom_errors`\n* OOM - out of memory errors - `kv_ep_oom_errors`\n* Rate of bg fetch (value + meta fetch counters)\n* Items - rate of change of the total number of items in the bucket (incl. replica counts) - `kv_curr_items_tot`",
+      "title": "Operation Summary",
       "type": "timeseries"
     },
     {
