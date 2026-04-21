@@ -34,6 +34,27 @@
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
+      },
+      {
+        "hide": 0,
+        "label": "Write-amp interval",
+        "name": "writeamp_interval",
+        "type": "custom",
+        "query": "5m,15m,30m,1h,2h,6h,12h,1d",
+        "options": [
+          {"selected": false, "text": "5m",  "value": "5m"},
+          {"selected": false, "text": "15m", "value": "15m"},
+          {"selected": false, "text": "30m", "value": "30m"},
+          {"selected": true,  "text": "1h",  "value": "1h"},
+          {"selected": false, "text": "2h",  "value": "2h"},
+          {"selected": false, "text": "6h",  "value": "6h"},
+          {"selected": false, "text": "12h", "value": "12h"},
+          {"selected": false, "text": "1d",  "value": "1d"}
+        ],
+        "current": {"selected": true, "text": "1h", "value": "1h"},
+        "includeAll": false,
+        "multi": false,
+        "skipUrlSync": false
       }
     ]
   },
@@ -1357,7 +1378,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "avg by (job)(rate(kv_ep_magma_write_bytes_bytes{bucket=\"$bucket\"}[15m]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[15m]))",
+          "expr": "avg by (job)(rate(kv_ep_magma_write_bytes_bytes{bucket=\"$bucket\"}[$writeamp_interval]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[$writeamp_interval]))",
           "hide": false,
           "legendFormat": "overall",
           "range": true,
@@ -1365,7 +1386,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "avg by (job)(rate(kv_magma_write_bytes_bytes{for=\"keyindex\",bucket=\"$bucket\"}[15m]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[15m]))",
+          "expr": "avg by (job)(rate(kv_magma_write_bytes_bytes{for=\"keyindex\",bucket=\"$bucket\"}[$writeamp_interval]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[$writeamp_interval]))",
           "hide": false,
           "legendFormat": "keyindex",
           "range": true,
@@ -1373,7 +1394,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "avg by (job)(rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[15m]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[15m]))",
+          "expr": "avg by (job)(rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[$writeamp_interval]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[$writeamp_interval]))",
           "hide": false,
           "legendFormat": "seqindex",
           "range": true,
@@ -1381,7 +1402,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "avg by (job)(rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[15m]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[15m]))",
+          "expr": "avg by (job)(rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[$writeamp_interval]))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[$writeamp_interval]))",
           "hide": false,
           "legendFormat": "seqindex delta",
           "range": true,
@@ -1389,7 +1410,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "(avg by (job)(rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[15m]))-avg by (job)(rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[15m])))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[15m]))",
+          "expr": "(avg by (job)(rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[$writeamp_interval]))-avg by (job)(rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[$writeamp_interval])))/avg by (job)(rate(kv_ep_magma_bytes_incoming_bytes{bucket=\"$bucket\"}[$writeamp_interval]))",
           "hide": false,
           "legendFormat": "seqindex data",
           "range": true,
@@ -1415,7 +1436,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_write_bytes_bytes{for=\"keyindex\",bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_magma_write_bytes_bytes{for=\"keyindex\",bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "write bytes",
           "range": true,
@@ -1423,7 +1444,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"keyindex\", bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"keyindex\", bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "bytes incoming",
           "range": true,
@@ -1468,7 +1489,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "write bytes",
           "range": true,
@@ -1476,7 +1497,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"seqindex\", bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"seqindex\", bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "bytes incoming",
           "range": true,
@@ -1521,7 +1542,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "delta write bytes",
           "range": true,
@@ -1529,7 +1550,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_delta_bytes_incoming_bytes{ bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_ep_magma_seqindex_delta_bytes_incoming_bytes{ bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "delta bytes incoming",
           "range": true,
@@ -1537,7 +1558,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_magma_write_bytes_bytes{for=\"seqindex\",bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "write bytes",
           "range": true,
@@ -1545,7 +1566,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"seqindex\",bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_magma_bytes_incoming_bytes{for=\"seqindex\",bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "bytes incoming",
           "range": true,
@@ -1622,7 +1643,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_ep_magma_seqindex_delta_write_bytes_bytes{bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "write bytes",
           "range": true,
@@ -1630,7 +1651,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(kv_ep_magma_seqindex_delta_bytes_incoming_bytes{ bucket=\"$bucket\"}[15m])",
+          "expr": "rate(kv_ep_magma_seqindex_delta_bytes_incoming_bytes{ bucket=\"$bucket\"}[$writeamp_interval])",
           "hide": false,
           "legendFormat": "bytes incoming",
           "range": true,
