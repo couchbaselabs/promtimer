@@ -630,7 +630,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(kv_magma_write_bytes_{for=\"keyindex\", bucket=\"$bucket\"}[1m])",
+          "expr": "rate(kv_magma_write_bytes_bytes{for=\"keyindex\", bucket=\"$bucket\"}[1m])",
           "interval": "",
           "legendFormat": "keyindex",
           "range": true,
@@ -724,7 +724,7 @@
         {
           "editorMode": "code",
           "exemplar": true,
-          "expr": "kv_magma_write_bytes_{for=\"keyindex\", bucket=\"$bucket\"}",
+          "expr": "kv_magma_write_bytes_bytes{for=\"keyindex\", bucket=\"$bucket\"}",
           "interval": "",
           "legendFormat": "keyindex",
           "range": true,
