@@ -1220,7 +1220,8 @@
         "defaults": {
           "custom": {
             "fillOpacity": 5
-          }
+          },
+          "unit": "percent"
         }
       },
       "gridPos": {
@@ -1229,30 +1230,22 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "kv_ep_magma_data_blocks_uncompressed_size{bucket=\"$bucket\"}",
+          "expr": "kv_ep_magma_data_blocks_space_reduction_estimate_pct_ratio{bucket=\"$bucket\"}*100",
           "hide": false,
-          "legendFormat": "uncompressed",
+          "legendFormat": "block compression savings %",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "kv_ep_magma_data_blocks_compressed_size{bucket=\"$bucket\"}",
+          "expr": "(1 - ((kv_ep_total_compressed_value_size_bytes{bucket=\"$bucket\"} / ignoring(name) (kv_ep_total_decompressed_value_size_bytes{bucket=\"$bucket\"} > 0)) or (kv_ep_total_compressed_value_size_bytes{bucket=\"$bucket\"} * 0 + 1)) * ignoring(name) (kv_ep_magma_data_blocks_compressed_size{bucket=\"$bucket\"} / ignoring(name) kv_ep_magma_data_blocks_uncompressed_size{bucket=\"$bucket\"})) * 100",
           "hide": false,
-          "legendFormat": "compressed",
+          "legendFormat": "total compression savings %",
           "range": true,
           "refId": "B"
-        },
-        {
-          "editorMode": "code",
-          "expr": "kv_ep_magma_data_blocks_space_reduction_estimate_pct_ratio{bucket=\"$bucket\"}*100",
-          "hide": false,
-          "legendFormat": "space reduction %",
-          "range": true,
-          "refId": "C"
         }
       ],
-      "title": "Data block compression"
+      "title": "Compression"
     },
     {
       "_base": "panel",
