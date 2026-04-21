@@ -241,30 +241,26 @@
         },
         {
             "_base": "panel",
-            "title": "Data block size uncompressed",
+            "title": "Compression",
             "gridPos": {
                 "h": 9
             },
-            "_targets": [
-                {
-                    "datasource": "{data-source:name}",
-                    "expr": "sum by (bucket) (kv_ep_magma_data_blocks_uncompressed_size)",
-                    "legendFormat": "{{bucket}}",
-                    "_base": "target"
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent"
                 }
-            ]
-        },
-        {
-            "_base": "panel",
-            "title": "Data block size compressed",
-            "gridPos": {
-                "h": 9
             },
             "_targets": [
                 {
                     "datasource": "{data-source:name}",
-                    "expr": "sum by (bucket) (kv_ep_magma_data_blocks_compressed_size)",
-                    "legendFormat": "{{bucket}}",
+                    "expr": "avg by (bucket) (kv_ep_magma_data_blocks_space_reduction_estimate_pct_ratio*100)",
+                    "legendFormat": "{{bucket}} block compression savings %",
+                    "_base": "target"
+                },
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "(1 - ((sum by (bucket) (kv_ep_total_compressed_value_size_bytes) / (sum by (bucket) (kv_ep_total_decompressed_value_size_bytes) > 0)) or (sum by (bucket) (kv_ep_total_compressed_value_size_bytes) * 0 + 1)) * (sum by (bucket) (kv_ep_magma_data_blocks_compressed_size) / sum by (bucket) (kv_ep_magma_data_blocks_uncompressed_size))) * 100",
+                    "legendFormat": "{{bucket}} total compression savings %",
                     "_base": "target"
                 }
             ]
