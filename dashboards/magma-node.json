@@ -83,17 +83,26 @@
             "_base": "panel",
             "title": "Thread pool CPU",
             "gridPos": {
-              "h": 9
+                "h": 9
             },
+            "_reference_lines": [
+                {"match": "cpus available"}
+            ],
             "_targets": [
-              {
-                "datasource": "{data-source:name}",
-                "expr": "sum by (thread_pool) (rate(kv_thread_cpu_usage_seconds[6m]))",
-                "legendFormat": "{{label_name}}",
-                "_base": "target"
-              }
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sum by (thread_pool) (rate(kv_thread_cpu_usage_seconds[6m]))",
+                    "legendFormat": "{{thread_pool}}",
+                    "_base": "target"
+                },
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "sys_cpu_cores_available",
+                    "legendFormat": "cpus available",
+                    "_base": "target"
+                }
             ]
-          },
+        },
           {
             "_base": "panel",
             "title": "Disk IO",

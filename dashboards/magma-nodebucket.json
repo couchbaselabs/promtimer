@@ -310,6 +310,9 @@
           }
         }
       },
+      "_reference_lines": [
+        {"match": "cpus available"}
+      ],
       "gridPos": {
         "h": 9
       },
@@ -320,8 +323,17 @@
           "format": "time_series",
           "instant": false,
           "interval": "",
-          "legendFormat": "{{label_name}}",
+          "legendFormat": "{{thread_pool}}",
           "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sys_cpu_cores_available",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "cpus available",
+          "refId": "B"
         }
       ]
     },
