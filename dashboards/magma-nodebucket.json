@@ -1406,7 +1406,7 @@
           "custom": {
             "fillOpacity": 5
           },
-          "unit": "binBps"
+          "unit": "none"
         }
       },
       "gridPos": {
@@ -1459,7 +1459,7 @@
           "custom": {
             "fillOpacity": 5
           },
-          "unit": "binBps"
+          "unit": "none"
         }
       },
       "gridPos": {
@@ -1512,7 +1512,7 @@
           "custom": {
             "fillOpacity": 5
           },
-          "unit": "binBps"
+          "unit": "none"
         }
       },
       "gridPos": {
@@ -1613,7 +1613,7 @@
           "custom": {
             "fillOpacity": 5
           },
-          "unit": "binBps"
+          "unit": "none"
         }
       },
       "gridPos": {
