@@ -271,11 +271,20 @@
             "gridPos": {
                 "h": 9
             },
+            "_reference_lines": [
+                {"match_regex": ".*threshold$"}
+            ],
             "_targets": [
                 {
                     "datasource": "{data-source:name}",
                     "expr": "sum by (bucket) (kv_ep_magma_fragmentation_ratio*100)",
                     "legendFormat": "{{bucket}}",
+                    "_base": "target"
+                },
+                {
+                    "datasource": "{data-source:name}",
+                    "expr": "max by (bucket) (kv_ep_magma_fragmentation_percentage) or max by (bucket) (kv_ep_magma_fragmentation_ratio * 0 + 50)",
+                    "legendFormat": "{{bucket}} threshold",
                     "_base": "target"
                 }
             ]

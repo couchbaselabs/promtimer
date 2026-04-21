@@ -1256,6 +1256,9 @@
           }
         }
       },
+      "_reference_lines": [
+        {"match": "fragmentation threshold %"}
+      ],
       "datasource": "${node}",
       "gridPos": {
         "h": 9
@@ -1270,6 +1273,16 @@
           "legendFormat": "fragmentation%",
           "range": true,
           "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "max(kv_ep_magma_fragmentation_percentage{bucket=\"$bucket\"}) or on() vector(50)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "fragmentation threshold %",
+          "range": true,
+          "refId": "C"
         }
       ],
       "title": "Fragmentation %"
