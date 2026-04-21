@@ -1259,7 +1259,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "(1 - ((kv_ep_total_compressed_value_size_bytes{bucket=\"$bucket\"} / ignoring(name) (kv_ep_total_decompressed_value_size_bytes{bucket=\"$bucket\"} > 0)) or (kv_ep_total_compressed_value_size_bytes{bucket=\"$bucket\"} * 0 + 1)) * ignoring(name) (kv_ep_magma_data_blocks_compressed_size{bucket=\"$bucket\"} / ignoring(name) kv_ep_magma_data_blocks_uncompressed_size{bucket=\"$bucket\"})) * 100",
+          "expr": "(1 - ((sum by (bucket) (kv_ep_total_compressed_value_size_bytes{bucket=\"$bucket\"}) / (sum by (bucket) (kv_ep_total_decompressed_value_size_bytes{bucket=\"$bucket\"}) > 0)) or (sum by (bucket) (kv_ep_total_compressed_value_size_bytes{bucket=\"$bucket\"}) * 0 + 1)) * (sum by (bucket) (kv_ep_magma_data_blocks_compressed_size{bucket=\"$bucket\"}) / sum by (bucket) (kv_ep_magma_data_blocks_uncompressed_size{bucket=\"$bucket\"}))) * 100",
           "hide": false,
           "legendFormat": "total compression savings %",
           "range": true,
