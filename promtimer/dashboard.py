@@ -15,6 +15,7 @@
 #
 
 from os import path
+import copy
 import json
 import logging
 from typing import Any
@@ -102,10 +103,37 @@ def add_targets_to_panel(panel, targets):
         panel['targets'].append(target)
 
 
+REFERENCE_LINE_PROPERTIES = [
+    {'id': 'custom.lineWidth', 'value': 1},
+    {'id': 'custom.fillOpacity', 'value': 0},
+    {'id': 'custom.lineStyle', 'value': {'fill': 'dash', 'dash': [8, 4]}},
+    {'id': 'color', 'value': {'mode': 'fixed', 'fixedColor': 'rgba(200,200,200,0.6)'}},
+]
+
+
+def _reference_line_override(entry):
+    if 'match_regex' in entry:
+        # Grafana's byRegexp option is a slash-wrapped regex.
+        pattern = entry['match_regex'].strip('/')
+        matcher = {'id': 'byRegexp', 'options': f'/{pattern}/'}
+    else:
+        matcher = {'id': 'byName', 'options': entry['match']}
+    return {'matcher': matcher,
+            'properties': copy.deepcopy(REFERENCE_LINE_PROPERTIES)}
+
+
+def add_reference_lines(panel, entries):
+    overrides = panel.setdefault('fieldConfig', {}).setdefault('overrides', [])
+    for entry in entries:
+        overrides.append(_reference_line_override(entry))
+
+
 def make_and_add_targets(panel, panel_meta, template_params):
     if '_targets' in panel_meta:
         targets = make_targets(panel_meta['_targets'], template_params)
         add_targets_to_panel(panel, targets)
+    if '_reference_lines' in panel_meta:
+        add_reference_lines(panel, panel_meta['_reference_lines'])
 
 
 def make_panels(panel_metas: list[dict[str, Any]],

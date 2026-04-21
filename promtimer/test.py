@@ -199,5 +199,47 @@ class TestDashboard(unittest.TestCase):
                          "Should have the correct parameter values")
 
 
+class TestReferenceLines(unittest.TestCase):
+
+    def test_byname_matcher(self):
+        ov = dashboard._reference_line_override({'match': 'cpus available'})
+        self.assertEqual(ov['matcher'],
+                         {'id': 'byName', 'options': 'cpus available'})
+
+    def test_byregexp_matcher_normalizes_to_single_wrap(self):
+        for pattern in ('.*threshold$', '/.*threshold$/', '/.*threshold$',
+                        '.*threshold$/', '//.*threshold$//'):
+            with self.subTest(pattern=pattern):
+                ov = dashboard._reference_line_override({'match_regex': pattern})
+                self.assertEqual(ov['matcher'],
+                                 {'id': 'byRegexp',
+                                  'options': '/.*threshold$/'})
+
+    def test_properties_are_isolated_per_override(self):
+        ov1 = dashboard._reference_line_override({'match': 'a'})
+        ov1['properties'][0]['value'] = 999
+        ov2 = dashboard._reference_line_override({'match': 'b'})
+        self.assertEqual(dashboard.REFERENCE_LINE_PROPERTIES[0]['value'], 1)
+        self.assertEqual(ov2['properties'][0]['value'], 1)
+
+    def test_add_reference_lines_appends_without_clobbering(self):
+        panel = {'fieldConfig': {'defaults': {'unit': 'bytes'},
+                                 'overrides': [{'existing': True}]}}
+        dashboard.add_reference_lines(panel, [{'match': 'a'}, {'match_regex': '.*b'}])
+        overrides = panel['fieldConfig']['overrides']
+        self.assertEqual(panel['fieldConfig']['defaults'], {'unit': 'bytes'})
+        self.assertEqual(len(overrides), 3)
+        self.assertEqual(overrides[0], {'existing': True})
+        self.assertEqual(overrides[1]['matcher'],
+                         {'id': 'byName', 'options': 'a'})
+        self.assertEqual(overrides[2]['matcher'],
+                         {'id': 'byRegexp', 'options': '/.*b/'})
+
+    def test_add_reference_lines_creates_fieldconfig_on_empty_panel(self):
+        panel = {}
+        dashboard.add_reference_lines(panel, [{'match': 'x'}])
+        self.assertEqual(len(panel['fieldConfig']['overrides']), 1)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
