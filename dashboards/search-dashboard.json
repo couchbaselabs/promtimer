@@ -489,6 +489,30 @@
                 "_base": "target"
               }
             ]
+          },
+          {
+            "title": "fts_total_vector_indexes_in_gpu",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_total_vector_indexes_in_gpu",
+                "legendFormat": "{data-source:name} fts_total_vector_indexes_in_gpu",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_vector_indexes_in_cpu",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_total_vector_indexes_in_cpu",
+                "legendFormat": "{data-source:name} fts_total_vector_indexes_in_cpu",
+                "_base": "target"
+              }
+            ]
           }
     ]
   }
