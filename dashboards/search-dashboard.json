@@ -491,6 +491,114 @@
             ]
           },
           {
+            "title": "fts_num_goroutines",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_num_goroutines",
+                "legendFormat": "{data-source:name} fts_num_goroutines",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_num_cgocalls",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_num_cgocalls",
+                "legendFormat": "{data-source:name} fts_num_cgocalls",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_heap_alloc",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_heap_alloc",
+                "legendFormat": "{data-source:name} fts_heap_alloc",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_heap_idle",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_heap_idle",
+                "legendFormat": "{data-source:name} fts_heap_idle",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_heap_inuse",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_heap_inuse",
+                "legendFormat": "{data-source:name} fts_heap_inuse",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_heap_released",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_heap_released",
+                "legendFormat": "{data-source:name} fts_heap_released",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_mallocs",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_mallocs",
+                "legendFormat": "{data-source:name} fts_mallocs",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_frees",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_frees",
+                "legendFormat": "{data-source:name} fts_frees",
+                "_base": "target"
+              }
+            ]
+          },
+          {
+            "title": "fts_total_scan_plus_queries_kv_errors",
+            "_base": "panel",
+            "_targets": [
+              {
+                "datasource": "{data-source:name}",
+                "expr": "fts_total_scan_plus_queries_kv_errors",
+                "legendFormat": "{data-source:name} fts_total_scan_plus_queries_kv_errors",
+                "_base": "target"
+              }
+            ]
+          },
+          {
             "title": "fts_total_vector_indexes_in_gpu",
             "_base": "panel",
             "_targets": [
