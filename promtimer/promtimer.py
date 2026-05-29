@@ -190,17 +190,21 @@ def prepare_grafana(grafana_port,
 
 def start_grafana(grafana_bin, grafana_home_path, grafana_port):
     """
-    Starts grafana-server wthe the specified home path listening to the specfied
-    port.
+    Starts grafana server with the specified home path listening to the
+    specified port.
 
     :param grafana_home_path: the Grafana home path to use
     :param grafana_port: the port to listen to
     :return: a Process instance wrapping the underlying process handle
     """
-    name = 'grafana-server'
-    args = [grafana_bin,
-            '--homepath', grafana_home_path,
-            '--config', 'custom.ini']
+    name = 'grafana server'
+    args = [grafana_bin]
+    # Modern Grafana (v9+) uses 'grafana server' subcommand;
+    # legacy Grafana uses 'grafana-server' directly
+    if not grafana_bin.endswith('grafana-server'):
+        args.append('server')
+    args.extend(['--homepath', grafana_home_path,
+                 '--config', 'custom.ini'])
     log_path = path.join(PROMTIMER_DIR, 'logs/grafana.log')
     logging.info('starting {} on localhost:{}; logging to {}'
                  .format(name, grafana_port, log_path))
@@ -424,7 +428,10 @@ def parse_args_validate_and_run():
     parser = argparse.ArgumentParser()
     grafana_home_default = None
     if sys.platform == 'darwin':
-        grafana_home_default = '/usr/local/share/grafana'
+        if os.path.isdir('/opt/homebrew/share/grafana'):
+            grafana_home_default = '/opt/homebrew/share/grafana'
+        else:
+            grafana_home_default = '/usr/local/share/grafana'
     elif sys.platform == 'linux':
         grafana_home_default = '/usr/share/grafana'
 
@@ -433,7 +440,8 @@ def parse_args_validate_and_run():
                         Grafana configuration "homepath"; should be set to the
                         out-of-the-box Grafana config path. On brew-installed Grafana on
                         Macs this is something like:
-                            /usr/local/share/grafana
+                            /opt/homebrew/share/grafana (directory used by brew)
+                            /usr/local/share/grafana (old location used by brew)
                         On linux systems the homepath should usually be:
                             /usr/share/grafana
                         On Mac and Linux 
@@ -441,7 +449,7 @@ def parse_args_validate_and_run():
     parser.add_argument('--grafana-install-path', dest='grafana_install_path',
                         help='''
                         Grafana installation path. If specified, this path is used to
-                        find the Grafana binary (in ${install}/bin/grafana-server) and to 
+                        find the Grafana binary (in ${install}/bin/grafana) and to
                         find the Grafana homepath (in ${install}/share/grafana).
                         If not specified, then the Grafana binary is assumed to be
                         available on $PATH and the Grafana home directory is assumed to be
@@ -493,11 +501,16 @@ def parse_args_validate_and_run():
     setup_logging(args.verbose)
 
     if args.grafana_install_path:
-        grafana_bin = os.path.join(args.grafana_install_path, 'bin', 'grafana-server')
+        grafana_bin = os.path.join(args.grafana_install_path, 'bin', 'grafana')
         if not os.path.isfile(grafana_bin):
-            logging.error('No Grafana binary found in specified installation path: {}'.
-                          format(grafana_bin))
-            sys.exit(1)
+            # Try legacy binary name for older Grafana versions
+            legacy_bin = os.path.join(args.grafana_install_path, 'bin', 'grafana-server')
+            if os.path.isfile(legacy_bin):
+                grafana_bin = legacy_bin
+            else:
+                logging.error('No Grafana binary found in specified installation path: {}'.
+                              format(grafana_bin))
+                sys.exit(1)
         if not os.access(grafana_bin, os.X_OK):
             logging.error('Grafana binary is not executable: {}'.format(grafana_bin))
             sys.exit(1)
@@ -505,7 +518,7 @@ def parse_args_validate_and_run():
         if args.grafana_home_path is None:
             args.grafana_home_path = os.path.join(args.grafana_install_path, 'share', 'grafana')
     else:
-        grafana_bin = 'grafana-server'
+        grafana_bin = 'grafana'
 
     if args.grafana_home_path is None:
         args.grafana_home_path = grafana_home_default
