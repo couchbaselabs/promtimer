@@ -157,6 +157,102 @@
           "_base": "target"
         }
       ]
+    },
+    {
+      "_base": "row",
+      "title": "Objstore"
+    },
+    {
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "_base": "target",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{data-source:uid}"
+          },
+          "editorMode": "builder",
+          "expr": "contbk_objstore_request_count{status=\"succeeded\"}",
+          "legendFormat": "{{request}}"
+        }
+      ],
+      "title": "$bucket: Successful requests"
+    },
+    {
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "_base": "target",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{data-source:uid}"
+          },
+          "editorMode": "builder",
+          "expr": "contbk_objstore_request_count{status=\"failed\"}",
+          "legendFormat": "{{request}}"
+        }
+      ],
+      "title": "$bucket: Failed requests"
+    },
+    {
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "_base": "target",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{data-source:uid}"
+          },
+          "editorMode": "builder",
+          "expr": "rate(contbk_objstore_request_bytes{status=\"succeeded\"}[1m])",
+          "legendFormat": "{{request}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "binBps"
+        }
+      },
+      "title": "$bucket: Throughput"
+    },
+    {
+      "_base": "panel",
+      "gridPos": {
+        "h": 8
+      },
+      "_targets": [
+        {
+          "_base": "target",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{data-source:uid}"
+          },
+          "editorMode": "builder",
+          "expr": "contbk_objstore_request_duration{status=\"succeeded\"}",
+          "legendFormat": "{{request}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 1
+          },
+          "unit": "milliseconds"
+        }
+      },
+      "title": "$bucket: Time"
     }
   ]
 }
