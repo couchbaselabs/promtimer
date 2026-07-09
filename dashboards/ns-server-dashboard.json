@@ -617,13 +617,14 @@
       "_base": "row"
     },
     {
-      "title": "cpu pressure - share of time stalled on cpu",
+      "title": "cpu pressure - share of time stalled on cpu (host, some, avg10)",
       "_base": "panel",
+      "description": "Whole-node (host) PSI, pinned to one series per node (host, some, 10s avg) so each line is a node for cross-node comparison. The Couchbase-slice view of the same metric is level=\"cgroup\".",
       "_targets": [
         {
           "datasource": "{data-source:name}",
-          "expr": "sys_pressure_share_time_stalled{resource=\"cpu\",level=\"host\"}",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "sys_pressure_share_time_stalled{resource=\"cpu\",level=\"host\",quantifier=\"some\",interval=\"10\"}",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -643,13 +644,13 @@
       "type": "timeseries"
     },
     {
-      "title": "cpu pressure - total stall time (ms)",
+      "title": "cpu pressure - total stall time (ms) (host, some)",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source:name}",
-          "expr": "sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\"}/1000",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\",quantifier=\"some\"}/1000",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -669,13 +670,13 @@
       "type": "timeseries"
     },
     {
-      "title": "rate of cpu pressure - total stall time (ms per s)",
+      "title": "rate of cpu pressure - total stall time (ms per s) (host, some)",
       "_base": "panel",
       "_targets": [
           {
           "datasource": "{data-source:name}",
-          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\"}[1m])/1000",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"cpu\",level=\"host\",quantifier=\"some\"}[1m])/1000",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -695,13 +696,14 @@
       "type": "timeseries"
     },
     {
-      "title": "memory pressure - share of time stalled on memory",
+      "title": "memory pressure - share of time stalled on memory (host, full, avg10)",
       "_base": "panel",
+      "description": "Whole-node (host) PSI, pinned to one series per node (host, full, 10s avg) so each line is a node for cross-node comparison. The Couchbase-slice view of the same metric is level=\"cgroup\".",
       "_targets": [
         {
           "datasource": "{data-source:name}",
-          "expr": "sys_pressure_share_time_stalled{resource=\"memory\",level=\"host\"}",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "sys_pressure_share_time_stalled{resource=\"memory\",level=\"host\",quantifier=\"full\",interval=\"10\"}",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -721,13 +723,13 @@
       "type": "timeseries"
     },
     {
-      "title": "memory pressure - total stall time (ms)",
+      "title": "memory pressure - total stall time (ms) (host, full)",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source:name}",
-          "expr": "sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\"}/1000",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\",quantifier=\"full\"}/1000",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -747,13 +749,13 @@
       "type": "timeseries"
     },
     {
-      "title": "rate of memory pressure - total stall time (ms per s)",
+      "title": "rate of memory pressure - total stall time (ms per s) (host, full)",
       "_base": "panel",
       "_targets": [
           {
           "datasource": "{data-source:name}",
-          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\"}[1m])/1000",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"memory\",level=\"host\",quantifier=\"full\"}[1m])/1000",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -773,13 +775,14 @@
       "type": "timeseries"
     },
     {
-      "title": "io pressure - share of time stalled on io",
+      "title": "io pressure - share of time stalled on io (host, full, avg10)",
       "_base": "panel",
+      "description": "Whole-node (host) PSI, pinned to one series per node (host, full, 10s avg) so each line is a node for cross-node comparison. The Couchbase-slice view of the same metric is level=\"cgroup\".",
       "_targets": [
         {
           "datasource": "{data-source:name}",
-          "expr": "sys_pressure_share_time_stalled{resource=\"io\",level=\"host\"}",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "sys_pressure_share_time_stalled{resource=\"io\",level=\"host\",quantifier=\"full\",interval=\"10\"}",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -799,13 +802,13 @@
       "type": "timeseries"
     },
     {
-      "title": "io pressure - total stall time (ms)",
+      "title": "io pressure - total stall time (ms) (host, full)",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source:name}",
-          "expr": "sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\"}/1000",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\",quantifier=\"full\"}/1000",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
@@ -825,13 +828,13 @@
       "type": "timeseries"
     },
     {
-      "title": "rate of io pressure - total stall time (ms per s)",
+      "title": "rate of io pressure - total stall time (ms per s) (host, full)",
       "_base": "panel",
       "_targets": [
           {
           "datasource": "{data-source:name}",
-          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\"}[1m])/1000",
-          "legendFormat": "{data-source:name} {{level}} {{quantifier}} {{interval}}",
+          "expr": "irate(sys_pressure_total_stall_time_usec{resource=\"io\",level=\"host\",quantifier=\"full\"}[1m])/1000",
+          "legendFormat": "{data-source:name}",
           "_base": "target"
         }
       ],
