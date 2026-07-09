@@ -7,10 +7,10 @@
     {
       "asDropdown": true,
       "icon": "external link",
-      "includeVars": false,
+      "includeVars": true,
       "keepTime": true,
       "tags": [],
-      "title": "Other Dashboards (same time range)",
+      "title": "Other Dashboards (same time range & variables)",
       "type": "dashboards"
     },
     {
