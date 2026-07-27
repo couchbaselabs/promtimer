@@ -52,6 +52,10 @@
   },
   "_panels": [
     {
+      "title": "CPU",
+      "_base": "row"
+    },
+    {
       "title": "sys_cpu_utilization_rate",
       "datasource": "{data-source:name}",
       "_base": "panel",
@@ -100,6 +104,10 @@
       "description": "Host cpu utilization (idle, sys, user, etc.)"
     },
     {
+      "title": "Memory",
+      "_base": "row"
+    },
+    {
       "title": "sysproc_mem_resident",
       "datasource": "{data-source:name}",
       "_base": "panel",
@@ -113,117 +121,6 @@
       "fieldConfig": {
         "defaults": {
           "unit": "bytes"
-        }
-      }
-    },
-    {
-      "title": "kv_curr_items",
-      "datasource": "{data-source:name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "kv_curr_items",
-          "legendFormat": "kv_curr_items {{bucket}}",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "sum(irate(kv_ops[1m]))",
-      "datasource": "{data-source:name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(irate(kv_ops[1m]))",
-          "legendFormat": "sum(irate(kv_ops[1m]))",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "kv gets and mutations",
-      "datasource": "{data-source:name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum(irate(kv_ops{op=\"get\"}[1m]))",
-          "legendFormat": "sum(irate(kv_ops{op=get}[1m]))",
-          "_base": "target"
-        },
-        {
-          "expr": "sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))",
-          "legendFormat": "sum(irate(kv_ops{op=~set|set_meta|cas|delete|...}[1m]))",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "total ops by bucket",
-      "datasource": "{data-source:name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "sum by (bucket) (irate(kv_ops[1m]))",
-          "legendFormat": "{{bucket}}: sum(irate(kv_ops[1m]))",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "90th percentile GET latency",
-      "datasource": "{data-source:name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "histogram_quantile(0.90, irate(kv_cmd_duration_seconds_bucket{opcode=\"GET\"}[5m]))",
-          "legendFormat": "{{bucket}}-latency",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s"
-        }
-      }
-    },
-    {
-      "title": "rate ns-server rest requests served",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source:name}",
-          "expr": "irate(cm_rest_request_leaves_total[1m])",
-          "legendFormat": "{data-source:name} sum(cm_rest_request_leaves_total[1m])",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "ns-server streaming requests currently being served",
-      "_base": "panel",
-      "_targets": [
-        {
-          "datasource": "{data-source:name}",
-          "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
-          "legendFormat": "{data-source:name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
-          "_base": "target"
-        }
-      ]
-    },
-    {
-      "title": "90th percentile ns-server outgoing request latencies",
-      "datasource": "{data-source:name}",
-      "_base": "panel",
-      "_targets": [
-        {
-          "expr": "histogram_quantile(0.9, irate(cm_outgoing_http_requests_seconds_bucket[5m]))",
-          "legendFormat": "{{type}}",
-          "_base": "target"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s"
         }
       }
     },
@@ -248,6 +145,10 @@
           "unit": "bytes"
         }
       }
+    },
+    {
+      "title": "Disk",
+      "_base": "row"
     },
     {
       "title": "sys_disk_read_bytes (per second)",
@@ -381,6 +282,125 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "title": "KV",
+      "_base": "row"
+    },
+    {
+      "title": "kv_curr_items",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "kv_curr_items",
+          "legendFormat": "kv_curr_items {{bucket}}",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "sum(irate(kv_ops[1m]))",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(irate(kv_ops[1m]))",
+          "legendFormat": "sum(irate(kv_ops[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "kv gets and mutations",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum(irate(kv_ops{op=\"get\"}[1m]))",
+          "legendFormat": "sum(irate(kv_ops{op=get}[1m]))",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(irate(kv_ops{op=~\"set|set_meta|set_ret_meta|cas|decr|del_meta|del_ret_meta|incr|delete\"}[1m]))",
+          "legendFormat": "sum(irate(kv_ops{op=~set|set_meta|cas|delete|...}[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "total ops by bucket",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "sum by (bucket) (irate(kv_ops[1m]))",
+          "legendFormat": "{{bucket}}: sum(irate(kv_ops[1m]))",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "90th percentile GET latency",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "histogram_quantile(0.90, irate(kv_cmd_duration_seconds_bucket{opcode=\"GET\"}[5m]))",
+          "legendFormat": "{{bucket}}-latency",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      }
+    },
+    {
+      "title": "REST",
+      "_base": "row"
+    },
+    {
+      "title": "rate ns-server rest requests served",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source:name}",
+          "expr": "irate(cm_rest_request_leaves_total[1m])",
+          "legendFormat": "{data-source:name} sum(cm_rest_request_leaves_total[1m])",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "ns-server streaming requests currently being served",
+      "_base": "panel",
+      "_targets": [
+        {
+          "datasource": "{data-source:name}",
+          "expr": "cm_rest_request_enters_total - ignoring(name) cm_rest_request_leaves_total",
+          "legendFormat": "{data-source:name} cm_rest_request_enters_total - cm_rest_request_leaves_total",
+          "_base": "target"
+        }
+      ]
+    },
+    {
+      "title": "90th percentile ns-server outgoing request latencies",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "histogram_quantile(0.9, irate(cm_outgoing_http_requests_seconds_bucket[5m]))",
+          "legendFormat": "{{type}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
       }
     }
   ]
