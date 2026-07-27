@@ -71,7 +71,7 @@
           "unit": "percent"
         }
       },
-      "description": "Container-level cpu utilization if running in a container. Otherwise same as host cpu utilization."
+      "description": "Container-level cpu utilization if running in a container. Otherwise same as host cpu utilization.\n\nThe underlying counters are broken out below in 'sys_cpu_host_seconds_total' and 'CPU cores used - host vs cgroup'."
     },
     {
       "title": "sysproc_cpu_utilization",
@@ -102,6 +102,85 @@
         }
       ],
       "description": "Host cpu utilization (idle, sys, user, etc.)"
+    },
+    {
+      "title": "CPU cores used - host vs cgroup",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "description": "Who is using CPU, in cores. The host series cover the whole node; the cgroup series cover the Couchbase slice.\n\n- **host cores** - `sys_cpu_host_cores_available`, the host CPU count\n- **cgroup limit** - `sys_cpu_cores_available`, the cgroup cpu.max quota in cores; with no quota it falls back to the CPU affinity count and equals host cores\n- **host used** - `sys_cpu_host_seconds_total`, modes user and sys\n- **cgroup used** - `sys_cpu_cgroup_seconds_total`, the same two modes\n\nOnly user and sys count on either side: the cgroup has no counterpart to the host's non-running modes (iowait, irq, stolen). 'host used' is therefore below the `sys_cpu_utilization_rate` panel above, which counts every non-idle mode. Throttling and steal are in the next panel.\n\nRaw counters are reported from 7.2.1.",
+      "_targets": [
+        {
+          "expr": "sys_cpu_host_cores_available",
+          "legendFormat": "host cores (capacity)",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_cpu_cores_available",
+          "legendFormat": "cgroup limit (cores)",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(rate(sys_cpu_host_seconds_total{mode=~\"user|sys\"}[1m]))",
+          "legendFormat": "host used (cores)",
+          "_base": "target"
+        },
+        {
+          "expr": "sum(rate(sys_cpu_cgroup_seconds_total{mode=~\"user|sys\"}[1m]))",
+          "legendFormat": "cgroup used (cores)",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "title": "CPU denied to the cgroup - throttle vs steal",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "description": "Cycles the cgroup did not get, each as a percentage of the core count it is measured against.\n\n- **throttled by cgroup cpu.max** - `sys_cpu_cgroup_seconds_total` mode throttled over `sys_cpu_cores_available`: the cgroup was runnable but held off by its own quota\n- **stolen by hypervisor** - `sys_cpu_host_seconds_total` mode stolen over `sys_cpu_host_cores_available`: the hypervisor ran another guest on the vCPU\n\nThrottling above zero while the host has idle CPU means the quota is the constraint rather than the host.\n\nRaw counters are reported from 7.2.1; mode stolen is Linux only.",
+      "_targets": [
+        {
+          "expr": "irate(sys_cpu_cgroup_seconds_total{mode=\"throttled\"}[1m]) / ignoring(name,mode) sys_cpu_cores_available * 100",
+          "legendFormat": "throttled by cgroup cpu.max",
+          "_base": "target"
+        },
+        {
+          "expr": "irate(sys_cpu_host_seconds_total{mode=\"stolen\"}[1m]) / ignoring(name,mode) sys_cpu_host_cores_available * 100",
+          "legendFormat": "stolen by hypervisor",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "title": "CPU pressure - host vs cgroup (share of time stalled, avg10)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "description": "Share of time stalled on CPU (PSI avg10), from `sys_pressure_share_time_stalled`.\n\n- **host** / **cgroup** - the whole node / the Couchbase slice\n- **some** / **full** - at least one task stalled / all non-idle tasks stalled at once\n\nThe host series is 'some' only: the kernel leaves CPU 'full' undefined at system level and reports it as zero.\n\nThe cgroup series need cgroup v2; without it only the host series appear.\n\nReported to Prometheus from 7.2.4; for an older capture, host PSI counters may be available on the NS Server log-derived dashboard.",
+      "_targets": [
+        {
+          "expr": "sys_pressure_share_time_stalled{resource=\"cpu\",level=\"host\",quantifier=\"some\",interval=\"10\"}",
+          "legendFormat": "host some",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_pressure_share_time_stalled{resource=\"cpu\",level=\"cgroup\",interval=\"10\"}",
+          "legendFormat": "cgroup {{quantifier}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      }
     },
     {
       "title": "Memory",
@@ -143,6 +222,67 @@
       "fieldConfig": {
         "defaults": {
           "unit": "bytes"
+        }
+      }
+    },
+    {
+      "title": "Memory used - host vs cgroup",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "description": "Who is using memory. The host series read /proc/meminfo and cover the whole node; the cgroup series read the cgroup's own counters and cover the Couchbase slice.\n\n- **host capacity** - `sys_mem_total`\n- **host used (incl cache)** - `sys_mem_used_sys`, mem_total - mem_free\n- **host used (excl cache)** - `sys_mem_actual_used`, mem_total - mem_available\n- **cgroup limit** - `sys_mem_cgroup_limit`, filtered to > 0 so an unset v2 limit draws no line. A flat line at 8 EiB is an unset v1 limit, not a limit.\n- **cgroup used (incl cache)** - `sys_mem_cgroup_used`, memory charged to the cgroup\n- **cgroup used (excl cache)** - `sys_mem_cgroup_actual_used`, the same minus the cgroup's page cache\n\nThe two 'incl cache' series both count cache as used, but the host one is system-wide and can also count memory no cgroup is charged for. The two 'excl cache' series do not subtract the same thing: the host one subtracts mem_available, the kernel's estimate of reclaimable memory, while the cgroup one subtracts the cgroup's whole page cache.\n\nThe cgroup metrics are reported from 7.2.0.",
+      "_targets": [
+        {
+          "expr": "sys_mem_total",
+          "legendFormat": "host capacity",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_mem_used_sys",
+          "legendFormat": "host used (incl cache)",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_mem_actual_used",
+          "legendFormat": "host used (excl cache)",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_mem_cgroup_limit > 0",
+          "legendFormat": "cgroup limit",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_mem_cgroup_used",
+          "legendFormat": "cgroup used (incl cache)",
+          "_base": "target"
+        },
+        {
+          "expr": "sys_mem_cgroup_actual_used",
+          "legendFormat": "cgroup used (excl cache)",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    },
+    {
+      "title": "Memory pressure - host vs cgroup (share of time stalled, avg10)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "description": "Share of time stalled on memory reclaim (PSI avg10), from `sys_pressure_share_time_stalled`.\n\n- **host** / **cgroup** - the whole node / the Couchbase slice\n- **some** / **full** - at least one task stalled / all non-idle tasks stalled at once\n\nThe cgroup series need cgroup v2; without it only the host series appear.\n\nReported to Prometheus from 7.2.4; for an older capture, host PSI counters may be available on the NS Server log-derived dashboard.",
+      "_targets": [
+        {
+          "expr": "sys_pressure_share_time_stalled{resource=\"memory\",interval=\"10\"}",
+          "legendFormat": "{{level}} {{quantifier}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
         }
       }
     },
@@ -282,6 +422,24 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "title": "IO pressure - host vs cgroup (share of time stalled, avg10)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "description": "Share of time stalled on IO (PSI avg10), from `sys_pressure_share_time_stalled`.\n\n- **host** / **cgroup** - the whole node / the Couchbase slice\n- **some** / **full** - at least one task stalled / all non-idle tasks stalled at once\n\nThe cgroup series need cgroup v2; without it only the host series appear.\n\nReported to Prometheus from 7.2.4; for an older capture, host PSI counters may be available on the NS Server log-derived dashboard.",
+      "_targets": [
+        {
+          "expr": "sys_pressure_share_time_stalled{resource=\"io\",interval=\"10\"}",
+          "legendFormat": "{{level}} {{quantifier}}",
+          "_base": "target"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
       }
     },
     {
