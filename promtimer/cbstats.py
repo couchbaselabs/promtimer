@@ -27,6 +27,7 @@ import os
 import zoneinfo
 import hashlib
 from os import path
+from collections import namedtuple
 from urllib.parse import urlparse, urlunparse
 from http.client import HTTPException
 from abc import ABC, abstractmethod
@@ -37,6 +38,24 @@ import util
 COUCHBASE_LOG = 'couchbase.log'
 DIAG_LOG = 'diag.log'
 STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
+CBCOLLECT_DIR_PREFIX = 'cbcollect_info'
+
+# The name cbcollect_info gives its output: the capturing node, then the
+# capture time. The node is ns_<n>@host on an installed cluster and
+# n_<n>@host under cluster_run. Not anchored at the end, so a name with
+# anything appended still parses.
+CBCOLLECT_DIR_RE = re.compile(
+    CBCOLLECT_DIR_PREFIX + r'_(ns?)_(\d+)@(.*)_(\d+)-(\d+)')
+
+
+class CBCollectDirName(
+        namedtuple('CBCollectDirName', 'prefix index host date time')):
+    """The parts of a cbcollect_info directory name."""
+
+    @property
+    def node(self):
+        """The Erlang node name, as the node calls itself in the logs."""
+        return '{}_{}@{}'.format(self.prefix, self.index, self.host)
 
 
 class Source(ABC):
@@ -287,7 +306,8 @@ class CBCollect(Source):
         """
         if self._zipfile:
             with zipfile.ZipFile(self._zipfile) as z:
-                filename = path.join(self._cbcollect_dir, log_file)
+                filename = CBCollect.zip_member_path(self._cbcollect_dir,
+                                                     log_file)
                 with z.open(filename, 'r') as filestream:
                     filereader = io.TextIOWrapper(filestream, 'utf-8', errors='replace')
                     return fun(filereader)
@@ -317,13 +337,84 @@ class CBCollect(Source):
         return candidate_path.is_dir() and CBCollect.snapshot_dir_exists(candidate_path)
 
     @staticmethod
+    def has_cbcollect_dir_name(name):
+        """
+        Returns whether name is the name cbcollect_info gives its output directory:
+        cbcollect_info_<node>_<timestamp>, which cbcollect_info fixes with no way to
+        override it.
+        :type name: string
+        :rtype: bool
+        """
+        return name.startswith(CBCOLLECT_DIR_PREFIX)
+
+    @staticmethod
+    def find_candidate_zips():
+        """
+        Returns the sorted names of the zip files in the working directory, any of
+        which may be a cbcollect zip. Whether a zip actually holds something usable
+        is up to the caller: Promtimer wants a stats_snapshot in it, the heartbeat
+        backfill wants an ns_server.stats.log.
+        :rtype: list of names of zip files
+        """
+        return sorted(glob.glob('*.zip'))
+
+    @staticmethod
+    def find_candidate_dirs():
+        """
+        Returns the sorted names of the directories in the working directory that
+        are named the way cbcollect_info names its output, whether or not they hold
+        anything Promtimer can use.
+        :rtype: list of names of directories
+        """
+        return [d for d in sorted(glob.glob(CBCOLLECT_DIR_PREFIX + '*'))
+                if path.isdir(d)]
+
+    @staticmethod
+    def find_dir_in_zip(zip_file):
+        """
+        Returns the name of the cbcollect directory inside an open zip, identified
+        by name rather than by content: the caller decides what it needs to find in
+        there. Returns None if the zip holds no such directory.
+        :type zip_file: zipfile.ZipFile
+        :rtype: string or None
+        """
+        dirs = [p for p in zipfile.Path(zip_file).iterdir() if p.is_dir()]
+        for p in dirs:
+            if CBCollect.has_cbcollect_dir_name(p.name):
+                return p.name
+        # Nothing named the way cbcollect_info names it: fall back to the
+        # directory holding a stats_snapshot, which is how this used to be
+        # identified, so a zip whose directory has been renamed still opens.
+        for p in dirs:
+            if CBCollect.snapshot_dir_exists(p):
+                return p.name
+        return None
+
+    @staticmethod
+    def parse_dir_name(cbcollect_dir):
+        """
+        Returns the parts of a cbcollect_info directory's name as a
+        CBCollectDirName, whose .node is the name the capturing node goes by in
+        the logs. Returns None for a directory not named the way cbcollect_info
+        names its output.
+        :type cbcollect_dir: string, a path or a bare directory name. Only the
+                             name itself is looked at, never the working
+                             directory, so '.' doesn't parse: a caller wanting
+                             the directory Promtimer is being run inside passes
+                             an absolute path.
+        :rtype: CBCollectDirName or None
+        """
+        m = CBCOLLECT_DIR_RE.match(path.basename(path.normpath(cbcollect_dir)))
+        return CBCollectDirName(*m.groups()) if m else None
+
+    @staticmethod
     def find_cbcollect_dirs():
-        cbcollects = sorted(glob.glob('cbcollect_info*'))
+        cbcollects = CBCollect.find_candidate_dirs()
         return [f for f in cbcollects if CBCollect.is_cbcollect_dir(pathlib.Path(f))]
 
     @staticmethod
     def get_cbcollect_dirs():
-        zips = sorted(glob.glob('*.zip'))
+        zips = CBCollect.find_candidate_zips()
         dirs = {}
         for z in zips:
             with zipfile.ZipFile(z) as zip_file:
@@ -334,6 +425,19 @@ class CBCollect(Source):
         for cbcollect_dir in cbcollect_dirs:
             result.append((cbcollect_dir, dirs.get(cbcollect_dir)))
         return result
+
+    @staticmethod
+    def zip_member_path(cbcollect_dir, name):
+        """
+        The name of one of a cbcollect's files inside the cbcollect zip. Zip
+        member names always use '/', whatever the platform, so this is
+        deliberately not os.path.join: joining with a backslash builds a name no
+        member has, and reading it raises KeyError.
+        :type cbcollect_dir: string, the cbcollect directory inside the zip
+        :type name: string, a path relative to the cbcollect directory
+        :rtype: string
+        """
+        return '{}/{}'.format(cbcollect_dir, name)
 
     @staticmethod
     def is_stats_snapshot_file(filename):
@@ -355,42 +459,47 @@ class CBCollect(Source):
         * couchbase.log: extracted if not present
         :return: the name of the cbcollect directory into which files will be extracted
         """
-        root = zipfile.Path(zip_file)
-        root_dir = None
-        for p in root.iterdir():
-            if CBCollect.is_cbcollect_dir(p):
-                snapshot_exists = CBCollect.snapshot_dir_exists(pathlib.Path(p.name))
-                logging.debug("{}/stats_snapshot exists: {}".format(p.name,
-                                                                    snapshot_exists))
-                root_dir = p.name
-                extracting = False
-                for item in zip_file.infolist():
-                    item_path = path.join(*item.filename.split('/'))
-                    should_extract = False
-                    if CBCollect.is_stats_snapshot_file(item.filename):
-                        should_extract = not snapshot_exists
-                    elif item.filename.endswith(COUCHBASE_LOG):
-                        should_extract = not path.exists(item_path)
-                    if should_extract:
-                        logging.debug("zipfile item:{}, exists:{}".format(
-                            item_path, path.exists(item_path)))
-                        if not extracting:
-                            extracting = True
-                            logging.info('extracting stats, couchbase.log from cbcollect'
-                                         ' zip:{}'
-                                         .format(zip_file.filename))
-                        zip_file.extract(item)
+        # The cbcollect in the zip is identified by name, not by whether it
+        # holds a stats_snapshot: a cbcollect captured before Prometheus has
+        # none in the zip - the heartbeat backfill creates it on disk instead.
+        # Name is what find_cbcollect_dirs matches on disk, so the two agree.
+        root_dir = CBCollect.find_dir_in_zip(zip_file)
+        if root_dir is not None:
+            snapshot_exists = CBCollect.snapshot_dir_exists(pathlib.Path(root_dir))
+            logging.debug("{}/stats_snapshot exists: {}".format(root_dir,
+                                                                snapshot_exists))
+            extracting = False
+            for item in zip_file.infolist():
+                item_path = path.join(*item.filename.split('/'))
+                should_extract = False
+                if CBCollect.is_stats_snapshot_file(item.filename):
+                    should_extract = not snapshot_exists
+                elif item.filename.endswith(COUCHBASE_LOG):
+                    should_extract = not path.exists(item_path)
+                if should_extract:
+                    logging.debug("zipfile item:{}, exists:{}".format(
+                        item_path, path.exists(item_path)))
+                    if not extracting:
+                        extracting = True
+                        logging.info('extracting stats, couchbase.log from cbcollect'
+                                     ' zip:{}'
+                                     .format(zip_file.filename))
+                    zip_file.extract(item)
         return root_dir
 
     @staticmethod
-    def try_get_data_source_names(cbcollect_dirs, pattern, name_format):
+    def try_get_data_source_names(cbcollect_dirs, make_name):
+        """
+        Names each cbcollect by applying make_name to the parsed parts of its
+        directory name, falling back to the directory name itself where it
+        doesn't parse. Returns None if the names aren't unique.
+        :type make_name: callable taking a CBCollectDirName, returning a string
+        :rtype: list of strings, or None
+        """
         data_sources = []
         for cbcollect in cbcollect_dirs:
-            m = re.match(pattern, cbcollect)
-            name = cbcollect
-            if m:
-                name = name_format.format(*m.groups())
-            data_sources.append(name)
+            parsed = CBCollect.parse_dir_name(cbcollect)
+            data_sources.append(make_name(parsed) if parsed else cbcollect)
         if len(set(data_sources)) == len(data_sources):
             return data_sources
         return None
@@ -408,10 +517,15 @@ class CBCollect(Source):
         :rtype: list of names of data sources; if cbcollect_dirs contains no duplicates the
                 returned list is guaranteed to also contain no duplicates
         """
-        regex = re.compile(r'cbcollect_info_ns_(\d+)@(.*)_(\d+)-(\d+)')
-        formats = ['{1}', 'ns_{0}@{1}', '{1}-{2}-{3}', 'ns_{0}-{1}-{2}-{3}']
-        for fmt in formats:
-            result = CBCollect.try_get_data_source_names(cbcollect_dirs, regex, fmt)
+        # Progressively more of the directory name, stopping at the first that
+        # names every cbcollect uniquely.
+        namers = [lambda p: p.host,
+                  lambda p: p.node,
+                  lambda p: '{}-{}-{}'.format(p.host, p.date, p.time),
+                  lambda p: '{}_{}-{}-{}-{}'.format(p.prefix, p.index, p.host,
+                                                    p.date, p.time)]
+        for make_name in namers:
+            result = CBCollect.try_get_data_source_names(cbcollect_dirs, make_name)
             if result:
                 return result
         return cbcollect_dirs
