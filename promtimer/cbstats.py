@@ -37,6 +37,7 @@ import util
 
 COUCHBASE_LOG = 'couchbase.log'
 DIAG_LOG = 'diag.log'
+NS_SERVER_STATS_LOG = 'ns_server.stats.log'
 STATS_SNAPSHOT_DIR_NAME = 'stats_snapshot'
 CBCOLLECT_DIR_PREFIX = 'cbcollect_info'
 
@@ -531,8 +532,27 @@ class CBCollect(Source):
         return cbcollect_dirs
 
     @staticmethod
-    def get_stats_sources(base_port):
+    def get_stats_sources(base_port, heartbeat_mode=None):
+        """
+        Prepares the cbcollects in the working directory and returns a stats Source
+        for each.
+        :param base_port: the port of the first Prometheus instance to be started
+        :param heartbeat_mode: a heartbeat.HeartbeatMode controlling the
+                               ns_server.stats.log backfill; defaults to AUTO
+        :rtype: list of CBCollect
+        """
+        # Imported here rather than at module scope: heartbeat imports cbstats
+        # for the cbcollect-finding functions above.
+        import heartbeat
+
         result = []
+        # Backfill the ns_server.stats.log heartbeat into each cbcollect's
+        # stats_snapshot before the cbcollects are discovered below: a snapshot
+        # created here makes an old (pre-snapshot) cbcollect discoverable, and
+        # the heartbeat-only metrics land in the same datasources. Runs once per
+        # cbcollect (skipped when the manifest already exists); no-op without
+        # promtool.
+        heartbeat.maybe_backfill(Source.PROMETHEUS_BIN, heartbeat_mode)
         cbcollects = CBCollect.get_cbcollect_dirs()
         if len(cbcollects) == 0:
             if os.path.isdir(STATS_SNAPSHOT_DIR_NAME):

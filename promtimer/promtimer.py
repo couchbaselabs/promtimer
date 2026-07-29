@@ -31,6 +31,7 @@ import annotations
 import backupstats
 import cbstats
 import dashboard
+import heartbeat
 import templating
 import util
 
@@ -268,7 +269,8 @@ def make_stats_sources(
         user: str | None,
         password: str | None,
         backup_archive_path: str | None,
-        cbmstatparser_path: str):
+        cbmstatparser_path: str,
+        heartbeat_mode: heartbeat.HeartbeatMode):
     live_cluster = cluster or nodes
     if live_cluster:
         if nodes:
@@ -294,7 +296,8 @@ def make_stats_sources(
             prometheus_base_port
         )
     else:
-        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port)
+        stats_sources = cbstats.CBCollect.get_stats_sources(prometheus_base_port,
+                                                            heartbeat_mode)
         if not stats_sources:
             sys.exit(1)
         times = cbstats.CBCollect.compute_min_and_max_times(stats_sources)
@@ -356,6 +359,7 @@ def run_promtimer(
         buckets: list[str],
         backup_archive_path: str | None,
         cbmstatparser_path: str,
+        heartbeat_mode: heartbeat.HeartbeatMode,
         refresh: str,
         dont_open_browser: bool):
 
@@ -369,7 +373,8 @@ def run_promtimer(
             user=user,
             password=password,
             backup_archive_path=backup_archive_path,
-            cbmstatparser_path=cbmstatparser_path)
+            cbmstatparser_path=cbmstatparser_path,
+            heartbeat_mode=heartbeat_mode)
 
     # determine timezone, list of buckets, refresh interval, etc
     timezone_override = os.environ.get('GRAFANA_TZ', '')
@@ -476,6 +481,17 @@ def parse_args_validate_and_run():
                              'for; if this option is provided, auto-detection of the '
                              'buckets by parsing couchbase.log (or by querying a running '
                              'Couchbase Server node directly) will be skipped')
+    parser.add_argument('--heartbeat', dest='heartbeat',
+                        type=heartbeat.HeartbeatMode,
+                        choices=list(heartbeat.HeartbeatMode),
+                        default=heartbeat.HeartbeatMode.AUTO,
+                        help='what to do about backfilling ns_server.stats.log '
+                             'heartbeat metrics into the stats snapshots: '
+                             '"auto" (the default) backfills once per cbcollect, '
+                             'on first open only; "skip" doesn\'t backfill; '
+                             '"refresh" discards and regenerates the backfilled '
+                             'metrics, which is needed to pick up changes to the '
+                             'heartbeat parser')
     parser.add_argument('--dont-open-browser', dest='dont_open_browser', default=False,
                         action='store_true',
                         help='don\'t open browser tab automatically on start')
@@ -568,6 +584,7 @@ def parse_args_validate_and_run():
         buckets=args.buckets.split(',') if args.buckets else [],
         backup_archive_path=args.backup_archive_path,
         cbmstatparser_path=args.cbmstatparser_bin if args.cbmstatparser_bin else CBMSTATPARSER_BIN,
+        heartbeat_mode=args.heartbeat,
         refresh=args.refresh if args.refresh else '',
         dont_open_browser=args.dont_open_browser)
 
