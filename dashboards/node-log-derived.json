@@ -1,0 +1,400 @@
+{
+  "_base": "dashboard",
+  "title": "NS Server log-derived",
+  "annotations": {
+    "list": [
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#ffffff",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Topology",
+        "showIn": 0,
+        "tags": [
+          "topology"
+        ],
+        "type": "tags"
+      },
+      {
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": false,
+        "iconColor": "#115fd4",
+        "limit": 500,
+        "matchAny": true,
+        "name": "Buckets",
+        "showIn": 0,
+        "tags": [
+          "buckets"
+        ],
+        "type": "tags"
+      }
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
+  },
+  "_panels": [
+    {
+      "_base": "text",
+      "gridPos": {
+        "w": 24,
+        "h": 3
+      },
+      "transparent": true,
+      "options": {
+        "mode": "markdown",
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "Every panel here is parsed from **ns_server.stats.log** - the ns_doctor heartbeat, roughly one sample a minute - and not scraped by Prometheus. Every series is whole-node: the heartbeat reads /proc and has no cgroup view.\nPrefer the scraped equivalent on **Node Overview** wherever the capture has one; panels name theirs.\nThese panels also cover a shorter span than the scraped stats, so they can start partway into the time range where the others do not."
+      }
+    },
+    {
+      "title": "CPU",
+      "_base": "row"
+    },
+    {
+      "title": "CPU utilization / steal (heartbeat)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_cpu_utilization_percent",
+          "legendFormat": "utilization",
+          "_base": "target",
+          "interval": "1m"
+        },
+        {
+          "expr": "heartbeat_cpu_stolen_percent",
+          "legendFormat": "stolen",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "description": "Whole-node CPU, from sigar.\n\n- **utilization** - percentage of the node's CPU that was busy\n- **stolen** - percentage of time the hypervisor ran another guest on the vCPU (Linux VMs only)\n\nPrefer sys_cpu_utilization_rate and the CPU attribution panels on Node Overview where the capture has them: scraped, and cgroup-aware."
+    },
+    {
+      "title": "Per-process CPU (heartbeat)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_process_cpu_percent",
+          "legendFormat": "{{proc}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "description": "CPU per process, one series for each process in the heartbeat.\n\nPrefer sysproc_cpu_utilization on Node Overview where the capture has it: the same instrument, at scrape resolution."
+    },
+    {
+      "title": "CPU pressure - share of time stalled, avg60 (host)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_pressure_avg60_percent{resource=\"cpu\"}",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "description": "PSI share of time the node was stalled waiting for CPU, the kernel's 60-second average.\n\n- **some** - share of time at least one task was stalled\n- **full** - share of time every non-idle task was stalled at once; the kernel tracks this per-cgroup only, so the host series reads zero or is absent\n\nPrefer 'CPU pressure - host vs cgroup (share of time stalled, avg10)' on Node Overview where the capture has it: scraped from 7.2.4, at avg10 and scrape resolution, host and cgroup separately. This panel is the only PSI an earlier capture has."
+    },
+    {
+      "title": "CPU pressure - stall time rate (host)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(heartbeat_pressure_stall_microseconds_total{resource=\"cpu\"}[5m])",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "\u00b5s/s"
+        }
+      },
+      "description": "Microseconds of PSI stall per second waiting for CPU, as a rate of the kernel's cumulative counter. Sampled once a minute, so a minute is the finest slice it resolves.\n\n- **some** - time at least one task was stalled\n- **full** - time every non-idle task was stalled at once; the host series reads zero or is absent, as above\n\nPrefer 'CPU pressure - host vs cgroup (share of time stalled, avg10)' on Node Overview where the capture has it: the same counter, scraped from 7.2.4 as sys_pressure_total_stall_time_usec."
+    },
+    {
+      "title": "Memory",
+      "_base": "row"
+    },
+    {
+      "title": "OS memory (memsup)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_os_memory_bytes",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "description": "The node's memory as memsup's get_system_memory_data() reports it. Which tags appear is platform-dependent, and memsup may add tags without notice.\n\n- **total_memory** - the total amount of memory available to the Erlang emulator, allocated and free\n- **system_total_memory** - the amount of memory available to the whole operating system\n- **free_memory** - the amount of free memory available to the Erlang emulator for allocation\n- **available_memory** - the amount of memory available for increased usage if there is an increased memory need; newer Linux kernels only, and where it is absent free + cached + buffered approximates it\n- **cached_memory** - the amount of memory the system uses for cached files read from disk; on Linux, memory marked reclaimable in the kernel slab allocator is added to this too\n- **buffered_memory** - the amount of memory the system uses for temporarily storing raw disk blocks\n- **total_swap** - the total amount of memory the system has available for disk swap\n- **free_swap** - the amount of memory the system has available for disk swap\n- **shared_memory** / **largest_free** - tags memsup can return that its documentation does not describe\n\nPrefer the sys_mem_* panels on Node Overview where the capture has them: scraped, and with the Couchbase cgroup broken out."
+    },
+    {
+      "title": "Per-process resident memory (heartbeat)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_process_resident_memory_bytes",
+          "legendFormat": "{{proc}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "description": "Resident set size per process, one series for each process in the heartbeat. RSS includes shared pages, so the series do not sum to the node's usage.\n\nPrefer sysproc_mem_resident on Node Overview where the capture has it: the same instrument, at scrape resolution."
+    },
+    {
+      "title": "meminfo anon/file LRU split (Linux)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_meminfo_bytes{kind=~\"active_anon|inactive_anon|active_file|inactive_file|dirty|writeback\"}",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "description": "The kernel's reclaim lists, from /proc/meminfo. Linux only.\n\n- **active_anon** / **inactive_anon** - anonymous pages (heaps, stacks), recently used and not; these can be swapped but not dropped\n- **active_file** / **inactive_file** - file-backed page cache; the inactive half is reclaimed first\n- **dirty** - pages modified and not yet written back\n- **writeback** - pages being written back"
+    },
+    {
+      "title": "meminfo reclaim fields (Linux)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_meminfo_bytes{kind=~\"mem_available|slab|sunreclaim|percpu\"}",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "description": "The /proc/meminfo fields describing reclaimable memory. Linux only.\n\n- **mem_available** - the kernel's estimate of what can be allocated without swapping: free memory plus the reclaimable part of the cache\n- **slab** - kernel data structures (inodes, dentries and the rest)\n- **sunreclaim** - the part of slab that cannot be reclaimed\n- **percpu** - per-CPU allocator memory"
+    },
+    {
+      "title": "Erlang memory breakdown (erlang:memory)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_erlang_memory_bytes",
+          "legendFormat": "{{type}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "description": "Memory dynamically allocated by the Erlang emulator, from erlang:memory(). More types may be added in a future release.\n\n- **total** - the total amount of memory currently allocated; the same as the sum of processes and system\n- **processes** - the total amount of memory currently allocated for the Erlang processes\n- **processes_used** - the amount of that currently used by the Erlang processes\n- **system** - memory currently allocated for the emulator that is not directly related to any Erlang process\n- **atom** - memory currently allocated for atoms; part of system\n- **atom_used** - the amount of that currently used\n- **binary** - memory currently allocated for binaries; part of system\n- **code** - memory currently allocated for Erlang code; part of system\n- **ets** - memory currently allocated for ETS tables; part of system\n\nThe series overlap rather than partition the total, so they do not add up: system = atom + binary + code + ets + other system memory, and processes = processes_used + the rest.\n\nThe docs note this accounting is approximate: system is incomplete, that error carries into total, and the amounts are not gathered atomically. total is not meant to equal the emulator's mapped pages - it excludes shared libraries, the emulator's own code and its stacks, while fragmentation and prereservation mean the segments holding it can be much larger."
+    },
+    {
+      "title": "Worst Erlang process memory (memsup)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_erlang_worst_process_memory_bytes",
+          "legendFormat": "{{pid}} {{name}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "description": "The largest single Erlang process on the node by allocated bytes, as memsup's get_memory_data() reports it, labelled with its pid and, where diag.log's process dump names it, its registered name or initial call.\n\nThe largest process is re-picked at every sample, so a series starts and stops as the winner changes.\n\nmemsup returns the result of its latest memory check rather than running a fresh one, so a sample can lag its timestamp by up to the check interval - one minute by default. The value is undefined where memsup is configured not to collect process data (memsup_system_only)."
+    },
+    {
+      "title": "Memory pressure - share of time stalled, avg60 (host)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_pressure_avg60_percent{resource=\"memory\"}",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "description": "PSI share of time the node was stalled waiting on memory reclaim, the kernel's 60-second average.\n\n- **some** - share of time at least one task was stalled\n- **full** - share of time every non-idle task was stalled at once\n\nPrefer 'Memory pressure - host vs cgroup (share of time stalled, avg10)' on Node Overview where the capture has it: scraped from 7.2.4, at avg10 and scrape resolution, host and cgroup separately. This panel is the only PSI an earlier capture has."
+    },
+    {
+      "title": "Memory pressure - stall time rate (host)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(heartbeat_pressure_stall_microseconds_total{resource=\"memory\"}[5m])",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "\u00b5s/s"
+        }
+      },
+      "description": "Microseconds of PSI stall per second waiting on memory reclaim, as a rate of the kernel's cumulative counter. Sampled once a minute, so a minute is the finest slice it resolves.\n\n- **some** - time at least one task was stalled\n- **full** - time every non-idle task was stalled at once\n\nPrefer 'Memory pressure - host vs cgroup (share of time stalled, avg10)' on Node Overview where the capture has it: the same counter, scraped from 7.2.4 as sys_pressure_total_stall_time_usec."
+    },
+    {
+      "title": "Memory allocation stalls (10m increase)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "increase(heartbeat_allocstall_total[10m])",
+          "legendFormat": "allocstalls",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "description": "Direct-reclaim stalls per 10-minute window, from the kernel's allocstall counter: the kernel counts one each time an allocation could not be met from free memory and the allocating task reclaimed memory itself rather than leaving it to kswapd. Linux only."
+    },
+    {
+      "title": "Disk",
+      "_base": "row"
+    },
+    {
+      "title": "IO pressure - share of time stalled, avg60 (host)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_pressure_avg60_percent{resource=\"io\"}",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "description": "PSI share of time the node was stalled waiting on IO, the kernel's 60-second average.\n\n- **some** - share of time at least one task was stalled\n- **full** - share of time every non-idle task was stalled at once\n\nPrefer 'IO pressure - host vs cgroup (share of time stalled, avg10)' on Node Overview where the capture has it: scraped from 7.2.4, at avg10 and scrape resolution, host and cgroup separately. This panel is the only PSI an earlier capture has."
+    },
+    {
+      "title": "IO pressure - stall time rate (host)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "rate(heartbeat_pressure_stall_microseconds_total{resource=\"io\"}[5m])",
+          "legendFormat": "{{kind}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "\u00b5s/s"
+        }
+      },
+      "description": "Microseconds of PSI stall per second waiting on IO, as a rate of the kernel's cumulative counter. Sampled once a minute, so a minute is the finest slice it resolves.\n\n- **some** - time at least one task was stalled\n- **full** - time every non-idle task was stalled at once\n\nPrefer 'IO pressure - host vs cgroup (share of time stalled, avg10)' on Node Overview where the capture has it: the same counter, scraped from 7.2.4 as sys_pressure_total_stall_time_usec."
+    },
+    {
+      "title": "Disk usage by mount (disksup)",
+      "datasource": "{data-source:name}",
+      "_base": "panel",
+      "_targets": [
+        {
+          "expr": "heartbeat_disk_usage_percent",
+          "legendFormat": "{{mount}}",
+          "_base": "target",
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        }
+      },
+      "description": "Percentage full per mount, as Erlang's disksup reports it: every mount it checks, tmpfs included. disksup runs on its own timer rather than per heartbeat, so the series step rather than curve. Mount sizes are backfilled too, as heartbeat_disk_capacity_bytes."
+    }
+  ],
+  "description": "Metrics parsed out of ns_server logs, not scraped from Prometheus: every panel comes from the ns_doctor heartbeat in ns_server.stats.log, roughly one sample a minute, mixing OS instruments (meminfo, PSI, sigar) with Erlang-VM instruments (erlang:memory, memsup). Collection gaps are drawn as breaks in the line.\n\nPrefer the scraped stats wherever the capture has them: Node Overview carries most of these instruments at scrape resolution and separates the host from the Couchbase cgroup. The heartbeat reads /proc and has no cgroup view, so every series here is whole-node. Panels name their Node Overview equivalent where there is one.\n\nThe heartbeat also covers a shorter span than the scraped stats, bounded by size rather than time: stats.log keeps 40 MiB per file over 10 rotations, all of which cbcollect concatenates, and each dump covers every node and bucket, so the span narrows as a cluster grows - a couple of days is typical, less on a large one. These panels can therefore start partway into the time range where the others do not.",
+  "tags": [
+    "log-derived",
+    "stats.log",
+    "heartbeat"
+  ]
+}

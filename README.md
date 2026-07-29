@@ -42,6 +42,19 @@ To browse stats online, all you need is a live cluster to run against.
 For offline browsing of stats, you will additionally need:
 * A Prometheus binary (version 2.20 or later)
 * Some cbcollects
+* (Optional) `promtool`, to additionally parse each cbcollect's
+  `ns_server.stats.log` into heartbeat metrics (Erlang memory breakdown,
+  the meminfo anon/file split, per-process RSS/CPU, and PSI pressure for
+  captures from before 7.2.4) shown on the "NS Server log-derived"
+  dashboard. Without
+  promtool this step is skipped and Promtimer works as before. Note that
+  the `install/bin` directory of a Couchbase Server build contains
+  `prometheus` but not `promtool`; the Prometheus release archives and
+  `brew install prometheus` include both. The log is read straight out of
+  the cbcollect zip when there is one, as couchbase.log and diag.log
+  already are, so cbcollects need no unzipping for this either. The parse happens once per cbcollect (subsequent
+  opens reuse the generated metrics; `--heartbeat=refresh` regenerates
+  them, `--heartbeat=skip` disables).
 * (Optional) Event Logger from [cbmultimanager](https://github.com/couchbaselabs/cbmultimanager)
   if you wish to generate an `events.log` file
 
