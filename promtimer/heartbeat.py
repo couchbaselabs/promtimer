@@ -498,7 +498,9 @@ def to_openmetrics(entries, nodes=None, names=None):
     samples of a series are >= GAP_S apart (a collection gap), an explicit
     NaN is written one interval after the last real sample, so Prometheus's
     query lookback carries forward NaN and Grafana breaks the line instead
-    of repeating stale values. Returns (text, n_samples)."""
+    of repeating stale values. Each series is terminated the same way, so
+    its final sample doesn't carry forward for the whole lookback window
+    either. Returns (text, n_samples)."""
     types = {}
     series = defaultdict(lambda: defaultdict(list))
 
@@ -539,6 +541,9 @@ def to_openmetrics(entries, nodes=None, names=None):
                 lines.append('{}{{{}}} {} {}'.format(name, labelstr, val, ts))
                 prev_ts = ts
                 n += 1
+            if prev_ts is not None:
+                lines.append('{}{{{}}} NaN {}'.format(
+                    name, labelstr, prev_ts + INTERVAL_S))
     lines.append('# EOF')
     return '\n'.join(lines) + '\n', n
 
