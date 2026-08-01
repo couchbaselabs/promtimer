@@ -267,10 +267,30 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "points",
+            "pointSize": 6,
+            "showPoints": "always",
+            "lineWidth": 0
+          }
         }
       },
-      "description": "The largest single Erlang process on the node by allocated bytes, as memsup's get_memory_data() reports it, labelled with its pid and, where diag.log's process dump names it, its registered name or initial call.\n\nThe largest process is re-picked at every sample, so a series starts and stops as the winner changes.\n\nmemsup returns the result of its latest memory check rather than running a fresh one, so a sample can lag its timestamp by up to the check interval - one minute by default. The value is undefined where memsup is configured not to collect process data (memsup_system_only)."
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": ["count"],
+          "sortBy": "Count",
+          "sortDesc": true,
+          "limit": 3
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "description": "The largest single Erlang process on the node by allocated bytes, as memsup's get_memory_data() reports it, labelled with its pid and, where diag.log's process dump names it, its registered name or initial call. The legend counts the samples each pid won and lists the three most frequent; 'show all' opens the rest. Every pid is plotted whether or not it is in the legend - hover a dot to identify it.\n\nmemsup returns the result of its latest memory check rather than running a fresh one, so a sample can lag its timestamp by up to the check interval - one minute by default."
     },
     {
       "title": "Memory pressure - share of time stalled, avg60 (host)",
