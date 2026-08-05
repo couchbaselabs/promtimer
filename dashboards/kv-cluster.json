@@ -303,19 +303,43 @@
     },
     {
       "title": "Percentile Sync Write latencies",
-      "description": "For each node computed as:`histogram_quantile(0.99|0.50, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m])))`",
+      "description": "99th and 50th percentile sync write commit latencies by durability level (`majority`, `majority_and_persist_on_master`, `persist_to_majority`).\n\nComputed per level as: `histogram_quantile(0.99|0.50, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"<level>\"}[5m])))`",
       "_base": "panel",
       "_targets": [
         {
           "datasource": "{data-source:name}",
           "expr": "histogram_quantile(0.99, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m])))",
-          "legendFormat": "99th {data-source:name} Sync SET",
+          "legendFormat": "99th {data-source:name} persist_to_majority",
           "_base": "target"
         },
         {
           "datasource": "{data-source:name}",
           "expr": "histogram_quantile(0.50, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"persist_to_majority\"}[5m])))",
-          "legendFormat": "50th {data-source:name} Sync SET",
+          "legendFormat": "50th {data-source:name} persist_to_majority",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source:name}",
+          "expr": "histogram_quantile(0.99, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"majority\"}[5m])))",
+          "legendFormat": "99th {data-source:name} majority",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source:name}",
+          "expr": "histogram_quantile(0.50, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"majority\"}[5m])))",
+          "legendFormat": "50th {data-source:name} majority",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source:name}",
+          "expr": "histogram_quantile(0.99, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"majority_and_persist_on_master\"}[5m])))",
+          "legendFormat": "99th {data-source:name} majority_and_persist_on_master",
+          "_base": "target"
+        },
+        {
+          "datasource": "{data-source:name}",
+          "expr": "histogram_quantile(0.50, sum by (le) (irate(kv_sync_write_commit_duration_seconds_bucket{level=\"majority_and_persist_on_master\"}[5m])))",
+          "legendFormat": "50th {data-source:name} majority_and_persist_on_master",
           "_base": "target"
         }
       ],
