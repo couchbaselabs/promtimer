@@ -89,7 +89,7 @@
           "legendFormat": "Bucket Quota"
         },
         {
-          "expr": "kv_ep_max_size{bucket=\"$bucket\"} * ignoring(name) (kv_ep_mutation_mem_ratio{bucket=\"$bucket\"} or (kv_ep_mutation_mem_threshold{bucket=\"$bucket\"} / 100))",
+          "expr": "(kv_ep_max_size{bucket=\"$bucket\"} * ignoring(name) last_over_time(kv_ep_mutation_mem_ratio{bucket=\"$bucket\"}[10s])) or (kv_ep_max_size{bucket=\"$bucket\"} * ignoring(name) (last_over_time(kv_ep_mutation_mem_threshold{bucket=\"$bucket\"}[10s]) / 100)) or (sum without(name) (kv_ep_max_size{bucket=\"$bucket\"}) * 0.93)",
           "legendFormat": "Mutation threshold"
         },
         {
