@@ -614,9 +614,8 @@
       ]
     },
     {
-      "_base": "panel",
-      "title": "Latency",
-      "type": "row"
+      "_base": "row",
+      "title": "Latency"
     },
     {
       "_base": "panel",
@@ -719,9 +718,8 @@
       ]
     },
     {
-      "_base": "panel",
-      "title": "Disk IO",
-      "type": "row"
+      "_base": "row",
+      "title": "Disk IO"
     },
     {
       "_base": "panel",
@@ -1218,9 +1216,8 @@
       ]
     },
     {
-      "_base": "panel",
-      "title": "Size",
-      "type": "row"
+      "_base": "row",
+      "title": "Size"
     },
     {
       "_base": "panel",
@@ -1402,9 +1399,8 @@
       "title": "Fragmentation %"
     },
     {
-      "_base": "panel",
-      "title": "History",
-      "type": "row"
+      "_base": "row",
+      "title": "History"
     },
     {
       "_base": "panel",
@@ -1464,9 +1460,8 @@
       "title": "History start timestamp"
     },
     {
-      "_base": "panel",
-      "title": "WriteAmp",
-      "type": "row"
+      "_base": "row",
+      "title": "WriteAmp"
     },
     {
       "_base": "panel",
@@ -1786,9 +1781,8 @@
       ]
     },
     {
-      "_base": "panel",
-      "title": "OS",
-      "type": "row"
+      "_base": "row",
+      "title": "OS"
     },
     {
       "_base": "panel",
