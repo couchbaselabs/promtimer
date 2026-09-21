@@ -802,6 +802,116 @@
       "type": "timeseries"
     },
     {
+      "title": "Throttling",
+      "_base": "row"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "description": "Total number of commands throttled",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "targets": [
+        {
+          "expr": "kv_throttle_count_total{bucket=\"$bucket\"}",
+          "legendFormat": "Throttle Count"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Total Throttle Count",
+      "type": "timeseries"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "description": "Combined read + write unit consumption rate (units/sec) per bucket - the same RU + WU total KV checks against throttle_reserved, throttle_hard_limit, and node capacity. Indicates headroom to the throttle limits; confirm actual throttling via throttle_count_total.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "fillOpacity": 10
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/(Hard Limit|Reserved|Node Capacity)/"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "targets": [
+        {
+          "expr": "kv_node_capacity < 1e18",
+          "legendFormat": "Node Capacity"
+        },
+        {
+          "expr": "kv_throttle_hard_limit{bucket=\"$bucket\"} < 1e18",
+          "legendFormat": "Hard Limit"
+        },
+        {
+          "expr": "kv_throttle_reserved{bucket=\"$bucket\"}",
+          "legendFormat": "Reserved"
+        },
+        {
+          "expr": "sum by (bucket) (rate(kv_ru_total{bucket=\"$bucket\"}[20s])) + sum by (bucket) (rate(kv_wu_total{bucket=\"$bucket\"}[20s]))",
+          "legendFormat": "Total Unit Rate"
+        },
+        {
+          "expr": "rate(kv_ru_total{bucket=\"$bucket\"}[20s])",
+          "legendFormat": "Read Unit Rate"
+        },
+        {
+          "expr": "rate(kv_wu_total{bucket=\"$bucket\"}[20s])",
+          "legendFormat": "Write Unit Rate"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Throttle Unit Rate (WU + RU)",
+      "type": "timeseries"
+    },
+    {
       "title": "File-Based Rebalance",
       "_base": "row"
     },
