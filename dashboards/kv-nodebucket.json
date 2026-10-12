@@ -577,6 +577,97 @@
       "type": "timeseries"
     },
     {
+      "title": "Memory Fragmentation",
+      "_base": "row"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "(kv_ep_arena_memory_resident_bytes{bucket=\"$bucket\"} - ignoring(name) kv_ep_arena_memory_allocated_bytes{bucket=\"$bucket\"}) / ignoring(name) kv_ep_arena_memory_resident_bytes{bucket=\"$bucket\"}",
+          "legendFormat": "Arena fragmentation"
+        }
+      ],
+      "description": "* Fragmentation - fraction of the bucket's arena resident memory which is not allocated - `(kv_ep_arena_memory_resident_bytes - kv_ep_arena_memory_allocated_bytes) / kv_ep_arena_memory_resident_bytes`",
+      "title": "Fragmentation % (from arena stats)",
+      "type": "timeseries"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix: items/s",
+          "min": 0,
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "irate(kv_ep_defragmenter_num_moved{bucket=\"$bucket\"}[2m])",
+          "legendFormat": "Items moved"
+        },
+        {
+          "expr": "irate(kv_ep_defragmenter_sv_num_moved{bucket=\"$bucket\"}[2m])",
+          "legendFormat": "StoredValues moved"
+        },
+        {
+          "expr": "irate(kv_ep_defragmenter_num_visited{bucket=\"$bucket\"}[2m])",
+          "legendFormat": "Items visited"
+        }
+      ],
+      "description": "* Items visited - rate of items visited (considered for defragmentation) by the defragmenter task - `kv_ep_defragmenter_num_visited`\n* Items moved - rate of items moved (reallocated) by the defragmenter task - `kv_ep_defragmenter_num_moved`\n* StoredValues moved - rate of StoredValues moved (reallocated) by the defragmenter task - `kv_ep_defragmenter_sv_num_moved`",
+      "title": "Defragmenter visited / moved rate (items/s, 2m interval)",
+      "type": "timeseries"
+    },
+    {
+      "_base": "panel",
+      "datasource": "${node}",
+      "gridPos": {
+        "h": 10,
+        "w": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": {
+            "fillOpacity": 10
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "kv_ep_defragmenter_sleep_time_seconds{bucket=\"$bucket\"}",
+          "legendFormat": "Sleep time"
+        }
+      ],
+      "description": "* Sleep time - time the defragmenter task will sleep before it is next scheduled to run - `kv_ep_defragmenter_sleep_time_seconds`",
+      "title": "Defragmenter sleep time",
+      "type": "timeseries"
+    },
+    {
       "title": "Operations",
       "_base": "row"
     },
