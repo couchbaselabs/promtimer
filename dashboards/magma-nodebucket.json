@@ -1216,6 +1216,59 @@
       ]
     },
     {
+      "_base": "panel",
+      "title": "Compaction Rate Limiting",
+      "datasource": "${node}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 5
+          },
+          "unit": "Bps"
+        }
+      },
+      "gridPos": {
+        "h": 9
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_read_bytes_compact_bytes{bucket=\"$bucket\"}[1m])",
+          "hide": false,
+          "legendFormat": "compaction read IO",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "editorMode": "code",
+          "expr": "rate(kv_ep_magma_write_bytes_compact_bytes{bucket=\"$bucket\"}[1m])",
+          "hide": false,
+          "legendFormat": "compaction write IO",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$A + $C",
+          "hide": false,
+          "refId": "Combined Read and Write IO",
+          "type": "math"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kv_magma_compaction_rate_limit_bytes",
+          "hide": false,
+          "legendFormat": "Compaction Rate Limit",
+          "range": true,
+          "refId": "B"
+        }
+      ]
+    },
+    {
       "_base": "row",
       "title": "Size"
     },
